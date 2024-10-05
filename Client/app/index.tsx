@@ -1,4 +1,3 @@
-import { ThemedText } from "@/components/ThemedText";
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 
