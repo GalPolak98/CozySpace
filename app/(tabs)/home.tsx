@@ -4,7 +4,7 @@ import React from 'react'
 const HomeScreen = () => {
   return (
     <View className='flex-1 items-center justify-center'>
-    <Text>welcome to home page</Text>
+    <Text className='font-pmedium'>welcome to home page</Text>
     </View>
   )
 }
