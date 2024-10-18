@@ -1,7 +1,9 @@
 import { SplashScreen, Stack } from "expo-router";
 import "../global.css"
 import { useFonts } from "expo-font";
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { StatusBar } from 'react-native';
+import React from "react";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,11 +30,15 @@ SplashScreen.preventAutoHideAsync();
 
 
   return (
-      <Stack>
-        <Stack.Screen name="index"/>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+    <>
+        <StatusBar barStyle="dark-content" />
+        <Stack>
+          <Stack.Screen name="(auth)" options={{headerTitle: "Sign In" }} />
+          <Stack.Screen name="(tabs)" options={{ headerTitle: "",headerLeft: () => null, headerShown: true, gestureEnabled: false}} />
+          <Stack.Screen name="index" options={{headerTitle: "AnxiEase"}}/>
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </>
   )
 }
 

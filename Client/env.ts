@@ -1,0 +1,9 @@
+export default {
+    FIREBASE_API_KEY: "AIzaSyDym56rls2iGHndXIJfbgY-LJvWf_bbkH0",
+    FIREBASE_AUTH_DOMAIN: "anxiease.firebaseapp.com",
+    FIREBASE_PROJECT_ID: "anxiease",
+    FIREBASE_STORAGE_BUCKET: "anxiease.appspot.com",
+    FIREBASE_MESSAGING_SENDER_ID: "900286492838",
+    FIREBASE_APP_ID: "1:900286492838:web:9aa20af182917891754467",
+    FIREBASE_MEASUREMENT_ID: "H4J3S9876R",
+  };
