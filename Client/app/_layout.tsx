@@ -1,44 +1,17 @@
-import { SplashScreen, Stack, Slot } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import "../global.css";
 import { useFonts } from "expo-font";
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import React from "react";
 import { ThemeProvider, useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
 import ThemeToggle from '@/components/ThemeToggle';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from '@/Services/firebaseConfig';
-import { onAuthStateChanged } from 'firebase/auth';
 import Loader from '@/components/Loader';
 
 const InitialLayout = () => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      try {
-        if (user) {
-          const token = await user.getIdToken();
-          await AsyncStorage.setItem('userToken', token);
-        } else {
-          await AsyncStorage.removeItem('userToken');
-        }
-      } catch (error) {
-        console.error('Auth state change error:', error);
-      } finally {
-        setIsCheckingAuth(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (isCheckingAuth) {
-    return <Loader isLoading={true} />;
-  }
 
   return (
     <>
@@ -113,7 +86,9 @@ export default function RootLayout() {
     if (fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded, error]);
 
-  if (!fontsLoaded && !error) return null;
+  if (!fontsLoaded && !error) {
+    return <Loader isLoading={true} />;
+  }
 
   return (
     <ThemeProvider>

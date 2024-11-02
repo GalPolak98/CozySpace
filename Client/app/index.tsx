@@ -1,19 +1,15 @@
-import React, { useState, useRef } from 'react';
-import {
-  View,
-  FlatList,
-  Dimensions,
-  Animated,
-  ViewToken,
-  Image,
-  StyleSheet,
-} from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import {View, FlatList, Dimensions, Animated, ViewToken, Image, StyleSheet} from 'react-native';
 import { router } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
+import { auth } from '@/Services/firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loader from '@/components/Loader';
 
 const { width, height } = Dimensions.get('window');
 
@@ -53,10 +49,67 @@ const onboardingData: OnboardingItem[] = [
 
 export default function Index() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const scrollX = useRef(new Animated.Value(0)).current;
   const slidesRef = useRef<FlatList>(null);
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
+
+  useEffect(() => {
+    let isSubscribed = true;
+
+    const checkAuth = async () => {
+      try {
+        // First check if we already have a token and a current user
+        const existingToken = await AsyncStorage.getItem('userToken');
+        
+        if (existingToken && auth.currentUser) {
+          console.log("Using existing token");
+          if (isSubscribed) {
+            router.replace('/(tabs)/home');
+          }
+          return;
+        }
+
+        // If no token or no current user, set up the listener
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+          if (!isSubscribed) return;
+
+          try {
+            if (user) {
+              const newToken = await user.getIdToken();
+              await AsyncStorage.setItem('userToken', newToken);
+              console.log("New token obtained");
+              router.replace('/(tabs)/home');
+            } else {
+              await AsyncStorage.removeItem('userToken');
+              console.log("No user found, showing onboarding");
+            }
+          } catch (error) {
+            console.error('Auth state change error:', error);
+            await AsyncStorage.removeItem('userToken');
+          } finally {
+            if (isSubscribed) {
+              setIsCheckingAuth(false);
+            }
+          }
+        });
+
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('Initial auth check error:', error);
+        if (isSubscribed) {
+          setIsCheckingAuth(false);
+        }
+      }
+    };
+
+    checkAuth();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, []);
 
   const viewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems[0]) {
@@ -132,6 +185,10 @@ export default function Index() {
       </View>
     );
   };
+
+  if (isCheckingAuth) {
+    return <Loader isLoading={true} />;
+  }
 
   return (
     <ThemedView className="flex-1">
