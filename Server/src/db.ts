@@ -9,7 +9,9 @@ const clientOptions = { serverApi: { version: ServerApiVersion.v1, strict: true,
 
 async function connectToDatabase() {
   try {
-    const uri = `mongodb+srv://galpolak:${process.env.MONGO_PASSWORD}@anxietyprojectdb.2gqxl.mongodb.net/?retryWrites=true&w=majority&appName=AnxietyProjectDB`;    
+    // const uri = `mongodb+srv://galpolak:${process.env.MONGO_PASSWORD}@anxietyprojectdb.2gqxl.mongodb.net/?retryWrites=true&w=majority&appName=AnxietyProjectDB`;    
+    const uri = `mongodb+srv://galpolak:${process.env.MONGO_PASSWORD}@anxietyprojectdb.2gqxl.mongodb.net/AnxiEase?retryWrites=true&w=majority&appName=AnxietyProjectDB`;
+
     await mongoose.connect(uri, clientOptions);
     console.log("Connected to MongoDB");
 
