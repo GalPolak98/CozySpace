@@ -65,8 +65,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerLeft: () => <ThemeToggle />,
-        headerRight:() => <HeaderRight />,
+        headerLeft: HeaderLeft,
+        headerRight: HeaderRight,
         headerStyle: {
           backgroundColor: colors.background,
         },

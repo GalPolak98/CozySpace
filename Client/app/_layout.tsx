@@ -25,7 +25,7 @@ const InitialLayout = () => {
             backgroundColor: colors.background,
           },
           headerTintColor: colors.text,
-          headerLeft: () => <ThemeToggle />,
+          headerShown:false
         }}
       >
         <Stack.Screen 

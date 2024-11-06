@@ -12,7 +12,7 @@ const AuthLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerLeft: () => <ThemeToggle />,
+        headerRight: () => <ThemeToggle />,
         headerStyle: {
           backgroundColor: colors.background,
         },
@@ -20,6 +20,8 @@ const AuthLayout = () => {
         headerTitleStyle: {
           fontFamily: 'Poppins-SemiBold',
         },
+        headerBackVisible:false,
+        headerTitle:"AnxiEase"
       }}
     >
       <Stack.Screen
