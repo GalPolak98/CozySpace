@@ -1,19 +1,27 @@
+// app/chat/layout.tsx
 import React from 'react';
 import { Stack } from 'expo-router';
-import { TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
+import ChatHeader from '@/components/chat/ChatHeader';
+import { ChatContextProvider, useChatContext } from '@/context/ChatContext';
 
-export default function ChatLayout() {
-  const { theme: currentTheme, toggleTheme } = useTheme();
-  const router = useRouter();
+// Create a wrapper component for the header to access chat context
+const HeaderWrapper = () => {
+  const { isTyping } = useChatContext();
+  const { toggleTheme } = useTheme();
+  
+  return <ChatHeader isTyping={isTyping} toggleTheme={toggleTheme} />;
+};
+
+const ChatLayoutInner = () => {
+  const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
   return (
     <Stack
       screenOptions={{
+        header: () => <HeaderWrapper />,
         headerStyle: {
           backgroundColor: colors.background,
         },
@@ -21,41 +29,23 @@ export default function ChatLayout() {
         headerTitleStyle: {
           fontFamily: 'Poppins-SemiBold',
         },
-        headerLeft: () => (
-          <View className="flex-row items-center">
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="px-2 py-1"
-            >
-              <Ionicons 
-                name="chevron-back" 
-                size={28} 
-                color={colors.text}
-              />
-            </TouchableOpacity>
-          </View>
-        ),
-        headerRight: () => (
-          <TouchableOpacity
-            onPress={toggleTheme}
-            className="px-4 py-2"
-          >
-            <Ionicons
-              name={currentTheme === 'light' ? 'moon-outline' : 'sunny-outline'}
-              size={24}
-              color={colors.text}
-            />
-          </TouchableOpacity>
-        ),
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          title: 'AI Therapy Chat',
           headerShadowVisible: false
         }}
       />
     </Stack>
+  );
+};
+
+// Wrap the layout with context provider
+export default function ChatLayout() {
+  return (
+    <ChatContextProvider>
+      <ChatLayoutInner />
+    </ChatContextProvider>
   );
 }
