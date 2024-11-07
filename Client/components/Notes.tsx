@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import useAuth from '../hooks/useAuth'; 
 import config from '../env'; 
 
@@ -14,6 +15,22 @@ const NotesSection: React.FC = () => {
     const now = new Date();
     return now.toLocaleString();
   };
+
+  // Load saved note from AsyncStorage when the component mounts
+  useEffect(() => {
+    const loadNote = async () => {
+      const savedNote = await AsyncStorage.getItem('draftNote');
+      if (savedNote) {
+        setNote(savedNote);
+      }
+    };
+    loadNote();
+  }, []);
+
+  // Save note to AsyncStorage whenever it changes
+  useEffect(() => {
+    AsyncStorage.setItem('draftNote', note);
+  }, [note]);
 
   const addNote = async () => {
     if (note.trim()) {
@@ -37,9 +54,9 @@ const NotesSection: React.FC = () => {
         }
         const savedNote = await response.json();
         setNotes([...notes, savedNote]);
-        setNote('');
+        setNote(''); // Clear the note input
+        await AsyncStorage.removeItem('draftNote'); // Clear the saved draft
         Alert.alert('Success', 'Note saved successfully!');
-
       } catch (error) {
         console.error('Failed to save note', error);
         Alert.alert('Error', 'Failed to save note. Please try again.');
@@ -47,7 +64,7 @@ const NotesSection: React.FC = () => {
     }
   };
 
-  const LINE_HEIGHT = 25; // Adjusted to match text line height
+  const LINE_HEIGHT = 25; 
   const CONTAINER_HEIGHT = 600;
   const NUMBER_OF_LINES = Math.floor(CONTAINER_HEIGHT / LINE_HEIGHT);
   
@@ -70,8 +87,6 @@ const NotesSection: React.FC = () => {
     ));
   };
   
-  
-
   return (
     <View style={{ marginBottom: 40 }}>
       <View style={{ 
