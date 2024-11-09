@@ -101,14 +101,14 @@ const ChatScreen = () => {
         <ChatList
           ref={listRef}
           messages={messages}
-          isTyping={isTyping} // Pass isTyping to ChatList
+          isTyping={isTyping}
           keyboardHeight={keyboardHeight}
         />
         <ChatInput
           value={inputText}
           onChangeText={setInputText}
           onSend={handleSend}
-          isLoading={isTyping} // Use isTyping for input loading state
+          isLoading={isTyping}
         />
       </View>
     </ChatContainer>

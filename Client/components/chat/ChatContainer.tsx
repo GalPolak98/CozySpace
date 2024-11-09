@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   KeyboardAvoidingView, 
   Platform, 
-  StyleSheet 
+  StyleSheet
 } from 'react-native';
 import ThemedView from '@/components/ThemedView';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,23 +15,23 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ children }) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
-      <ThemedView style={[
-        styles.container,
-        { paddingBottom: insets.bottom }
-      ]}>
+    <ThemedView style={[styles.container, { paddingBottom: insets.bottom }]}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboardAvoid}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      >
         {children}
-      </ThemedView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  keyboardAvoid: {
     flex: 1,
   },
 });

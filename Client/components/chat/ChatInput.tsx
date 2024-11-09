@@ -6,8 +6,12 @@ import {
   Platform,
   Keyboard,
   StyleSheet,
-  Animated
+  Animated,
+  Alert,
+  ActionSheetIOS,
+  Pressable
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
@@ -70,6 +74,46 @@ const ChatInput: React.FC<ChatInputProps> = ({
     inputRef.current?.focus();
   };
 
+  const handlePaste = async () => {
+    try {
+      const text = await Clipboard.getStringAsync();
+      if (text) {
+        const selectionStart = inputRef.current?.props.selection?.start || value.length;
+        const newText = value.slice(0, selectionStart) + text + value.slice(selectionStart);
+        onChangeText(newText);
+      }
+    } catch (error) {
+      console.error('Failed to paste:', error);
+    }
+  };
+
+  const handleLongPress = () => {
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Paste', 'Cancel'],
+          cancelButtonIndex: 1,
+          title: 'Input Options',
+        },
+        async (buttonIndex) => {
+          if (buttonIndex === 0) {
+            await handlePaste();
+          }
+        }
+      );
+    } else {
+      Alert.alert(
+        'Input Options',
+        '',
+        [
+          { text: 'Paste', onPress: handlePaste },
+          { text: 'Cancel', style: 'cancel' },
+        ],
+        { cancelable: true }
+      );
+    }
+  };
+
   return (
     <Animated.View
       style={[
@@ -90,23 +134,34 @@ const ChatInput: React.FC<ChatInputProps> = ({
           }
         ]}
       >
-        <TextInput
-          ref={inputRef}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder="Type your message..."
-          placeholderTextColor={colors.placeholder}
-          style={[
-            styles.input,
-            {
-              color: colors.text,
-            }
-          ]}
-          multiline
-          maxLength={500}
-          returnKeyType="default"
-          blurOnSubmit={false}
-        />
+        <Pressable 
+          onLongPress={handleLongPress} 
+          style={styles.inputWrapper}
+        >
+          <TextInput
+            ref={inputRef}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder="Type your message..."
+            placeholderTextColor={colors.placeholder}
+            style={[
+              styles.input,
+              {
+                color: colors.text,
+              }
+            ]}
+            multiline
+            maxLength={500}
+            contextMenuHidden={false}
+            returnKeyType="default"
+            blurOnSubmit={false}
+            textAlignVertical="center"
+            scrollEnabled={true}
+            keyboardType="default"
+            autoCapitalize="sentences"
+            selectionColor={colors.primary}
+          />
+        </Pressable>
         
         <TouchableOpacity
           onPress={handleSend}
@@ -144,12 +199,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
-  input: {
+  inputWrapper: {
     flex: 1,
+  },
+  input: {
     fontFamily: 'Poppins-Regular',
     fontSize: 16,
     paddingVertical: 8,
     maxHeight: 100,
+    textAlignVertical: 'center',
   },
   sendButton: {
     borderRadius: 20,

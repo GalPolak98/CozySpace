@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet, Keyboard } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import ChatMessage from './ChatMessage';
 import TypingIndicator from './TypingIndicator';
@@ -22,31 +22,31 @@ const ChatList = React.forwardRef<FlashList<Message>, ChatListProps>(({
     }
   };
 
-  const ListHeaderComponent = () => (
-    <View style={styles.headerContainer}>
-      {isTyping && <TypingIndicator />}
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <FlashList
         ref={ref}
         data={messages}
         estimatedItemSize={80}
-        ListHeaderComponent={ListHeaderComponent}
+        ListHeaderComponent={
+          isTyping ? (
+            <View style={styles.typingContainer}>
+              <TypingIndicator />
+            </View>
+          ) : null
+        }
         renderItem={({ item }) => (
-          <ChatMessage 
-            text={item.text}
-            sender={item.sender}
-            timestamp={item.timestamp}
-          />
+          <View style={styles.messageWrapper}>
+            <ChatMessage 
+              text={item.text}
+              sender={item.sender}
+              timestamp={item.timestamp}
+            />
+          </View>
         )}
         keyExtractor={item => item.id}
-        contentContainerStyle={{
-          paddingBottom: keyboardHeight > 0 ? keyboardHeight : 16,
-        }}
-        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={true}
         onContentSizeChange={scrollToBottom}
         onLayout={scrollToBottom}
       />
@@ -58,8 +58,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerContainer: {
-    width: '100%',
+  typingContainer: {
+    padding: 8,
+  },
+  messageWrapper: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+  listContent: {
+    paddingBottom: 16,
   },
 });
 
