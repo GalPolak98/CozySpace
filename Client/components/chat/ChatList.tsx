@@ -1,19 +1,16 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import ChatMessage from './ChatMessage';
-import TypingIndicator from './TypingIndicator';
 import { Message } from '@/types/chat';
 
 interface ChatListProps {
   messages: Message[];
-  isTyping: boolean;
   keyboardHeight: number;
 }
 
 const ChatList = React.forwardRef<FlashList<Message>, ChatListProps>(({ 
-  messages, 
-  isTyping, 
+  messages,
   keyboardHeight 
 }, ref) => {
   const scrollToBottom = () => {
@@ -28,13 +25,6 @@ const ChatList = React.forwardRef<FlashList<Message>, ChatListProps>(({
         ref={ref}
         data={messages}
         estimatedItemSize={80}
-        ListHeaderComponent={
-          isTyping ? (
-            <View style={styles.typingContainer}>
-              <TypingIndicator />
-            </View>
-          ) : null
-        }
         renderItem={({ item }) => (
           <View style={styles.messageWrapper}>
             <ChatMessage 
@@ -45,7 +35,9 @@ const ChatList = React.forwardRef<FlashList<Message>, ChatListProps>(({
           </View>
         )}
         keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={{
+          paddingBottom: Platform.OS === 'ios' ? 90 : 80
+        }}
         showsVerticalScrollIndicator={true}
         onContentSizeChange={scrollToBottom}
         onLayout={scrollToBottom}
@@ -58,15 +50,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  typingContainer: {
-    padding: 8,
-  },
   messageWrapper: {
     paddingHorizontal: 16,
     paddingVertical: 4,
-  },
-  listContent: {
-    paddingBottom: 16,
   },
 });
 

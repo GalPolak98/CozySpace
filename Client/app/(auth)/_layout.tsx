@@ -28,7 +28,7 @@ const AuthLayout = () => {
         name="sign-in"
         options={{
           title: "Sign In",
-          headerBackVisible: false, // Hide back button
+          headerBackVisible: false, 
         }}
       />
       <Stack.Screen

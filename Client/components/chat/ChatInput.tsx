@@ -1,15 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { 
   View, 
   TextInput, 
   TouchableOpacity, 
   Platform,
-  Keyboard,
   StyleSheet,
-  Animated,
   Alert,
   ActionSheetIOS,
-  Pressable
+  Pressable 
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
@@ -33,38 +31,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const inputRef = useRef<TextInput>(null);
-  const translateY = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const keyboardWillShow = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      () => {
-        Animated.spring(translateY, {
-          toValue: Platform.OS === 'ios' ? -8 : 0,
-          useNativeDriver: true,
-          tension: 100,
-          friction: 10,
-        }).start();
-      }
-    );
-
-    const keyboardWillHide = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => {
-        Animated.spring(translateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 100,
-          friction: 10,
-        }).start();
-      }
-    );
-
-    return () => {
-      keyboardWillShow.remove();
-      keyboardWillHide.remove();
-    };
-  }, []);
 
   const handleSend = async () => {
     if (Platform.OS === 'ios') {
@@ -115,13 +81,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <Animated.View
+    <View
       style={[
         styles.container,
         { 
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          transform: [{ translateY }]
+          paddingBottom: Platform.OS === 'ios' ? 5 : 0,
+          marginBottom: Platform.OS === 'ios' ? 0 : 0,
         }
       ]}
     >
@@ -181,15 +148,20 @@ const ChatInput: React.FC<ChatInputProps> = ({
           />
         </TouchableOpacity>
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     borderTopWidth: 1,
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingTop: 8,
+    zIndex: 1,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -198,6 +170,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 4,
+    backgroundColor: 'white',
   },
   inputWrapper: {
     flex: 1,
@@ -207,6 +180,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 8,
     maxHeight: 100,
+    minHeight: 24,
     textAlignVertical: 'center',
   },
   sendButton: {

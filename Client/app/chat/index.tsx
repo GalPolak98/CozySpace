@@ -1,5 +1,4 @@
-// app/chat/index.tsx
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { createChatService } from '@/services/chatService';
@@ -7,22 +6,21 @@ import ChatContainer from '@/components/chat/ChatContainer';
 import ChatList from '@/components/chat/ChatList';
 import ChatInput from '@/components/chat/ChatInput';
 import { Message } from '@/types/chat';
-import { useChatHistory } from '@/hooks/useChatHistory';
-import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useChatContext } from '@/context/ChatContext';
-
-const INITIAL_MESSAGE: Message = {
-  id: '1',
-  text: "Hello! I'm here to help you manage anxiety. How are you feeling today?",
-  sender: 'bot',
-  timestamp: new Date()
-};
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
+import { getRandomInitialMessage } from '@/constants/messages';
 
 const ChatScreen = () => {
-  // Hooks
-  const { messages, setMessages, saveChatHistory } = useChatHistory();
+  // Context and hooks
+  const { 
+    isTyping, 
+    setIsTyping, 
+    currentSession, 
+    setCurrentSession,
+    saveSession,
+    clearCurrentSession 
+  } = useChatContext();
   const keyboardHeight = useKeyboardHeight();
-  const { isTyping, setIsTyping } = useChatContext(); // Get isTyping from context
   
   // Local state
   const [inputText, setInputText] = React.useState('');
@@ -31,16 +29,40 @@ const ChatScreen = () => {
   // Services
   const chatService = createChatService();
 
+  // Initialize session if needed
+  useEffect(() => {
+    if (!currentSession) {
+      const newSession = {
+        id: Date.now().toString(),
+        messages: [getRandomInitialMessage()],
+        createdAt: new Date(),
+        lastMessageAt: new Date(),
+        hasUserMessages: false
+      };
+      setCurrentSession(newSession);
+    }
+    
+    // Cleanup function
+    return () => {
+      if (currentSession && !currentSession.hasUserMessages) {
+        clearCurrentSession();
+      }
+    };
+  }, []);
+
   // Scroll handler
   const scrollToBottom = () => {
-    if (listRef.current && messages.length > 0) {
-      listRef.current.scrollToEnd({ animated: true });
+    if (listRef.current && currentSession && currentSession.messages) {
+      const messageCount = currentSession.messages.length;
+      if (messageCount > 0) {
+        listRef.current.scrollToEnd({ animated: true });
+      }
     }
   };
 
   // Message handler
   const handleSend = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || !currentSession) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -49,14 +71,21 @@ const ChatScreen = () => {
       timestamp: new Date()
     };
 
-    // Update UI
-    setMessages((prev: any) => [...prev, userMessage]);
+    const updatedMessages = [...(currentSession.messages || []), userMessage];
+    const updatedSession = {
+      ...currentSession,
+      messages: updatedMessages,
+      lastMessageAt: new Date(),
+      hasUserMessages: true // Set this to true when user sends a message
+    };
+
+    setCurrentSession(updatedSession);
+    await saveSession(updatedSession);
     setInputText('');
     setIsTyping(true);
     scrollToBottom();
 
     try {
-      // Get bot response
       const response = await chatService.getChatResponse(inputText);
       
       const botMessage: Message = {
@@ -66,18 +95,20 @@ const ChatScreen = () => {
         timestamp: new Date()
       };
 
-      // Update messages and save
-      const updatedMessages = [...messages, userMessage, botMessage];
-      setMessages(updatedMessages);
-      saveChatHistory(updatedMessages);
-      
-      // Ensure smooth scroll after new message
+      const finalMessages = [...updatedMessages, botMessage];
+      const finalSession = {
+        ...updatedSession,
+        messages: finalMessages,
+        lastMessageAt: new Date()
+      };
+
+      setCurrentSession(finalSession);
+      await saveSession(finalSession);
       setTimeout(scrollToBottom, 100);
 
     } catch (error) {
       console.error('Chat error:', error);
       
-      // Handle error with fallback message
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: "I'm here to help. Would you like to try a calming exercise together?",
@@ -85,23 +116,45 @@ const ChatScreen = () => {
         timestamp: new Date()
       };
 
-      // Update messages and save
-      const updatedMessages = [...messages, userMessage, errorMessage];
-      setMessages(updatedMessages);
-      saveChatHistory(updatedMessages);
+      const finalMessages = [...updatedMessages, errorMessage];
+      const finalSession = {
+        ...updatedSession,
+        messages: finalMessages,
+        lastMessageAt: new Date()
+      };
+
+      setCurrentSession(finalSession);
+      await saveSession(finalSession);
 
     } finally {
       setIsTyping(false);
     }
   };
 
+  const handleNewChat = () => {
+    // Only save the current session if it has user messages
+    if (currentSession && !currentSession.hasUserMessages) {
+      clearCurrentSession();
+    }
+    
+    const newSession = {
+      id: Date.now().toString(),
+      messages: [getRandomInitialMessage()],
+      createdAt: new Date(),
+      lastMessageAt: new Date(),
+      hasUserMessages: false
+    };
+    setCurrentSession(newSession);
+    setInputText('');
+    setIsTyping(false);
+  };
+
   return (
-    <ChatContainer>
+    <ChatContainer onNewChat={handleNewChat}>
       <View style={styles.container}>
         <ChatList
           ref={listRef}
-          messages={messages}
-          isTyping={isTyping}
+          messages={currentSession?.messages || []}
           keyboardHeight={keyboardHeight}
         />
         <ChatInput

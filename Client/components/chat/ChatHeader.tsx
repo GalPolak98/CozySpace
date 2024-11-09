@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
@@ -16,8 +16,17 @@ interface ChatHeaderProps {
 const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
   const { theme: currentTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const colors = theme[currentTheme];
   const insets = useSafeAreaInsets();
+
+  const handleBack = () => {
+    if (pathname === '/chat/history') {
+      router.back();
+    } else {
+      router.replace('/(tabs)/home');
+    }
+  };
 
   return (
     <View style={[
@@ -25,12 +34,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
       { 
         backgroundColor: colors.background,
         paddingTop: insets.top,
+        zIndex: 2,
       }
     ]}>
       <View style={styles.headerContent}>
         <View style={styles.leftContainer}>
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={handleBack}
             style={styles.backButton}
           >
             <Ionicons 
@@ -43,7 +53,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
 
         <View style={styles.titleContainer}>
           <ThemedText style={styles.title}>
-          Coral Care - Chat
+            {pathname === '/chat/history' ? 'Chat History' : 'Coral Care - Chat'}
           </ThemedText>
         </View>
 
@@ -59,8 +69,18 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
         </TouchableOpacity>
       </View>
 
-      {isTyping && (
-        <View style={[styles.typingContainer, { backgroundColor: colors.surface }]}>
+      {isTyping && pathname !== '/chat/history' && (
+        <View style={[
+          styles.typingContainer,
+          { 
+            backgroundColor: colors.surface,
+            position: 'absolute',
+            bottom: -40,
+            left: 16,
+            right: 16,
+            zIndex: 100,
+          }
+        ]}>
           <ThemedText 
             style={[
               styles.typingText,
@@ -114,9 +134,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 4,
     paddingHorizontal: 12,
-    marginHorizontal: 16,
-    marginBottom: 8,
     borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   typingText: {
     fontSize: 13,

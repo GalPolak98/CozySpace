@@ -4,3 +4,11 @@ export interface Message {
     sender: 'user' | 'bot';
     timestamp: Date;
   }
+
+  export interface ChatSession {
+    id: string;
+    messages: Message[];
+    createdAt: Date;
+    lastMessageAt: Date;
+    hasUserMessages: boolean;
+  }
