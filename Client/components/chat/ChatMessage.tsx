@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, Pressable, StyleSheet, Platform, Modal, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { 
+  View, 
+  Pressable, 
+  StyleSheet, 
+  Platform,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Modal,
+  Dimensions
+} from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import ThemedText from '@/components/ThemedText';
 import { useTheme } from '@/components/ThemeContext';
@@ -17,20 +26,40 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender, timestamp }) =>
   const colors = theme[currentTheme];
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  const [messageWidth, setMessageWidth] = useState(0);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  const screenHeight = Dimensions.get('window').height;
 
   const handleCopyText = async () => {
-    await Clipboard.setStringAsync(text);
-    if (Platform.OS === 'ios') {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    try {
+      await Clipboard.setStringAsync(text);
+      if (Platform.OS === 'ios') {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    } catch (error) {
+      console.error('Failed to copy text:', error);
+    } finally {
+      setMenuVisible(false);
+      setIsHighlighted(false);
     }
-    setMenuVisible(false);
   };
 
   const handleLongPress = (event: any) => {
     const { pageX, pageY } = event.nativeEvent;
-    setMenuPosition({ x: pageX, y: pageY });
+    
+    const yPosition = pageY + 50 > screenHeight ? pageY - 50 : pageY;
+    
+    setMenuPosition({ x: pageX, y: yPosition });
     setMenuVisible(true);
+    setIsHighlighted(true);
+    
+    if (Platform.OS === 'ios') {
+      Haptics.selectionAsync();
+    }
+  };
+
+  const handleModalClose = () => {
+    setMenuVisible(false);
+    setIsHighlighted(false);
   };
 
   return (
@@ -40,9 +69,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender, timestamp }) =>
           styles.container,
           sender === 'user' ? styles.userContainer : styles.botContainer
         ]}
-        onLayout={(event) => {
-          setMessageWidth(event.nativeEvent.layout.width);
-        }}
       >
         <Pressable 
           onLongPress={handleLongPress}
@@ -52,7 +78,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender, timestamp }) =>
             styles.bubble,
             sender === 'user' 
               ? [styles.userBubble, { backgroundColor: colors.primary }]
-              : [styles.botBubble, { backgroundColor: colors.surface }]
+              : [styles.botBubble, { backgroundColor: colors.surface }],
+            isHighlighted && styles.highlightedBubble
           ]}>
             <ThemedText
               style={[
@@ -87,27 +114,23 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender, timestamp }) =>
         visible={menuVisible}
         transparent
         animationType="fade"
-        onRequestClose={() => setMenuVisible(false)}
+        onRequestClose={handleModalClose}
       >
-        <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
+        <TouchableWithoutFeedback onPress={handleModalClose}>
           <View style={styles.modalOverlay}>
-            <View 
+            <TouchableOpacity
               style={[
-                styles.menuContainer,
+                styles.copyButton,
                 {
                   backgroundColor: colors.surface,
-                  left: menuPosition.x - (messageWidth / 2),
-                  top: menuPosition.y - 50,
+                  left: menuPosition.x - 50, 
+                  top: menuPosition.y - 40,  
                 }
               ]}
+              onPress={handleCopyText}
             >
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={handleCopyText}
-              >
-                <ThemedText style={styles.menuText}>Copy</ThemedText>
-              </TouchableOpacity>
-            </View>
+              <ThemedText style={styles.copyText}>Copy</ThemedText>
+            </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
@@ -140,6 +163,9 @@ const styles = StyleSheet.create({
   botBubble: {
     borderTopLeftRadius: 4,
   },
+  highlightedBubble: {
+    opacity: 0.7,
+  },
   messageText: {
     fontFamily: 'Poppins-Regular',
     fontSize: 16,
@@ -152,12 +178,14 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: 'transparent',  
   },
-  menuContainer: {
+  copyButton: {
     position: 'absolute',
-    minWidth: 100,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 8,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -165,15 +193,11 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
   },
-  menuItem: {
-    padding: 12,
-  },
-  menuText: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
+  copyText: {
+    fontSize: 14,
+    fontWeight: '600',
+  }
 });
 
 export default ChatMessage;
