@@ -22,16 +22,15 @@ const InitialLayout = () => {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: colors.background,
+            backgroundColor: colors.header,
           },
           headerTintColor: colors.text,
-          headerShown:false
+          headerShown:false,
         }}
       >
         <Stack.Screen 
           name="(auth)" 
           options={{
-            headerShown: false,
           }} 
         />
         <Stack.Screen 
@@ -39,7 +38,6 @@ const InitialLayout = () => {
           options={{ 
             headerTitle: "",
             headerLeft: () => null,
-            headerShown: false,
             gestureEnabled: false,
           }} 
         />

@@ -32,7 +32,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
     <View style={[
       styles.container,
       { 
-        backgroundColor: colors.background,
+        backgroundColor: colors.header,
         paddingTop: insets.top,
         borderBottomColor: colors.border
       }

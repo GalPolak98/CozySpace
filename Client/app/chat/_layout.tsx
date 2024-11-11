@@ -20,7 +20,7 @@ function ChatLayoutInner() {
       screenOptions={{
         header: () => <HeaderWrapper />,
         headerStyle: {
-          backgroundColor: colors.background,
+          backgroundColor: colors.header,
         },
         headerTintColor: colors.text,
         animation: 'slide_from_right',

@@ -14,7 +14,7 @@ const AuthLayout = () => {
       screenOptions={{
         headerRight: () => <ThemeToggle />,
         headerStyle: {
-          backgroundColor: colors.background,
+          backgroundColor: colors.header,
         },
         headerTintColor: colors.text,
         headerTitleStyle: {

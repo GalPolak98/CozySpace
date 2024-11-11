@@ -145,7 +145,7 @@ const ChatScreen = () => {
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: colors.background,
+    backgroundColor: colors.bottomBar,
     borderTopWidth: 1,
     borderTopColor: colors.border,
     paddingBottom: insets.bottom,
