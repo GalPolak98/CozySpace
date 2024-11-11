@@ -1,4 +1,3 @@
-// app/chat/components/TypingIndicator.tsx
 import React, { useEffect, useRef } from 'react';
 import { View, Animated, StyleSheet } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';

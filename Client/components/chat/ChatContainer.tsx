@@ -3,11 +3,13 @@ import {
   KeyboardAvoidingView, 
   Platform, 
   StyleSheet,
-  View 
+  View, 
+  Keyboard 
 } from 'react-native';
 import ThemedView from '@/components/ThemedView';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HistoryButton from './HistoryButton';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
 interface ChatContainerProps {
   children: React.ReactNode;
@@ -21,22 +23,43 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
   showHistoryButton = true 
 }) => {
   const insets = useSafeAreaInsets();
+  const keyboardHeight = useKeyboardHeight();
+  const [keyboardVisible, setKeyboardVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const showListener = Keyboard.addListener(
+      Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow',
+      () => setKeyboardVisible(true)
+    );
+    const hideListener = Keyboard.addListener(
+      Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide',
+      () => setKeyboardVisible(false)
+    );
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
 
   return (
     <ThemedView 
       style={[
         styles.container, 
-        { 
-          paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0
-        }
+        { paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0 }
       ]}
     >
       <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoid}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
-        <View style={styles.content}>
+        <View style={[
+          styles.content,
+          Platform.OS === 'android' && {
+            paddingBottom: keyboardVisible ? keyboardHeight : 0
+          }
+        ]}>
           {children}
         </View>
       </KeyboardAvoidingView>

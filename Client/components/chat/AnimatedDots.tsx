@@ -7,7 +7,6 @@ const AnimatedDots = () => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   
-  // Create refs for animated values to persist between renders
   const dot1 = useRef(new Animated.Value(0)).current;
   const dot2 = useRef(new Animated.Value(0)).current;
   const dot3 = useRef(new Animated.Value(0)).current;
@@ -28,7 +27,6 @@ const AnimatedDots = () => {
       ]);
     };
 
-    // Create staggered animation sequence
     const animation = Animated.loop(
       Animated.stagger(150, [
         createAnimation(dot1),
@@ -37,10 +35,8 @@ const AnimatedDots = () => {
       ])
     );
 
-    // Start the animation
     animation.start();
 
-    // Cleanup
     return () => {
       animation.stop();
       dot1.setValue(0);
@@ -53,7 +49,7 @@ const AnimatedDots = () => {
     transform: [{
       translateY: animatedValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, -5] 
+        outputRange: [0, -3] 
       })
     }]
   });
@@ -79,14 +75,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 4,
-    height: 20, 
-    paddingTop: 8, 
+    height: 12,
   },
   dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    marginHorizontal: 2,
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    marginHorizontal: 1,
     opacity: 0.7,
   },
 });

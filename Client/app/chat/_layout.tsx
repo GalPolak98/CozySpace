@@ -22,8 +22,11 @@ function ChatLayoutInner() {
         headerStyle: {
           backgroundColor: colors.background,
         },
-        headerShown: true,
+        headerTintColor: colors.text,
         animation: 'slide_from_right',
+        headerTitleStyle: {
+          fontFamily: 'Poppins-SemiBold',
+        },
       }}
     >
       <Stack.Screen

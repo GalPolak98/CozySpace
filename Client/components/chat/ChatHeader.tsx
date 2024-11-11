@@ -34,7 +34,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
       { 
         backgroundColor: colors.background,
         paddingTop: insets.top,
-        zIndex: 2,
+        borderBottomColor: colors.border
       }
     ]}>
       <View style={styles.headerContent}>
@@ -52,9 +52,26 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
         </View>
 
         <View style={styles.titleContainer}>
-          <ThemedText style={styles.title}>
-            {pathname === '/chat/history' ? 'Chat History' : 'Coral Care - Chat'}
-          </ThemedText>
+          {pathname === '/chat/history' ? (
+            <ThemedText style={styles.title}>Chat History</ThemedText>
+          ) : (
+            <View>
+              <ThemedText style={styles.title}>Coral Care - Chat</ThemedText>
+              {isTyping && (
+                <View style={styles.typingContainer}>
+                  <ThemedText 
+                    style={[
+                      styles.typingText,
+                      { color: colors.textSecondary }
+                    ]}
+                  >
+                    typing
+                  </ThemedText>
+                  <AnimatedDots />
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
         <TouchableOpacity
@@ -68,30 +85,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
           />
         </TouchableOpacity>
       </View>
-
-      {isTyping && pathname !== '/chat/history' && (
-        <View style={[
-          styles.typingContainer,
-          { 
-            backgroundColor: colors.surface,
-            position: 'absolute',
-            bottom: -40,
-            left: 16,
-            right: 16,
-            zIndex: 100,
-          }
-        ]}>
-          <ThemedText 
-            style={[
-              styles.typingText,
-              { color: colors.textSecondary }
-            ]}
-          >
-            typing
-          </ThemedText>
-          <AnimatedDots />
-        </View>
-      )}
     </View>
   );
 };
@@ -123,6 +116,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontFamily: 'Poppins-SemiBold',
+    textAlign: 'center',
   },
   themeButton: {
     padding: 8,
@@ -132,20 +126,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    marginTop: 2,
   },
   typingText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Poppins-Regular',
   },
 });

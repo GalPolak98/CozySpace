@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { createChatService } from '@/services/chatService';
 import ChatContainer from '@/components/chat/ChatContainer';
@@ -7,11 +7,12 @@ import ChatList from '@/components/chat/ChatList';
 import ChatInput from '@/components/chat/ChatInput';
 import { Message } from '@/types/chat';
 import { useChatContext } from '@/context/ChatContext';
-import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { getRandomInitialMessage } from '@/constants/messages';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '@/components/ThemeContext';
+import { theme } from '@/Styles/Theme';
 
 const ChatScreen = () => {
-  // Context and hooks
   const { 
     isTyping, 
     setIsTyping, 
@@ -20,16 +21,14 @@ const ChatScreen = () => {
     saveSession,
     clearCurrentSession 
   } = useChatContext();
-  const keyboardHeight = useKeyboardHeight();
   
-  // Local state
+  const { theme: currentTheme } = useTheme();
+  const colors = theme[currentTheme];
   const [inputText, setInputText] = React.useState('');
   const listRef = useRef<FlashList<Message>>(null);
-  
-  // Services
+  const insets = useSafeAreaInsets();
   const chatService = createChatService();
 
-  // Initialize session if needed
   useEffect(() => {
     if (!currentSession) {
       const newSession = {
@@ -42,7 +41,6 @@ const ChatScreen = () => {
       setCurrentSession(newSession);
     }
     
-    // Cleanup function
     return () => {
       if (currentSession && !currentSession.hasUserMessages) {
         clearCurrentSession();
@@ -50,17 +48,12 @@ const ChatScreen = () => {
     };
   }, []);
 
-  // Scroll handler
   const scrollToBottom = () => {
-    if (listRef.current && currentSession && currentSession.messages) {
-      const messageCount = currentSession.messages.length;
-      if (messageCount > 0) {
-        listRef.current.scrollToEnd({ animated: true });
-      }
+    if (listRef.current && currentSession?.messages && currentSession.messages.length > 0) {
+      listRef.current.scrollToEnd({ animated: true });
     }
   };
 
-  // Message handler
   const handleSend = async () => {
     if (!inputText.trim() || !currentSession) return;
 
@@ -76,7 +69,7 @@ const ChatScreen = () => {
       ...currentSession,
       messages: updatedMessages,
       lastMessageAt: new Date(),
-      hasUserMessages: true // Set this to true when user sends a message
+      hasUserMessages: true
     };
 
     setCurrentSession(updatedSession);
@@ -125,14 +118,12 @@ const ChatScreen = () => {
 
       setCurrentSession(finalSession);
       await saveSession(finalSession);
-
     } finally {
       setIsTyping(false);
     }
   };
 
   const handleNewChat = () => {
-    // Only save the current session if it has user messages
     if (currentSession && !currentSession.hasUserMessages) {
       clearCurrentSession();
     }
@@ -149,29 +140,48 @@ const ChatScreen = () => {
     setIsTyping(false);
   };
 
+  const inputContainerStyle = {
+    position: 'absolute' as const,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.background,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingBottom: insets.bottom,
+    zIndex: 1,
+  };
+
   return (
-    <ChatContainer onNewChat={handleNewChat}>
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+    >
       <View style={styles.container}>
-        <ChatList
-          ref={listRef}
-          messages={currentSession?.messages || []}
-          keyboardHeight={keyboardHeight}
-        />
+        <ChatContainer onNewChat={handleNewChat}>
+          <ChatList
+            ref={listRef}
+            messages={currentSession?.messages || []}
+            keyboardHeight={0}
+          />
+        </ChatContainer>
         <ChatInput
           value={inputText}
           onChangeText={setInputText}
           onSend={handleSend}
           isLoading={isTyping}
+          style={inputContainerStyle}
         />
       </View>
-    </ChatContainer>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
+  }
 });
 
 export default ChatScreen;

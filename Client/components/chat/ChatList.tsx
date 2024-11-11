@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import ChatMessage from './ChatMessage';
 import { Message } from '@/types/chat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ChatListProps {
   messages: Message[];
@@ -13,6 +14,8 @@ const ChatList = React.forwardRef<FlashList<Message>, ChatListProps>(({
   messages,
   keyboardHeight 
 }, ref) => {
+  const insets = useSafeAreaInsets();
+  
   const scrollToBottom = () => {
     if (ref && 'current' in ref && ref.current && messages.length > 0) {
       ref.current.scrollToEnd({ animated: true });
@@ -35,9 +38,7 @@ const ChatList = React.forwardRef<FlashList<Message>, ChatListProps>(({
           </View>
         )}
         keyExtractor={item => item.id}
-        contentContainerStyle={{
-          paddingBottom: Platform.OS === 'ios' ? 90 : 80
-        }}
+        contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={true}
         onContentSizeChange={scrollToBottom}
         onLayout={scrollToBottom}
@@ -54,6 +55,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 4,
   },
+  listContent: {
+    paddingBottom: 90, 
+  }
 });
 
 export default ChatList;

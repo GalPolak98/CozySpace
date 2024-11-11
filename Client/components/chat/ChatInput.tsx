@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Alert,
   ActionSheetIOS,
-  Pressable 
+  Pressable,
+  ViewStyle
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,13 +21,15 @@ interface ChatInputProps {
   onChangeText: (text: string) => void;
   onSend: () => void;
   isLoading: boolean;
+  style?: ViewStyle;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
   value,
   onChangeText,
   onSend,
-  isLoading
+  isLoading,
+  style
 }) => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
@@ -81,87 +84,72 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        { 
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          paddingBottom: Platform.OS === 'ios' ? 5 : 0,
-          marginBottom: Platform.OS === 'ios' ? 0 : 0,
-        }
-      ]}
-    >
-      <View
-        style={[
-          styles.inputContainer,
-          {
-            backgroundColor: currentTheme === 'dark' ? colors.background : colors.surface,
-            borderColor: colors.border,
-          }
-        ]}
-      >
-        <Pressable 
-          onLongPress={handleLongPress} 
-          style={styles.inputWrapper}
-        >
-          <TextInput
-            ref={inputRef}
-            value={value}
-            onChangeText={onChangeText}
-            placeholder="Type your message..."
-            placeholderTextColor={colors.placeholder}
-            style={[
-              styles.input,
-              {
-                color: colors.text,
-              }
-            ]}
-            multiline
-            maxLength={500}
-            contextMenuHidden={false}
-            returnKeyType="default"
-            blurOnSubmit={false}
-            textAlignVertical="center"
-            scrollEnabled={true}
-            keyboardType="default"
-            autoCapitalize="sentences"
-            selectionColor={colors.primary}
-          />
-        </Pressable>
-        
-        <TouchableOpacity
-          onPress={handleSend}
-          disabled={isLoading || !value.trim()}
+    <View style={style}>
+      <View style={styles.innerContainer}>
+        <View
           style={[
-            styles.sendButton,
+            styles.inputContainer,
             {
-              backgroundColor: colors.primary,
-              opacity: isLoading || !value.trim() ? 0.5 : 1,
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
             }
           ]}
         >
-          <Ionicons 
-            name="send" 
-            size={20} 
-            color="#FFFFFF"
-          />
-        </TouchableOpacity>
+          <Pressable 
+            onLongPress={handleLongPress} 
+            style={styles.inputWrapper}
+          >
+            <TextInput
+              ref={inputRef}
+              value={value}
+              onChangeText={onChangeText}
+              placeholder="Type your message..."
+              placeholderTextColor={colors.placeholder}
+              style={[
+                styles.input,
+                { color: colors.text }
+              ]}
+              multiline
+              maxLength={500}
+              contextMenuHidden={false}
+              returnKeyType="default"
+              blurOnSubmit={false}
+              textAlignVertical="center"
+              scrollEnabled={true}
+              keyboardType="default"
+              autoCapitalize="sentences"
+              selectionColor={colors.primary}
+            />
+          </Pressable>
+          
+          <TouchableOpacity
+            onPress={handleSend}
+            disabled={isLoading || !value.trim()}
+            style={[
+              styles.sendButton,
+              {
+                backgroundColor: colors.primary,
+                opacity: isLoading || !value.trim() ? 0.5 : 1,
+              }
+            ]}
+          >
+            <Ionicons 
+              name="send" 
+              size={20} 
+              color="#FFFFFF"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopWidth: 1,
+  innerContainer: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    zIndex: 1,
+    paddingBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -170,7 +158,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    backgroundColor: 'white',
   },
   inputWrapper: {
     flex: 1,
