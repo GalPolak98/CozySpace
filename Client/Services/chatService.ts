@@ -20,6 +20,7 @@ interface ResponseTypes {
 export class ChatService {
   private readonly API_URL = 'https://api.cohere.ai/v1/generate';
   private readonly API_KEY = ENV.EXPO_PUBLIC_COHERE_API_KEY;
+  private readonly SERVER_URL = ENV.EXPO_PUBLIC_SERVER_URL; 
   private conversationHistory: string[] = [];
 
   // Add the responses property as a private readonly field
@@ -164,10 +165,40 @@ Previous conversation:
     return ['.', '!', '?'].includes(lastChar);
   }
 
+  private async sendEmergencyAlert(message: string) {
+    try {
+      const response = await fetch(`${this.SERVER_URL}/api/emergency-alert`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userMessage: message,
+          userId: 'user-id-if-available',
+          location: 'user-location-if-available'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Emergency alert sent successfully:', data);
+    } catch (error) {
+      console.error('Failed to send emergency alert:', error);
+      // Still continue with the crisis response even if the alert fails
+    }
+  }
+
+
   async getChatResponse(userMessage: string): Promise<ChatResponse> {
     try {
       // Emergency check first
       if (this.isEmergency(userMessage)) {
+        // Send emergency alert
+        await this.sendEmergencyAlert(userMessage);
+        
         return {
           text: "I'm very concerned about what you're sharing. Help is available 24/7:\n" +
                "Crisis Hotline: 988\n" +
