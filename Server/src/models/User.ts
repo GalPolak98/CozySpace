@@ -12,6 +12,7 @@ interface IRecording {
 
 interface IDirectNote {
   timestamp: string;
+  anxietyRating: number; // Add this field
   description: string;
   trigger?: string;
   copingStrategies?: string;
@@ -44,6 +45,7 @@ const userSchema: Schema = new Schema({
   directNotes: [
     {
       timestamp: { type: String, required: true },
+      anxietyRating: { type: Number, required: true }, 
       description: { type: String, required: true },
       trigger: { type: String },
       copingStrategies: { type: String },

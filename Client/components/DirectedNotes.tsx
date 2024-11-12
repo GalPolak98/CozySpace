@@ -14,9 +14,14 @@ const DirectedNoteScreen: React.FC = () => {
   const [physicalSymptoms, setPhysicalSymptoms] = useState('');
   const [emotionalState, setEmotionalState] = useState('');
   const [selfTalk, setSelfTalk] = useState('');
+  const userId = useAuth(); // Call `useAuth` to get `userId`
 
   const handleSubmit = async () => {
-    const userId = useAuth;
+  
+    if (!userId) {
+      Alert.alert('Error', 'User is not authenticated.');
+      return;
+    }
   
     // Collect the data
     const timestamp = new Date().toISOString();
@@ -53,6 +58,7 @@ const DirectedNoteScreen: React.FC = () => {
       Alert.alert('Error', 'Unable to submit the note at the moment. Please check your connection.');
     }
   };
+  
 
   useEffect(() => {
     // Load saved form data when the component mounts
