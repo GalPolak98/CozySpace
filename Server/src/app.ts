@@ -5,19 +5,25 @@ import dotenv from 'dotenv';
 import connectToDatabase from './db';
 import routes from './apiRoutes';
 
+// Load environment variables
 dotenv.config();
 
+// Initialize express app
 const app: Express = express();
 
+// Set port
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', routes);
 
+// Connect to the database
 connectToDatabase()
   .then(() => {
+    // Start the server only after successfully connecting to the database
     app.listen(PORT, () => {
       console.log("Server is running on port", PORT);
     });
