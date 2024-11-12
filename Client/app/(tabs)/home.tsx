@@ -12,6 +12,11 @@ export default function HomeScreen() {
         handlePress={() => router.push('/notes')}
         containerStyles="w-full mt-7"
       />
+      <CustomButton
+        title="Direct Document"
+        handlePress={() => router.push('/directedNotes')}
+        containerStyles="w-full mt-7"
+      />
             <RecordingsSection />
 
     </View>

@@ -25,6 +25,36 @@ router.post('/notes', async (req, res) => {
 });
 
 
+router.post('/directNotes', async (req, res) => {
+  const { userId, description, trigger, copingStrategies, physicalSymptoms, emotionalState, selfTalk, timestamp } = req.body;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { userId },
+      {
+        $push: {
+          directNotes: {
+            timestamp,
+            description,
+            trigger,
+            copingStrategies,
+            physicalSymptoms,
+            emotionalState,
+            selfTalk,
+          },
+        },
+      },
+      { new: true, upsert: true }
+    );
+
+    res.status(201).json(user);
+  } catch (error) {
+    const err = error as any;
+    res.status(400).json({ message: err.message });
+  }
+});
+
+
 
 // Save a recording
 router.post('/recordings', async (req, res) => {

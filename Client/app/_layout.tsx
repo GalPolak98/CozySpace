@@ -36,6 +36,8 @@ const RootLayout = () => {
         <Stack.Screen name="index" options={{ headerTitle: "AnxiEase" }} />
         <Stack.Screen name="+not-found" />
         <Stack.Screen name="notes" options={{ headerTitle: "Documenting" }} />
+        <Stack.Screen name="directedNotes" options={{ headerTitle: "Direct Documenting" }} />
+
       </Stack>
     </>
   );
