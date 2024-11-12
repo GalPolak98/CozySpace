@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, TextInput, Alert, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
 import useAuth from '../hooks/useAuth';
 import config from '../env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DirectedNoteScreen: React.FC = () => {
   const [anxietyRating, setAnxietyRating] = useState(5);
@@ -15,7 +16,7 @@ const DirectedNoteScreen: React.FC = () => {
   const [selfTalk, setSelfTalk] = useState('');
 
   const handleSubmit = async () => {
-    const userId = useAuth; 
+    const userId = useAuth;
   
     // Collect the data
     const timestamp = new Date().toISOString();
@@ -43,6 +44,8 @@ const DirectedNoteScreen: React.FC = () => {
   
       if (response.ok) {
         Alert.alert('Submission Successful', 'Your responses have been submitted.');
+        // Optionally, clear saved data after successful submission
+        await AsyncStorage.removeItem('@formData');
       } else {
         Alert.alert('Submission Failed', 'Something went wrong. Please try again.');
       }
@@ -50,8 +53,52 @@ const DirectedNoteScreen: React.FC = () => {
       Alert.alert('Error', 'Unable to submit the note at the moment. Please check your connection.');
     }
   };
+
+  useEffect(() => {
+    // Load saved form data when the component mounts
+    const loadData = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem('@formData');
+        if (savedData) {
+          const { anxietyRating, description, trigger, copingStrategies, physicalSymptoms, emotionalState, selfTalk } = JSON.parse(savedData);
+          setAnxietyRating(anxietyRating || 5);
+          setDescription(description || '');
+          setTrigger(trigger || '');
+          setCopingStrategies(copingStrategies || '');
+          setPhysicalSymptoms(physicalSymptoms || '');
+          setEmotionalState(emotionalState || '');
+          setSelfTalk(selfTalk || '');
+        }
+      } catch (error) {
+        console.error('Error loading form data', error);
+      }
+    };
   
-  
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    // Save the form data to AsyncStorage whenever it changes
+    const saveData = async () => {
+      const formData = {
+        anxietyRating,
+        description,
+        trigger,
+        copingStrategies,
+        physicalSymptoms,
+        emotionalState,
+        selfTalk,
+      };
+      try {
+        await AsyncStorage.setItem('@formData', JSON.stringify(formData));
+      } catch (error) {
+        console.error('Error saving form data', error);
+      }
+    };
+
+    saveData();
+  }, [anxietyRating, description, trigger, copingStrategies, physicalSymptoms, emotionalState, selfTalk]);
+
   const renderIcon = (iconName: string) => {
     switch (iconName) {
       case 'text':
