@@ -4,10 +4,69 @@ import { useFonts } from "expo-font";
 import { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import React from "react";
+import { ThemeProvider, useTheme } from '@/components/ThemeContext';
+import { theme } from '@/Styles/Theme';
+import ThemeToggle from '@/components/ThemeToggle';
+import Loader from '@/components/Loader';
 
-SplashScreen.preventAutoHideAsync();
+const InitialLayout = () => {
+  const { theme: currentTheme } = useTheme();
+  const colors = theme[currentTheme];
 
-const RootLayout = () => {
+  return (
+    <>
+      <StatusBar 
+        barStyle={currentTheme === 'light' ? "dark-content" : "light-content"}
+        backgroundColor={colors.background}
+      />
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.header,
+          },
+          headerTintColor: colors.text,
+          headerShown:false,
+        }}
+      >
+        <Stack.Screen 
+          name="(auth)" 
+          options={{
+          }} 
+        />
+        <Stack.Screen 
+          name="(tabs)" 
+          options={{ 
+            headerTitle: "",
+            headerLeft: () => null,
+            gestureEnabled: false,
+          }} 
+        />
+        <Stack.Screen 
+          name="index" 
+          options={{
+            headerTitle: "AnxiEase",
+            headerTitleStyle: {
+              fontFamily: 'Poppins-SemiBold',
+              color: colors.text,
+            },
+          }}
+        />
+        <Stack.Screen 
+          name="+not-found"
+          options={{
+            headerTitle: "Not Found",
+            headerTitleStyle: {
+              fontFamily: 'Poppins-SemiBold',
+              color: colors.text,
+            },
+          }}
+        />
+      </Stack>
+    </>
+  );
+};
+
+export default function RootLayout() {
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -19,28 +78,19 @@ const RootLayout = () => {
     "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
-
+  
   useEffect(() => {
     if (error) throw error;
     if (fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded, error]);
 
-  if (!fontsLoaded && !error) return null;
+  if (!fontsLoaded && !error) {
+    return <Loader isLoading={true} />;
+  }
 
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <Stack>
-        <Stack.Screen name="(auth)" options={{ headerTitle: "Sign In" }} />
-        <Stack.Screen name="(tabs)" options={{ headerTitle: "", headerLeft: () => null, headerShown: true, gestureEnabled: false }} />
-        <Stack.Screen name="index" options={{ headerTitle: "AnxiEase" }} />
-        <Stack.Screen name="+not-found" />
-        <Stack.Screen name="notes" options={{ headerTitle: "Documenting" }} />
-        <Stack.Screen name="directedNotes" options={{ headerTitle: "Direct Documenting" }} />
-
-      </Stack>
-    </>
+    <ThemeProvider>
+      <InitialLayout />
+    </ThemeProvider>
   );
 }
-
-export default RootLayout;

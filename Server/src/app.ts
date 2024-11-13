@@ -1,9 +1,11 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response, NextFunction, RequestHandler} from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectToDatabase from './db';
 import routes from './apiRoutes';
+import { emailService } from './services/emailService';
+import { ParsedQs } from 'qs';
 
 // Load environment variables
 dotenv.config();
@@ -19,6 +21,111 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', routes);
+
+// Types
+interface ApiError extends Error {
+  status?: number;
+}
+
+interface EmergencyAlertRequest {
+  userMessage: string;
+  userId?: string;
+  location?: string;
+}
+
+// Custom RequestHandler type that allows for async/await
+type AsyncRequestHandler<
+  P = {},
+  ResBody = {},
+  ReqBody = {},
+  ReqQuery = ParsedQs,
+  Locals extends Record<string, any> = Record<string, any>
+> = (
+  req: Request<P, ResBody, ReqBody, ReqQuery, Locals>,
+  res: Response<ResBody, Locals>,
+  next: NextFunction
+) => Promise<void> | void;
+
+// Logging middleware
+const loggingMiddleware: RequestHandler = (req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`, {
+    body: req.body,
+    headers: req.headers
+  });
+  next();
+};
+
+app.use(loggingMiddleware);
+
+const emergencyAlertHandler: AsyncRequestHandler<{}, any, EmergencyAlertRequest> = async (req, res, next) => {
+  try {
+    console.log('Received emergency alert request:', req.body);
+    
+    const { userMessage, userId, location } = req.body;
+    
+    if (!userMessage) {
+      res.status(400).json({ 
+        error: 'Missing required field: userMessage'
+      });
+      return;
+    }
+
+    const notification = {
+      userMessage,
+      timestamp: new Date(),
+      userId: userId || 'anonymous',
+      location: location || 'unknown'
+    };
+
+    console.log('Sending emergency notification:', notification);
+
+    if (!process.env.SENDGRID_API_KEY) {
+      console.error('SendGrid API key not configured');
+      res.status(500).json({ 
+        error: 'Email service not properly configured' 
+      });
+      return;
+    }
+
+    const emailSent = await emailService.sendEmergencyAlert(notification);
+    console.log('Email sending result:', emailSent);
+
+    if (emailSent) {
+      res.status(200).json({ 
+        message: 'Emergency alert sent successfully',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    throw new Error('Failed to send email');
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+app.post('/api/emergency-alert', emergencyAlertHandler);
+
+// Error handler
+const errorHandler = (
+  err: ApiError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.error('Error:', {
+    message: err.message,
+    stack: err.stack,
+  });
+
+  res.status(err.status || 500).json({ 
+    error: 'Internal server error',
+    message: err.message || 'Unknown error occurred'
+  });
+};
+
+app.use(errorHandler);
 
 // Connect to the database
 connectToDatabase()
