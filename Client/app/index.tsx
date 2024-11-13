@@ -6,7 +6,7 @@ import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
-import { auth } from '@/services/firebaseConfig';
+import { auth } from '@/Services/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';

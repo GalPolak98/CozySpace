@@ -1,5 +1,5 @@
 // services/authService.ts
-import { auth } from '@/services/firebaseConfig';
+import { auth } from '@/Services/firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class AuthService {

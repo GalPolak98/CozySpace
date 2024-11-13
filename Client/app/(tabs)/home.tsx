@@ -20,6 +20,16 @@ const Home = () => {
         variant="primary"
         isLoading={false}
       />
+      <CustomButton
+        title="Document Now"
+        handlePress={() => router.push('/notes')}
+        containerStyles="w-full mt-7"
+      />
+      <CustomButton
+        title="Direct Document"
+        handlePress={() => router.push('/directedNotes')}
+        containerStyles="w-full mt-7"
+      />
     </ThemedView>
   );
 };

@@ -1,4 +1,4 @@
-import { AuthScreen } from './authScreen';
+import { AuthScreen } from './AuthScreen';
 import React from 'react';
 
 export default function SignInScreen() {

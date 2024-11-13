@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
 import ThemeToggle from '@/components/ThemeToggle';
-import { auth } from '@/services/firebaseConfig';
+import { auth } from '@/Services/firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const HeaderRight = () => <ThemeToggle />;
