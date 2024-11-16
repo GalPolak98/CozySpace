@@ -9,46 +9,9 @@ import { PersonalInfoSection } from '@/components/onboarding/PersonalInfoSection
 import { TherapistSelectionSection } from '@/components/onboarding/TherapistSelectionSection';
 import { PatientCustomizationStep } from '@/components/onboarding/PatientCustomizationStep';
 import { TherapistQualificationsSection } from '@/components/onboarding/TherapistQualificationsSection';
-import { DataShareOptions } from '@/types/onboarding';
+import { DataShareOptions, RegistrationData } from '@/types/onboarding';
 import { CompletionStep } from '@/components/onboarding/CompletionStep';
-
-interface RegistrationData {
-    userId: string;
-    timestamp: string;
-    userType: 'patient' | 'therapist';
-    personalInfo: {
-      firstName: string;
-      lastName: string;
-      email: string | null;
-    };
-    professionalInfo?: {
-      educationLevel: string;
-      experienceLevel: string;
-      workplace: string;
-      specialization: string;
-      licenseNumber: string;
-    };
-    patientInfo?: {
-      therapistInfo: {
-        selectedTherapistId: string | null;
-        shareWithTherapist: boolean;
-        dataSharing: {
-          anxietyTracking: boolean;
-          personalDocumentation: boolean;
-        };
-      };
-      toolsPreferences: {
-        smartJewelry: {
-          enabled: boolean;
-          vibrationAlerts: boolean;
-        };
-        musicTherapy: {
-          enabled: boolean;
-          selectedMusicType: string | null;
-        };
-      };
-    };
-  } 
+import { userService } from '@/services/userService';
 
 export const InitialRegistrationScreen: React.FC = () => {
   // Basic navigation state
@@ -191,12 +154,11 @@ export const InitialRegistrationScreen: React.FC = () => {
             }
         ),
       };
-  
-      // Log the registration data
-      console.log('Registration data:', JSON.stringify(registrationData, null, 2));
 
       // Here you would typically save the data to your backend
       console.log('Registration data:', JSON.stringify(registrationData, null, 2));
+
+      await userService.registerUser(registrationData);
 
       // Navigate to appropriate screen based on user type
       if (userType === 'therapist') {

@@ -9,53 +9,91 @@ export interface PersonalInfoProps {
     setLastName: (value: string) => void;
   }
   
-  export interface RoleSelectionProps {
-    userType: 'patient' | 'therapist' | null;
-    setUserType: (type: 'patient' | 'therapist') => void;
-  }
+export interface RoleSelectionProps {
+userType: 'patient' | 'therapist' | null;
+setUserType: (type: 'patient' | 'therapist') => void;
+}
   
-  export interface DataShareOptions {
-    anxietyTracking: boolean;
-    personalDocumentation: boolean;
-  }
+export interface DataShareOptions {
+anxietyTracking: boolean;
+personalDocumentation: boolean;
+}
   
-  export interface TherapistSelectionProps {
-    selectedTherapist: string | null;
-    setSelectedTherapist: (id: string) => void;
-    shareWithTherapist: boolean;
-    setShareWithTherapist: (share: boolean) => void;
-    dataShareOptions: DataShareOptions;
-    setDataShareOptions: (options: DataShareOptions | ((prev: DataShareOptions) => DataShareOptions)) => void;
-  }
+export interface TherapistSelectionProps {
+selectedTherapist: string | null;
+setSelectedTherapist: (id: string) => void;
+shareWithTherapist: boolean;
+setShareWithTherapist: (share: boolean) => void;
+dataShareOptions: DataShareOptions;
+setDataShareOptions: (options: DataShareOptions | ((prev: DataShareOptions) => DataShareOptions)) => void;
+}
   
-  export interface MusicSelectionProps {
-    selectedMusic: string | null;
-    setSelectedMusic: (id: string) => void;
-  }
+export interface MusicSelectionProps {
+selectedMusic: string | null;
+setSelectedMusic: (id: string) => void;
+}
 
-  export interface OptionType {
-    id: string;
-    label: string;
-    sublabel?: string;
-  }
-  
-  export interface TherapistQualificationsProps {
-    educationLevel: string | null;
-    setEducationLevel: (value: string | null) => void;
-    experienceLevel: string | null;
-    setExperienceLevel: (value: string | null) => void;
-    workplace: string;
-    setWorkplace: (value: string) => void;
-    specialization: string | null;
-    setSpecialization: (value: string | null) => void;
-    licenseNumber: string;
-    setLicenseNumber: (value: string) => void;
-  }
-  
-  export interface CustomDropdownProps {
-    options: OptionType[];
-    value: string | null;
-    onChange: (value: string) => void;
-    placeholder: string;
-    label?: string;
-  }
+export interface OptionType {
+id: string;
+label: string;
+sublabel?: string;
+}
+
+export interface TherapistQualificationsProps {
+educationLevel: string | null;
+setEducationLevel: (value: string | null) => void;
+experienceLevel: string | null;
+setExperienceLevel: (value: string | null) => void;
+workplace: string;
+setWorkplace: (value: string) => void;
+specialization: string | null;
+setSpecialization: (value: string | null) => void;
+licenseNumber: string;
+setLicenseNumber: (value: string) => void;
+}
+
+export interface CustomDropdownProps {
+options: OptionType[];
+value: string | null;
+onChange: (value: string) => void;
+placeholder: string;
+label?: string;
+}
+
+export interface RegistrationData {
+    userId: string;
+    timestamp: string;
+    userType: 'patient' | 'therapist';
+    personalInfo: {
+      firstName: string;
+      lastName: string;
+      email: string | null;
+    };
+    professionalInfo?: {
+      educationLevel: string;
+      experienceLevel: string;
+      workplace: string;
+      specialization: string;
+      licenseNumber: string;
+    };
+    patientInfo?: {
+      therapistInfo: {
+        selectedTherapistId: string | null;
+        shareWithTherapist: boolean;
+        dataSharing: {
+          anxietyTracking: boolean;
+          personalDocumentation: boolean;
+        };
+      };
+      toolsPreferences: {
+        smartJewelry: {
+          enabled: boolean;
+          vibrationAlerts: boolean;
+        };
+        musicTherapy: {
+          enabled: boolean;
+          selectedMusicType: string | null;
+        };
+      };
+    };
+  } 

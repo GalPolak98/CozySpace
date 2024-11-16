@@ -36,38 +36,6 @@ export const TherapistHomeScreen = () => {
             <Ionicons name="notifications-outline" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
-
-        {/* Quick Actions */}
-        <View className="flex-row justify-between mt-4">
-          <CustomButton
-            title="Patients"
-            handlePress={() => {}}
-            variant="secondary"
-            icon={<Ionicons name="people-outline" size={20} color={colors.text} />}
-            containerStyles="flex-1 mx-1"
-          />
-          <CustomButton
-            title="Messages"
-            handlePress={() => {}}
-            variant="secondary"
-            icon={<Ionicons name="chatbubble-outline" size={20} color={colors.text} />}
-            containerStyles="flex-1 mx-1"
-          />
-          <CustomButton
-            title="Schedule"
-            handlePress={() => {}}
-            variant="secondary"
-            icon={<Ionicons name="calendar-outline" size={20} color={colors.text} />}
-            containerStyles="flex-1 mx-1"
-          />
-          <CustomButton
-            title="Settings"
-            handlePress={() => {}}
-            variant="secondary"
-            icon={<Ionicons name="settings-outline" size={20} color={colors.text} />}
-            containerStyles="flex-1 mx-1"
-          />
-        </View>
       </View>
 
       {/* Patients List */}

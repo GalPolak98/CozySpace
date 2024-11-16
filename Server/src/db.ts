@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-const clientOptions = { serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true } };
+const clientOptions = { serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true }, dbName: 'AnxiEase' };
 
 async function connectToDatabase() {
   try {
