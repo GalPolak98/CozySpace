@@ -5,11 +5,13 @@ export const theme = {
       text: '#1F2937',
       textSecondary: '#6B7280',
       primary: '#FF9C01',
-      header: '#E5E7EB',      
+      header: '#FFFFFF',      
       bottomBar: '#E5E7EB',   
-      border: '#D1D5DB',
+      border: '#FFFFFF',
       error: '#EF4444',
-      placeholder: '#9CA3AF'
+      placeholder: '#9CA3AF',
+      warning: '#F59E0B',  
+      success: '#10B981', 
     },
     dark: {
       background: '#161622',
@@ -17,10 +19,12 @@ export const theme = {
       text: '#FFFFFF',
       textSecondary: '#9CA3AF',
       primary: '#FF9C01',
-      header: '#1A1A28', 
+      header: '#161622', 
       bottomBar: '#1A1A28',   
-      border: '#252536',
+      border: '#161622',
       error: '#EF4444',
-      placeholder: '#6B7280'
+      placeholder: '#6B7280',
+      warning: '#F59E0B', 
+      success: '#10B981',
     }
   };

@@ -1,15 +1,12 @@
 import React from 'react';
 import { 
-  KeyboardAvoidingView, 
   Platform, 
   StyleSheet,
   View, 
-  Keyboard 
 } from 'react-native';
 import ThemedView from '@/components/ThemedView';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HistoryButton from './HistoryButton';
-import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
 interface ChatContainerProps {
   children: React.ReactNode;
@@ -23,24 +20,6 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
   showHistoryButton = true 
 }) => {
   const insets = useSafeAreaInsets();
-  const keyboardHeight = useKeyboardHeight();
-  const [keyboardVisible, setKeyboardVisible] = React.useState(false);
-
-  React.useEffect(() => {
-    const showListener = Keyboard.addListener(
-      Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow',
-      () => setKeyboardVisible(true)
-    );
-    const hideListener = Keyboard.addListener(
-      Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide',
-      () => setKeyboardVisible(false)
-    );
-
-    return () => {
-      showListener.remove();
-      hideListener.remove();
-    };
-  }, []);
 
   return (
     <ThemedView 
@@ -49,20 +28,11 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
         { paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0 }
       ]}
     >
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.keyboardAvoid}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-      >
         <View style={[
-          styles.content,
-          Platform.OS === 'android' && {
-            paddingBottom: keyboardVisible ? keyboardHeight : 0
-          }
+          styles.content
         ]}>
           {children}
         </View>
-      </KeyboardAvoidingView>
       {showHistoryButton && <HistoryButton onNewChat={onNewChat} />}
     </ThemedView>
   );
@@ -70,9 +40,6 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  keyboardAvoid: {
     flex: 1,
   },
   content: {

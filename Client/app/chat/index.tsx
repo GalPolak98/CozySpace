@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { View, StyleSheet, Platform, KeyboardAvoidingView,  Keyboard,} from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { createChatService } from '@/services/chatService';
 import ChatContainer from '@/components/chat/ChatContainer';
@@ -28,6 +28,22 @@ const ChatScreen = () => {
   const listRef = useRef<FlashList<Message>>(null);
   const insets = useSafeAreaInsets();
   const chatService = createChatService();
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardWillShow = Platform.OS === 'ios' 
+      ? Keyboard.addListener('keyboardWillShow', () => setIsKeyboardVisible(true))
+      : Keyboard.addListener('keyboardDidShow', () => setIsKeyboardVisible(true));
+      
+    const keyboardWillHide = Platform.OS === 'ios'
+      ? Keyboard.addListener('keyboardWillHide', () => setIsKeyboardVisible(false))
+      : Keyboard.addListener('keyboardDidHide', () => setIsKeyboardVisible(false));
+
+    return () => {
+      keyboardWillShow.remove();
+      keyboardWillHide.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (!currentSession) {
@@ -148,7 +164,7 @@ const ChatScreen = () => {
     backgroundColor: colors.bottomBar,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    paddingBottom: insets.bottom,
+    paddingBottom: isKeyboardVisible ? 0 : insets.bottom,
     zIndex: 1,
   };
 
@@ -156,14 +172,12 @@ const ChatScreen = () => {
     <KeyboardAvoidingView 
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <View style={styles.container}>
         <ChatContainer onNewChat={handleNewChat}>
           <ChatList
             ref={listRef}
             messages={currentSession?.messages || []}
-            keyboardHeight={0}
           />
         </ChatContainer>
         <ChatInput
