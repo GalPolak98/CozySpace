@@ -21,14 +21,18 @@ const Home = () => {
         isLoading={false}
       />
       <CustomButton
-        title="Document Now"
-        handlePress={() => router.push('/notes')}
-        containerStyles="w-full mt-7"
+        title="Guided Documenting"
+        handlePress={() => router.push('/guidedNote')}
+        containerStyles="flex-row items-center space-x-2"
+        variant="primary"
+        isLoading={false}
       />
       <CustomButton
-        title="Direct Document"
-        handlePress={() => router.push('/directedNotes')}
-        containerStyles="w-full mt-7"
+        title="Document Now"
+        handlePress={() => router.push('/directNote')}
+        containerStyles="flex-row items-center space-x-2"
+        variant="primary"
+        isLoading={false}
       />
     </ThemedView>
   );

@@ -41,22 +41,8 @@ const InitialLayout = () => {
             gestureEnabled: false,
           }} 
         />
-        <Stack.Screen 
-          name="notes" 
-          options={{ 
-            headerTitle: "Documenting",
-            headerLeft: () => null,
-            gestureEnabled: false,
-          }} 
-        />
-        <Stack.Screen 
-          name="directedNotes" 
-          options={{ 
-            headerTitle: "Direct Documenting",
-            headerLeft: () => null,
-            gestureEnabled: false,
-          }} 
-        />
+
+
         <Stack.Screen 
           name="index" 
           options={{
