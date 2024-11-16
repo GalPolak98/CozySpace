@@ -1,5 +1,5 @@
-import React from "react";
-import { ActivityIndicator, Pressable } from "react-native";
+import React, { ReactNode } from "react";
+import { ActivityIndicator, Pressable, View } from "react-native";
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
 import ThemedText from '@/components/ThemedText';
@@ -11,6 +11,8 @@ interface CustomButtonProps {
   textStyles?: string;
   isLoading?: boolean;
   variant?: 'primary' | 'secondary' | 'outline';
+  icon?: ReactNode;
+  iconPosition?: 'left' | 'right';
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
@@ -20,6 +22,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   textStyles = "",
   isLoading = false,
   variant = 'primary',
+  icon,
+  iconPosition = 'left',
 }) => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
@@ -44,7 +48,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       case 'secondary':
         return currentTheme === 'dark' ? colors.text : colors.primary;
       default: // primary
-        // Use black text in light mode, white text in dark mode
         return currentTheme === 'light' ? '#000000' : '#FFFFFF';
     }
   };
@@ -55,8 +58,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         return colors.primary;
       case 'secondary':
         return currentTheme === 'dark' ? colors.text : colors.primary;
-      default: // primary
-        // Match loader color with text color
+      default:
         return currentTheme === 'light' ? '#000000' : '#FFFFFF';
     }
   };
@@ -67,21 +69,23 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       className={`${getButtonStyles()} ${isLoading ? "opacity-50" : ""}`}
       disabled={isLoading}
     >
-      <ThemedText
-        style={{ color: getTextColor() }}
-        className={`font-psemibold text-base ${textStyles}`}
-      >
-        {title}
-      </ThemedText>
-
-      {isLoading && (
-        <ActivityIndicator
-          animating={isLoading}
-          color={getLoaderColor()}
-          size="small"
-          className="ml-2"
-        />
-      )}
+      <View className="flex-row items-center justify-center space-x-2">
+        {icon && iconPosition === 'left' && icon}
+        <ThemedText
+          style={{ color: getTextColor() }}
+          className={`font-psemibold text-base ${textStyles}`}
+        >
+          {title}
+        </ThemedText>
+        {icon && iconPosition === 'right' && icon}
+        {isLoading && (
+          <ActivityIndicator
+            animating={isLoading}
+            color={getLoaderColor()}
+            size="small"
+          />
+        )}
+      </View>
     </Pressable>
   );
 };

@@ -12,21 +12,23 @@ const AuthLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerLeft: () => <ThemeToggle />,
+        headerRight: () => <ThemeToggle />,
         headerStyle: {
-          backgroundColor: colors.background,
+          backgroundColor: colors.header,
         },
         headerTintColor: colors.text,
         headerTitleStyle: {
           fontFamily: 'Poppins-SemiBold',
         },
+        headerBackVisible:false,
+        headerTitle:"AnxiEase"
       }}
     >
       <Stack.Screen
         name="sign-in"
         options={{
           title: "Sign In",
-          headerBackVisible: false, // Hide back button
+          headerBackVisible: false, 
         }}
       />
       <Stack.Screen
@@ -35,6 +37,14 @@ const AuthLayout = () => {
           title: "Sign Up",
         }}
       />
+    <Stack.Screen
+      name="initial-registration"
+      options={{
+        title: "Complete Profile",
+        headerBackVisible: false,
+        gestureEnabled: false,
+      }}
+    />
     </Stack>
   );
 };

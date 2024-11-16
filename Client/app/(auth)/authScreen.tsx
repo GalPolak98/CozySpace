@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../Services/firebaseConfig';
+import { auth } from '../../services/firebaseConfig';
 import { router, Link } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';
@@ -50,29 +50,64 @@ interface AuthScreenProps {
   mode: 'signin' | 'signup';
 }
 
-export const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
+const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
+  const isMounted = useRef(true);
+  const navigationInProgress = useRef(false);
 
+  // Set up auth listener once on mount
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const token = await user.getIdToken();
-          await AsyncStorage.setItem('userToken', token);
-          router.push('/(tabs)/home');
-        } catch (err) {
-          console.error('Token storage error:', err);
-          Alert.alert('Error', 'Failed to complete authentication');
-        }
-      }
-    });
+    let authUnsubscribe: () => void;
 
-    return () => unsubscribe();
+    const setupAuthListener = () => {
+      authUnsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (!isMounted.current || navigationInProgress.current) return;
+
+        if (user) {
+          try {
+            navigationInProgress.current = true;
+
+            const token = await user.getIdToken();
+            await AsyncStorage.setItem('userToken', token);
+
+            // Only proceed if still mounted
+            if (!isMounted.current) return;
+
+            const creationTime = new Date(user.metadata.creationTime!).getTime();
+            const lastSignInTime = new Date(user.metadata.lastSignInTime!).getTime();
+            const isNewUser = Math.abs(creationTime - lastSignInTime) < 1000;
+
+            console.log('User status:', isNewUser ? 'New user' : 'Existing user');
+
+            if (isNewUser) {
+              router.replace('/initial-registration');
+            } else {
+              router.replace('/(tabs)/home');
+            }
+          } catch (err) {
+            console.error('Auth state change error:', err);
+            if (isMounted.current) {
+              Alert.alert('Error', 'Failed to complete authentication');
+            }
+          }
+        }
+      });
+    };
+
+    setupAuthListener();
+
+    // Cleanup function
+    return () => {
+      isMounted.current = false;
+      if (authUnsubscribe) {
+        authUnsubscribe();
+      }
+    };
   }, []);
 
   const handleAuth = async () => {
@@ -83,20 +118,25 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
 
     setIsLoading(true);
     setError(null);
+    navigationInProgress.current = false;
 
     try {
+      console.log('Attempting authentication');
       if (mode === 'signin') {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
       }
     } catch (err: any) {
+      console.error('Auth error:', err);
       setError(getErrorMessage(err.code));
     } finally {
-      setIsLoading(false);
+      if (isMounted.current) {
+        setIsLoading(false);
+      }
     }
   };
-
+  
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -180,3 +220,5 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
     </KeyboardAvoidingView>
   );
 };
+
+export default AuthScreen;
