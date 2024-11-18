@@ -38,7 +38,7 @@ const AuthLayout = () => {
         }}
       />
     <Stack.Screen
-      name="initial-registration"
+      name="initialUserSettings"
       options={{
         title: "Complete Profile",
         headerBackVisible: false,

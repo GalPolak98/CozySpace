@@ -85,7 +85,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
             console.log('User status:', isNewUser ? 'New user' : 'Existing user');
 
             if (isNewUser) {
-              router.replace('/initial-registration');
+              router.replace('/initialUserSettings');
             } else {
               router.replace('/(tabs)/home');
             }
