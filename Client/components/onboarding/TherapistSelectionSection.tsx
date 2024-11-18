@@ -1,29 +1,11 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
 import { CustomDropdown } from '@/components/CustomDropdown';
-import { TherapistSelectionProps } from '@/types/onboarding';
+import { TherapistSelectionProps, OptionType } from '@/types/onboarding';
 import { CustomCheckbox } from '@/components/CustomCheckbox';
-
-// Mock therapist data (replace with API data later)
-const THERAPISTS = [
-  { 
-    id: '1', 
-    label: 'Dr. Sarah Johnson',
-    sublabel: 'Specializes in Anxiety & Depression • 10+ years experience'
-  },
-  { 
-    id: '2', 
-    label: 'Dr. Michael Chen',
-    sublabel: 'Specializes in OCD & Anxiety • 8 years experience'
-  },
-  { 
-    id: '3', 
-    label: 'Dr. Emily Brown',
-    sublabel: 'Specializes in Trauma & PTSD • 15 years experience'
-  },
-];
+import ENV from '@/env';
 
 const DATA_SHARING_OPTIONS = [
   {
@@ -46,15 +28,83 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
 }) => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
+  const [therapists, setTherapists] = useState<OptionType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTherapists = async () => {
+      try {
+        const url = `${ENV.EXPO_PUBLIC_SERVER_URL}/api/therapists`;
+        console.log('Fetching from:', url);
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('Response status:', response.status);
+        const text = await response.text();
+        console.log('Raw response:', text);
+
+        if (!response.ok) {
+          throw new Error(`Server returned ${response.status}: ${text}`);
+        }
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.error('Parse error:', e);
+          throw new Error('Invalid response format');
+        }
+
+        if (!data.therapists) {
+          throw new Error('No therapists data in response');
+        }
+
+        setTherapists(data.therapists);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load therapists');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTherapists();
+  }, []);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="p-4 bg-error/10 rounded-lg">
+        <Text style={{ color: colors.error }} className="text-center">
+          {error}
+        </Text>
+      </View>
+    );
+  }
+
 
   return (
     <View className="space-y-6">
       <CustomDropdown
-        label="Select Your Therapist"
-        options={THERAPISTS}
-        value={selectedTherapist}
-        onChange={(id) => setSelectedTherapist(id)}
-        placeholder="Choose a therapist to work with"
+       label="Select Your Therapist"
+       options={therapists}
+       value={selectedTherapist}
+       onChange={(id) => setSelectedTherapist(id)}
+       placeholder="Choose a therapist to work with"
       />
 
       <View className="bg-surface p-6 rounded-xl">

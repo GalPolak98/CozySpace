@@ -1,32 +1,21 @@
-// models/User.ts
-import mongoose from 'mongoose';
-import { TherapistModel } from './Therapist';
-import { PatientModel } from './Patient';
+import { UserModel, IUser } from '../models/User';
+import { PatientModel } from '../models/Patient';
+import { TherapistModel } from '../models/Therapist';
 
-export interface IUser {
-  userId: string;
-  userType: 'patient' | 'therapist';
-}
-
-const UserSchema = new mongoose.Schema({
-  userId: { type: String, required: true, unique: true },
-  userType: { type: String, required: true, enum: ['patient', 'therapist'] }
-});
-
-export const UserModel = mongoose.model<IUser>('User', UserSchema);
-
-// Updated UserService
 export class UserService {
   async registerUser(userData: any) {
     const session = await UserModel.startSession();
     session.startTransaction();
 
     try {
-      // Create base user with only userId and userType
+      // Create base user
       const user = new UserModel({
         userId: userData.userId,
-        userType: userData.userType
+        userType: userData.userType,
+        personalInfo: userData.personalInfo,
+        timestamp: userData.timestamp,
       });
+
       await user.save({ session });
 
       // Create type-specific profile
@@ -35,7 +24,8 @@ export class UserService {
           userId: userData.userId,
           personalInfo: userData.personalInfo,
           therapistInfo: userData.patientInfo.therapistInfo,
-          toolsPreferences: userData.patientInfo.toolsPreferences
+          toolsPreferences: userData.patientInfo.toolsPreferences,
+          timestamp: userData.timestamp
         });
         await patient.save({ session });
       } else {
@@ -43,6 +33,7 @@ export class UserService {
           userId: userData.userId,
           personalInfo: userData.personalInfo,
           professionalInfo: userData.professionalInfo,
+          timestamp: userData.timestamp,
         });
         await therapist.save({ session });
       }
@@ -56,4 +47,20 @@ export class UserService {
       session.endSession();
     }
   }
+
+  async getUserProfile(userId: string) {
+    const user = await UserModel.findOne({ userId });
+    if (!user) return null;
+
+    let profile;
+    if (user.userType === 'patient') {
+      profile = await PatientModel.findOne({ userId });
+    } else {
+      profile = await TherapistModel.findOne({ userId });
+    }
+
+    return { user, profile };
+  }
 }
+
+export const userService = new UserService();
