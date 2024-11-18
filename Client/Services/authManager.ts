@@ -2,6 +2,7 @@ class AuthManager {
     private static instance: AuthManager;
     private isHandlingAuth: boolean = false;
     private authListenerCount: number = 0;
+    private authUnsubscribe: (() => void) | null = null;
   
     private constructor() {}
   
@@ -21,18 +22,33 @@ class AuthManager {
       this.isHandlingAuth = value;
     }
   
+    setAuthUnsubscribe(unsubscribe: () => void) {
+      this.authUnsubscribe = unsubscribe;
+    }
+  
     incrementListenerCount() {
       this.authListenerCount++;
       console.log(`Auth listener count: ${this.authListenerCount}`);
     }
   
     decrementListenerCount() {
-      this.authListenerCount--;
-      console.log(`Auth listener count: ${this.authListenerCount}`);
+      if (this.authListenerCount > 0) {
+        this.authListenerCount--;
+        console.log(`Auth listener count: ${this.authListenerCount}`);
+      }
     }
   
     shouldSetupListener(): boolean {
       return this.authListenerCount === 0;
+    }
+  
+    cleanup() {
+      console.log('Cleaning up auth manager');
+      if (this.authUnsubscribe) {
+        this.authUnsubscribe();
+        this.authUnsubscribe = null;
+      }
+      this.reset();
     }
   
     reset() {
@@ -40,6 +56,6 @@ class AuthManager {
       this.isHandlingAuth = false;
       this.authListenerCount = 0;
     }
-  }
+}
   
-  export const authManager = AuthManager.getInstance();
+export const authManager = AuthManager.getInstance();

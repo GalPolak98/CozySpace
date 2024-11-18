@@ -65,7 +65,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
 
   // Set up auth listener once on mount
   useEffect(() => {
-    let authUnsubscribe: () => void;
+    let unsubscribe: () => void;
 
     const setupAuthListener = () => {
       if (!authManager.shouldSetupListener()) {
@@ -76,7 +76,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
       console.log('Setting up auth listener');
       authManager.incrementListenerCount();
       
-      authUnsubscribe = onAuthStateChanged(auth, async (user) => {
+      unsubscribe = onAuthStateChanged(auth, async (user) => {
         console.log('Auth state changed, isHandlingAuth:', authManager.isProcessing());
         
         if (!isMounted.current || navigationInProgress.current) {
@@ -124,6 +124,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
           console.log('No user in auth state change');
         }
       });
+
+      // Store the unsubscribe function in the AuthManager
+      authManager.setAuthUnsubscribe(unsubscribe);
     };
     
     setupAuthListener();
@@ -131,8 +134,8 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
     return () => {
       console.log('Cleaning up auth listener');
       isMounted.current = false;
-      if (authUnsubscribe) {
-        authUnsubscribe();
+      if (unsubscribe) {
+        unsubscribe();
         authManager.decrementListenerCount();
       }
     };
@@ -166,7 +169,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
       }
     }
   };
-  
+
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

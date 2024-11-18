@@ -1,10 +1,11 @@
 import { Request, Response, RequestHandler } from 'express';
-import User from '../models/User';
+import UserModel from '../models/User';
+import type { IUser } from '../models/User';
 
 export const getUserById: RequestHandler = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await User.findOne({ userId });
+    const user = await UserModel.findOne({ userId });
     
     if (!user) {
       res.status(404).json({ 
@@ -36,14 +37,21 @@ export const registerUser: RequestHandler = async (req, res) => {
       return;
     }
 
+    // Clean up data based on user type
+    if (userData.userType === 'therapist') {
+      delete userData.patientInfo;
+    } else if (userData.userType === 'patient') {
+      delete userData.professionalInfo;
+    }
+
     // Check if user already exists
-    const existingUser = await User.findOne({ userId: userData.userId });
+    const existingUser = await UserModel.findOne({ userId: userData.userId });
     if (existingUser) {
       // Update existing user
-      const updatedUser = await User.findOneAndUpdate(
+      const updatedUser = await UserModel.findOneAndUpdate(
         { userId: userData.userId },
         userData,
-        { new: true }
+        { new: true, runValidators: true }
       );
       res.status(200).json({
         message: 'User updated successfully',
@@ -53,7 +61,7 @@ export const registerUser: RequestHandler = async (req, res) => {
     }
 
     // Create new user
-    const newUser = new User(userData);
+    const newUser = new UserModel(userData);
     await newUser.save();
     res.status(201).json({
       message: 'User registered successfully',
