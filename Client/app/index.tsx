@@ -10,6 +10,7 @@ import { auth } from '@/services/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';
+import { AuthRoutingService } from '@/services/authRoutingService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -57,7 +58,7 @@ export default function Index() {
 
   useEffect(() => {
     let isSubscribed = true;
-
+  
     const checkAuth = async () => {
       try {
         // First check if we already have a token and a current user
@@ -66,35 +67,35 @@ export default function Index() {
         if (existingToken && auth.currentUser) {
           console.log("Using existing token");
           if (isSubscribed) {
-            router.replace('/(tabs)/home');
+            await AuthRoutingService.handleAuthRouting();
           }
           return;
         }
-
+  
         // If no token or no current user, set up the listener
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
           if (!isSubscribed) return;
-
+  
           try {
             if (user) {
               const newToken = await user.getIdToken();
               await AsyncStorage.setItem('userToken', newToken);
               console.log("New token obtained");
-              router.replace('/(tabs)/home');
+              await AuthRoutingService.handleAuthRouting();
             } else {
               await AsyncStorage.removeItem('userToken');
               console.log("No user found, showing onboarding");
+              setIsCheckingAuth(false);
             }
           } catch (error) {
             console.error('Auth state change error:', error);
             await AsyncStorage.removeItem('userToken');
-          } finally {
             if (isSubscribed) {
               setIsCheckingAuth(false);
             }
           }
         });
-
+  
         return () => unsubscribe();
       } catch (error) {
         console.error('Initial auth check error:', error);
@@ -103,9 +104,9 @@ export default function Index() {
         }
       }
     };
-
+  
     checkAuth();
-
+  
     return () => {
       isSubscribed = false;
     };

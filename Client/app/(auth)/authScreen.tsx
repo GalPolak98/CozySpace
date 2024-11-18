@@ -16,6 +16,8 @@ import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
+import { AuthRoutingService } from '@/services/authRoutingService';
+import { authManager } from '@/services/authManager';
 
 // Firebase error messages mapping
 const getErrorMessage = (code: string) => {
@@ -59,56 +61,82 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
   const colors = theme[currentTheme];
   const isMounted = useRef(true);
   const navigationInProgress = useRef(false);
+  const newUserCreated = useRef(false);
 
   // Set up auth listener once on mount
   useEffect(() => {
     let authUnsubscribe: () => void;
 
     const setupAuthListener = () => {
-      authUnsubscribe = onAuthStateChanged(auth, async (user) => {
-        if (!isMounted.current || navigationInProgress.current) return;
+      if (!authManager.shouldSetupListener()) {
+        console.log('Auth listener already exists, skipping setup');
+        return;
+      }
 
+      console.log('Setting up auth listener');
+      authManager.incrementListenerCount();
+      
+      authUnsubscribe = onAuthStateChanged(auth, async (user) => {
+        console.log('Auth state changed, isHandlingAuth:', authManager.isProcessing());
+        
+        if (!isMounted.current || navigationInProgress.current) {
+          console.log('Skipping auth handling - not mounted or navigation in progress');
+          return;
+        }
+    
         if (user) {
           try {
             navigationInProgress.current = true;
-
+            console.log('Starting auth process for user:', user.uid);
+    
             const token = await user.getIdToken();
             await AsyncStorage.setItem('userToken', token);
-
-            // Only proceed if still mounted
-            if (!isMounted.current) return;
-
+    
+            if (!isMounted.current) {
+              console.log('Component unmounted during auth process');
+              return;
+            }
+    
             const creationTime = new Date(user.metadata.creationTime!).getTime();
             const lastSignInTime = new Date(user.metadata.lastSignInTime!).getTime();
             const isNewUser = Math.abs(creationTime - lastSignInTime) < 1000;
-
-            console.log('User status:', isNewUser ? 'New user' : 'Existing user');
-
-            if (isNewUser) {
-              router.replace('/initialUserSettings');
+    
+            console.log('Processing user, isNewUser:', isNewUser);
+            
+            if (mode === 'signup' || isNewUser) {
+              console.log('New signup or new user, routing to initial settings');
+              router.replace('/(auth)/initialUserSettings');
             } else {
-              router.replace('/(tabs)/home');
+              console.log('Existing user, checking routing');
+              await AuthRoutingService.handleAuthRouting();
             }
           } catch (err) {
             console.error('Auth state change error:', err);
             if (isMounted.current) {
               Alert.alert('Error', 'Failed to complete authentication');
             }
+          } finally {
+            if (isMounted.current) {
+              navigationInProgress.current = false;
+            }
           }
+        } else {
+          console.log('No user in auth state change');
         }
       });
     };
-
+    
     setupAuthListener();
-
-    // Cleanup function
+    
     return () => {
+      console.log('Cleaning up auth listener');
       isMounted.current = false;
       if (authUnsubscribe) {
         authUnsubscribe();
+        authManager.decrementListenerCount();
       }
     };
-  }, []);
+  }, [mode]);
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -119,9 +147,10 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
     setIsLoading(true);
     setError(null);
     navigationInProgress.current = false;
+    authManager.reset(); // Reset the auth manager state
 
     try {
-      console.log('Attempting authentication');
+      console.log('Attempting authentication for mode:', mode);
       if (mode === 'signin') {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
@@ -130,6 +159,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
     } catch (err: any) {
       console.error('Auth error:', err);
       setError(getErrorMessage(err.code));
+      authManager.setProcessing(false); // Reset processing state on error
     } finally {
       if (isMounted.current) {
         setIsLoading(false);
