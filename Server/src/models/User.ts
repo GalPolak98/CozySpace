@@ -21,7 +21,6 @@ interface DataSharing {
 
 interface TherapistInfo {
   selectedTherapistId: string | null;
-  shareWithTherapist: boolean;
   dataSharing: DataSharing;
 }
 
@@ -92,7 +91,6 @@ const UserSchema = new Schema<IUser>({
     type: {
       therapistInfo: {
         selectedTherapistId: { type: String, default: null },
-        shareWithTherapist: { type: Boolean, default: false },
         dataSharing: {
           anxietyTracking: { type: Boolean, default: false },
           personalDocumentation: { type: Boolean, default: false },

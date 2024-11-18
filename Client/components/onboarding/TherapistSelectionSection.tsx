@@ -3,9 +3,8 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
 import { CustomDropdown } from '@/components/CustomDropdown';
-import { TherapistSelectionProps, DataShareOptions } from '@/types/onboarding';
+import { TherapistSelectionProps } from '@/types/onboarding';
 import { CustomCheckbox } from '@/components/CustomCheckbox';
-import { Ionicons } from '@expo/vector-icons';
 
 // Mock therapist data (replace with API data later)
 const THERAPISTS = [
@@ -42,8 +41,6 @@ const DATA_SHARING_OPTIONS = [
 export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
   selectedTherapist,
   setSelectedTherapist,
-  shareWithTherapist,
-  setShareWithTherapist,
   dataShareOptions,
   setDataShareOptions
 }) => {
@@ -65,79 +62,45 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
           Data Sharing Settings
         </Text>
 
-        <View className="space-y-6">
-          {/* Master toggle for data sharing with improved margin */}
-          <TouchableOpacity 
-            onPress={() => setShareWithTherapist(!shareWithTherapist)}
-            className="flex-row items-start pb-4 border-b border-border"
-            style={{ borderBottomColor: colors.border }}
-          >
-            <View className="mr-4">
-              <CustomCheckbox
-                checked={shareWithTherapist}
-                onCheckedChange={setShareWithTherapist}
-              />
-            </View>
-            <View className="flex-1 mr-4">
-              <Text style={{ color: colors.text }} className="font-pbold text-base">
-                Enable Data Sharing
-              </Text>
-              <Text style={{ color: colors.textSecondary }} className="text-sm mt-1">
-                Allow your therapist to access your data
-              </Text>
-            </View>
-            <Ionicons
-              name={shareWithTherapist ? "shield-checkmark" : "shield-outline"}
-              size={24}
-              color={shareWithTherapist ? colors.primary : colors.text}
-            />
-          </TouchableOpacity>
-
-          {/* Individual data sharing options */}
-          {shareWithTherapist && (
-            <View className="space-y-5">
-              {DATA_SHARING_OPTIONS.map((option) => (
-                <TouchableOpacity 
-                  key={option.id} 
-                  onPress={() => {
+        <View className="space-y-5">
+          {DATA_SHARING_OPTIONS.map((option) => (
+            <TouchableOpacity 
+              key={option.id} 
+              onPress={() => {
+                setDataShareOptions(prev => ({
+                  ...prev,
+                  [option.id]: !prev[option.id]
+                }));
+              }}
+              className="flex-row items-start"
+            >
+              <View className="mr-4">
+                <CustomCheckbox
+                  checked={dataShareOptions[option.id]}
+                  onCheckedChange={(checked) => {
                     setDataShareOptions(prev => ({
                       ...prev,
-                      [option.id]: !prev[option.id]
+                      [option.id]: checked
                     }));
                   }}
-                  className="flex-row items-start"
-                >
-                  <View className="mr-4">
-                    <CustomCheckbox
-                      checked={dataShareOptions[option.id]}
-                      onCheckedChange={(checked) => {
-                        setDataShareOptions(prev => ({
-                          ...prev,
-                          [option.id]: checked
-                        }));
-                      }}
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <Text style={{ color: colors.text }} className="font-pmedium text-base">
-                      {option.label}
-                    </Text>
-                    <Text style={{ color: colors.textSecondary }} className="text-sm mt-1">
-                      {option.description}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
+                />
+              </View>
+              <View className="flex-1">
+                <Text style={{ color: colors.text }} className="font-pmedium text-base">
+                  {option.label}
+                </Text>
+                <Text style={{ color: colors.textSecondary }} className="text-sm mt-1">
+                  {option.description}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-          {shareWithTherapist && (
-            <View className="mt-4 p-4 bg-primary/10 rounded-lg">
-              <Text style={{ color: colors.text }} className="text-sm font-pregular">
-                Your therapist will only see the data you choose to share. You can change these settings at any time.
-              </Text>
-            </View>
-          )}
+        <View className="mt-4 p-4 bg-primary/10 rounded-lg">
+          <Text style={{ color: colors.text }} className="text-sm font-pregular">
+            Your therapist will only see the data you choose to share. You can change these settings at any time.
+          </Text>
         </View>
       </View>
     </View>
