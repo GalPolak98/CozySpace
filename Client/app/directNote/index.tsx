@@ -143,14 +143,12 @@ const NotesSection: React.FC = () => {
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9' }]}>
       <View style={styles.header}>
-        {/* Example NoteCard */}
         {notes.length > 0 && <NoteCard note={notes[0]} setSelectedNote={setSelectedNote} setEditedNote={setEditedNote} setIsModalVisible={setIsModalVisible} />}
       </View>
 
       <View>
         <NoteInput note={note} setNote={setNote} />
         <View style={styles.addNoteButton}>
-          {/* Custom TouchableOpacity button with rounded corners */}
           <TouchableOpacity onPress={addNote} style={[styles.button, { backgroundColor: currentTheme === 'dark' ? '#4B5563' : '#007BFF' }]}>
             <Text style={styles.buttonText}>Add Note</Text>
           </TouchableOpacity>

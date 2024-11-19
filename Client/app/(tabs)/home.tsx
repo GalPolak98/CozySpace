@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 import CustomButton from '@/components/CustomButton';
+import RecordingsSection from '@/components/Recordings'; // Update the path as needed
 
 const Home = () => {
   const router = useRouter();
@@ -34,6 +35,7 @@ const Home = () => {
         variant="primary"
         isLoading={false}
       />
+      <RecordingsSection />
     </ThemedView>
   );
 };
