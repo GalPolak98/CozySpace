@@ -62,6 +62,7 @@ const DirectedNoteScreen: React.FC = () => {
     const loadData = async () => {
       try {
         const savedData = await AsyncStorage.getItem('@formData');
+
         if (savedData) {
           const { anxietyRating, description, trigger, copingStrategies, physicalSymptoms, emotionalState, selfTalk } = JSON.parse(savedData);
           setAnxietyRating(anxietyRating || 5);
