@@ -24,7 +24,6 @@ export const InitialRegistrationScreen: React.FC = () => {
   
   // Patient-specific state
   const [selectedTherapist, setSelectedTherapist] = useState<string | null>(null);
-  const [shareWithTherapist, setShareWithTherapist] = useState(false);
   const [enableVibrations, setEnableVibrations] = useState(false);
   const [dataShareOptions, setDataShareOptions] = useState<DataShareOptions>({
     anxietyTracking: false,
@@ -134,7 +133,6 @@ export const InitialRegistrationScreen: React.FC = () => {
               patientInfo: {
                 therapistInfo: {
                   selectedTherapistId: selectedTherapist,
-                  shareWithTherapist,
                   dataSharing: {
                     anxietyTracking: dataShareOptions.anxietyTracking,
                     personalDocumentation: dataShareOptions.personalDocumentation,
@@ -155,7 +153,6 @@ export const InitialRegistrationScreen: React.FC = () => {
         ),
       };
 
-      // Here you would typically save the data to your backend
       console.log('Registration data:', JSON.stringify(registrationData, null, 2));
 
       await userService.registerUser(registrationData);
@@ -176,48 +173,56 @@ export const InitialRegistrationScreen: React.FC = () => {
     }
   };
 
+  const handleUserTypeChange = useCallback((type: 'patient' | 'therapist') => {
+    setUserType(type);
+    setScreenKey(prev => prev + 1);
+  }, []);
+
   const renderStep = () => {
-    if (!userType) {
-        return (
-          <OnboardingStep
-            key={`role-selection-${screenKey}`}
-            title="Welcome to AnxiEase"
-            subtitle="Let's start by selecting your role"
-            currentStep={1}
-            totalSteps={1}
-          >
-            <RoleSelectionSection
+    const totalSteps = userType === 'patient' ? 4 : 3;
+
+    // Role selection step
+    if (step === 1 && !userType) {
+      return (
+        <OnboardingStep
+          key={`role-selection-${screenKey}`}
+          title="Welcome to AnxiEase"
+          subtitle="Let's start by selecting your role"
+          currentStep={1}
+          totalSteps={1}
+        >
+          <RoleSelectionSection
             userType={userType}
-            setUserType={(type) => {
-              setUserType(type);
-              setScreenKey(prev => prev + 1);
-            }}
-            />
-          </OnboardingStep>
-        );
-      }
+            setUserType={handleUserTypeChange}
+          />
+        </OnboardingStep>
+      );
+    }
 
-    switch (step) {
-    case 1:
+    // Personal information step
+    if (step === 1) {
+      return (
+        <OnboardingStep
+          key={`step-1-${screenKey}`}
+          title="Personal Information"
+          subtitle="Tell us about yourself"
+          currentStep={step}
+          totalSteps={totalSteps}
+        >
+          <PersonalInfoSection
+            firstName={firstName}
+            lastName={lastName}
+            setFirstName={setFirstName}
+            setLastName={setLastName}
+          />
+        </OnboardingStep>
+      );
+    }
+
+    // Therapist selection or professional background step
+    if (step === 2) {
+      if (userType === 'patient') {
         return (
-            <OnboardingStep
-            key={`step-1-${screenKey}`}
-            title="Personal Information"
-            subtitle="Tell us about yourself"
-            currentStep={step}
-            totalSteps={totalSteps}
-            >
-            <PersonalInfoSection
-                firstName={firstName}
-                lastName={lastName}
-                setFirstName={setFirstName}
-                setLastName={setLastName}
-            />
-            </OnboardingStep>
-        );
-
-      case 2:
-        return userType === 'patient' ? (
           <OnboardingStep
             key={`step-2-${screenKey}`}
             title="Connect with a Therapist"
@@ -228,83 +233,88 @@ export const InitialRegistrationScreen: React.FC = () => {
             <TherapistSelectionSection
               selectedTherapist={selectedTherapist}
               setSelectedTherapist={setSelectedTherapist}
-              shareWithTherapist={shareWithTherapist}
-              setShareWithTherapist={setShareWithTherapist}
               dataShareOptions={dataShareOptions}
               setDataShareOptions={setDataShareOptions}
             />
           </OnboardingStep>
-        ) : (
+        );
+      }
+
+      return (
+        <OnboardingStep
+          title="Professional Background"
+          subtitle="Tell us about your qualifications"
+          currentStep={step}
+          totalSteps={totalSteps}
+        >
+          <TherapistQualificationsSection
+            educationLevel={educationLevel}
+            setEducationLevel={setEducationLevel}
+            experienceLevel={experienceLevel}
+            setExperienceLevel={setExperienceLevel}
+            workplace={workplace}
+            setWorkplace={setWorkplace}
+            specialization={specialization}
+            setSpecialization={setSpecialization}
+            licenseNumber={licenseNumber}
+            setLicenseNumber={setLicenseNumber}
+          />
+        </OnboardingStep>
+      );
+    }
+
+    // Customization or completion step
+    if (step === 3) {
+      if (userType === 'patient') {
+        return (
           <OnboardingStep
-            title="Professional Background"
-            subtitle="Tell us about your qualifications"
+            title="Customize Your Experience"
+            subtitle="Set up your anxiety management tools"
             currentStep={step}
             totalSteps={totalSteps}
           >
-            <TherapistQualificationsSection
-              educationLevel={educationLevel}
-              setEducationLevel={setEducationLevel}
-              experienceLevel={experienceLevel}
-              setExperienceLevel={setExperienceLevel}
-              workplace={workplace}
-              setWorkplace={setWorkplace}
-              specialization={specialization}
-              setSpecialization={setSpecialization}
-              licenseNumber={licenseNumber}
-              setLicenseNumber={setLicenseNumber}
+            <PatientCustomizationStep
+              useSmartJewelry={useSmartJewelry}
+              setUseSmartJewelry={setUseSmartJewelry}
+              enableVibrations={enableVibrations}
+              setEnableVibrations={setEnableVibrations}
+              playMusic={playMusic}
+              setPlayMusic={setPlayMusic}
+              selectedMusic={selectedMusic}
+              setSelectedMusic={setSelectedMusic}
             />
           </OnboardingStep>
         );
+      }
 
-        case 3:
-            if (userType === 'patient') {
-              return (
-                <OnboardingStep
-                  title="Customize Your Experience"
-                  subtitle="Set up your anxiety management tools"
-                  currentStep={step}
-                  totalSteps={totalSteps}
-                >
-                  <PatientCustomizationStep
-                    useSmartJewelry={useSmartJewelry}
-                    setUseSmartJewelry={setUseSmartJewelry}
-                    enableVibrations={enableVibrations}
-                    setEnableVibrations={setEnableVibrations}
-                    playMusic={playMusic}
-                    setPlayMusic={setPlayMusic}
-                    selectedMusic={selectedMusic}
-                    setSelectedMusic={setSelectedMusic}
-                  />
-                </OnboardingStep>
-              );
-            } else {
-              return (
-                <OnboardingStep
-                  title="You're All Set!"
-                  subtitle="Welcome to the AnxiEase professional network"
-                  currentStep={step}
-                  totalSteps={totalSteps}
-                >
-                  <CompletionStep userType="therapist" />
-                </OnboardingStep>
-              );
-            }
-            
-          case 4:
-            if (userType === 'patient') {
-              return (
-                <OnboardingStep
-                  title="You're All Set!"
-                  subtitle="Let's start managing your anxiety together"
-                  currentStep={step}
-                  totalSteps={totalSteps}
-                >
-                  <CompletionStep userType="patient" />
-                </OnboardingStep>
-              );
-            }
-            return null;
-        };
+      return (
+        <OnboardingStep
+          title="You're All Set!"
+          subtitle="Welcome to the AnxiEase professional network"
+          currentStep={step}
+          totalSteps={totalSteps}
+        >
+          <CompletionStep userType="therapist" />
+        </OnboardingStep>
+      );
+    }
+
+    // Final completion step for patients
+    if (step === 4 && userType === 'patient') {
+      return (
+        <OnboardingStep
+          title="You're All Set!"
+          subtitle="Let's start managing your anxiety together"
+          currentStep={step}
+          totalSteps={totalSteps}
+        >
+          <CompletionStep userType="patient" />
+        </OnboardingStep>
+      );
+    }
+
+    // Fallback return
+    return null;
   };
 
   const isRoleSelection = step === 1 && !userType;
@@ -320,6 +330,6 @@ export const InitialRegistrationScreen: React.FC = () => {
       {renderStep()}
     </OnboardingContainer>
   );
-}
+};
 
 export default InitialRegistrationScreen;

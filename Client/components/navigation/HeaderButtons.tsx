@@ -7,6 +7,7 @@ import { theme } from '@/Styles/Theme';
 import ThemeToggle from '@/components/ThemeToggle';
 import { auth } from '@/Services/firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authManager } from '@/services/authManager';
 
 export const HeaderRight = () => <ThemeToggle />;
 
@@ -28,6 +29,7 @@ export const HeaderLeft = () => {
           style: "destructive",
           onPress: async () => {
             try {
+              authManager.cleanup();
               await auth.signOut();
               await AsyncStorage.removeItem('userToken');
               router.replace('/(auth)/sign-in');

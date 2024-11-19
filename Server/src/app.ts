@@ -6,7 +6,7 @@ import connectToDatabase from './db';
 import routes from './apiRoutes';
 import { emailService } from './services/emailService';
 import { ParsedQs } from 'qs';
-import userRoutes from './routes/userRoutes';
+import routes from './routes';
 
 // Load environment variables
 dotenv.config();
@@ -126,7 +126,7 @@ const errorHandler = (
   });
 };
 
-app.use('/api/users', userRoutes);
+app.use('/api', routes);
 app.use(errorHandler);
 
 // Connect to the database

@@ -15,15 +15,13 @@ setUserType: (type: 'patient' | 'therapist') => void;
 }
   
 export interface DataShareOptions {
-anxietyTracking: boolean;
-personalDocumentation: boolean;
-}
+    anxietyTracking: boolean;
+    personalDocumentation: boolean;
+  }
   
 export interface TherapistSelectionProps {
 selectedTherapist: string | null;
 setSelectedTherapist: (id: string) => void;
-shareWithTherapist: boolean;
-setShareWithTherapist: (share: boolean) => void;
 dataShareOptions: DataShareOptions;
 setDataShareOptions: (options: DataShareOptions | ((prev: DataShareOptions) => DataShareOptions)) => void;
 }
@@ -79,7 +77,6 @@ export interface RegistrationData {
     patientInfo?: {
       therapistInfo: {
         selectedTherapistId: string | null;
-        shareWithTherapist: boolean;
         dataSharing: {
           anxietyTracking: boolean;
           personalDocumentation: boolean;
@@ -96,4 +93,4 @@ export interface RegistrationData {
         };
       };
     };
-  } 
+  }
