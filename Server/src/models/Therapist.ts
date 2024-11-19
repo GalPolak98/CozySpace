@@ -14,6 +14,10 @@ interface ITherapist extends Document {
     specialization: string;
     licenseNumber: string;
   };
+  patients: Array<{
+    userId: string;
+    fullName: string;
+  }>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,6 +36,10 @@ const TherapistSchema = new Schema<ITherapist>({
     specialization: { type: String, required: true },
     licenseNumber: { type: String, required: true },
   },
+  patients: [{
+    userId: { type: String, required: true },
+    fullName: { type: String, required: true }
+  }]
 }, {
   timestamps: true
 });

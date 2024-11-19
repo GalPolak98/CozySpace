@@ -161,7 +161,7 @@ export const InitialRegistrationScreen: React.FC = () => {
       if (userType === 'therapist') {
         router.replace('/(therapist)/home');
       } else {
-        router.replace('/(tabs)/home');
+        router.replace('/(patient)/home');
       }
     } catch (error) {
       console.error('Registration error:', error);

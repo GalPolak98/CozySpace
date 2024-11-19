@@ -24,9 +24,9 @@ export interface IPatient extends IBaseModel {
         selectedMusicType: string | null;
       };
     };
-  }
-  
-  const PatientSchema = new Schema({
+}
+
+const PatientSchema = new Schema({
     ...baseModelFields,
     personalInfo: {
       firstName: { type: String, required: true },
@@ -50,6 +50,6 @@ export interface IPatient extends IBaseModel {
         selectedMusicType: { type: String, default: null }
       }
     }
-  });
-  
-  export const PatientModel = mongoose.model<IPatient>('Patient', PatientSchema);
+});
+
+export const PatientModel = mongoose.model<IPatient>('Patient', PatientSchema);
