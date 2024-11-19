@@ -1,12 +1,12 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
+import { Platform } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
-import { Platform, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
 
-export default function TabLayout() {
+export default function TherapistLayout() {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
@@ -29,16 +29,14 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: colors.bottomBar,
           borderTopColor: colors.border,
+          borderTopWidth: 1,
           height: Platform.OS === 'ios' ? 88 : 68,
           paddingBottom: Platform.OS === 'ios' ? 28 : 8,
           paddingTop: 8,
           ...Platform.select({
             ios: {
               shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: -1,
-              },
+              shadowOffset: { width: 0, height: -1 },
               shadowOpacity: 0.1,
               shadowRadius: 1,
             },
@@ -58,25 +56,51 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon 
+          title: 'Dashboard',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons 
               name={focused ? 'home' : 'home-outline'} 
-              color={color}
-              size={24} // Explicitly set icon size
+              size={size} 
+              color={color} 
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="patients"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon 
-              name={focused ? 'code-slash' : 'code-slash-outline'} 
-              color={color}
-              size={24} 
+          title: 'Patients',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons 
+              name={focused ? 'people' : 'people-outline'} 
+              size={size} 
+              color={color} 
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: 'Messages',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons 
+              name={focused ? 'chatbubbles' : 'chatbubbles-outline'} 
+              size={size} 
+              color={color} 
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons 
+              name={focused ? 'settings' : 'settings-outline'} 
+              size={size} 
+              color={color} 
             />
           ),
         }}
@@ -84,16 +108,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: Platform.OS === 'android' ? 8 : 0,
-  },
-});

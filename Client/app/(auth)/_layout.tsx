@@ -37,6 +37,14 @@ const AuthLayout = () => {
           title: "Sign Up",
         }}
       />
+    <Stack.Screen
+      name="initial-registration"
+      options={{
+        title: "Complete Profile",
+        headerBackVisible: false,
+        gestureEnabled: false,
+      }}
+    />
     </Stack>
   );
 };

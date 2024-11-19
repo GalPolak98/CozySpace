@@ -25,13 +25,12 @@ const InitialLayout = () => {
             backgroundColor: colors.header,
           },
           headerTintColor: colors.text,
-          headerShown:false,
+          headerShown: false,
         }}
       >
         <Stack.Screen 
           name="(auth)" 
-          options={{
-          }} 
+          options={{}} 
         />
         <Stack.Screen 
           name="(tabs)" 
@@ -43,6 +42,14 @@ const InitialLayout = () => {
         />
 
 
+        <Stack.Screen 
+          name="(therapist)" 
+          options={{ 
+            headerTitle: "",
+            headerLeft: () => null,
+            gestureEnabled: false,
+          }} 
+        />
         <Stack.Screen 
           name="index" 
           options={{

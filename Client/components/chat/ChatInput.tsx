@@ -113,7 +113,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
               maxLength={500}
               contextMenuHidden={false}
               returnKeyType="default"
-              blurOnSubmit={false}
               textAlignVertical="center"
               scrollEnabled={true}
               keyboardType="default"

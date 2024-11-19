@@ -3,18 +3,14 @@ import { View, StyleSheet } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import ChatMessage from './ChatMessage';
 import { Message } from '@/types/chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ChatListProps {
   messages: Message[];
-  keyboardHeight: number;
 }
 
 const ChatList = React.forwardRef<FlashList<Message>, ChatListProps>(({ 
   messages,
-  keyboardHeight 
 }, ref) => {
-  const insets = useSafeAreaInsets();
   
   const scrollToBottom = () => {
     if (ref && 'current' in ref && ref.current && messages.length > 0) {
