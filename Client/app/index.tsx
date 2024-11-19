@@ -10,7 +10,7 @@ import { auth } from '@/Services/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';
-import { AuthRoutingService } from '@/services/authRoutingService';
+import { AuthRoutingService } from '@/Services/authRoutingService';
 
 const { width, height } = Dimensions.get('window');
 

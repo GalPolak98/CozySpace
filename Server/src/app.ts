@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectToDatabase from './db';
-import routes from './apiRoutes';
 import { emailService } from './services/emailService';
 import { ParsedQs } from 'qs';
 import routes from './routes';

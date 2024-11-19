@@ -16,8 +16,8 @@ import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
-import { AuthRoutingService } from '@/services/authRoutingService';
-import { authManager } from '@/services/authManager';
+import { AuthRoutingService } from '@/Services/authRoutingService';
+import { authManager } from '@/Services/authManager';
 
 // Firebase error messages mapping
 const getErrorMessage = (code: string) => {

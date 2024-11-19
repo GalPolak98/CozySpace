@@ -7,7 +7,7 @@ import { theme } from '@/Styles/Theme';
 import ThemeToggle from '@/components/ThemeToggle';
 import { auth } from '@/Services/firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authManager } from '@/services/authManager';
+import { authManager } from '@/Services/authManager';
 
 export const HeaderRight = () => <ThemeToggle />;
 
