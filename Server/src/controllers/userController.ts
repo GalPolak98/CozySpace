@@ -89,6 +89,18 @@ export const getNotes: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const saveRecording: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const recordingData = req.body;
+
+    const result = await userService.saveRecording(userId, recordingData);
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Delete a note for the user
 export const deleteNote: RequestHandler = async (req, res, next) => {

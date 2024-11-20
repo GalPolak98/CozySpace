@@ -148,6 +148,28 @@ async updateNoteForUser(userId: string, noteId: string, noteData: any) {
   }
 }
 
+async saveRecording(userId: string, recordingData: any) {
+  const session = await PatientModel.startSession();
+  session.startTransaction();
+
+  try {
+    const patient = await PatientModel.findOne({ userId }).session(session);
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
+    patient.recordings.push(recordingData);
+    await patient.save({ session });
+
+    await session.commitTransaction();
+    return { success: true, message: 'Recording saved successfully' };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
 
 // Delete a note for a user
 async deleteNoteForUser(userId: string, noteId: string) {

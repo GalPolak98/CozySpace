@@ -43,6 +43,12 @@ export interface IPatient extends IBaseModel {
         timestamp: string;
       }
     ];
+    recordings: [
+      {
+        uri: string;
+        timestamp: string;
+      }
+    ];
   }
   
   const PatientSchema = new Schema({
@@ -87,6 +93,12 @@ export interface IPatient extends IBaseModel {
 
         content: { type: String, required: false },
         timestamp: { type: String, required: false }
+      }
+    ],
+    recordings: [
+      {
+        uri: { type: String, required: true },
+        timestamp: { type: String, required: true },
       }
     ]
   });

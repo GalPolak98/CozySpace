@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 import CustomButton from '@/components/CustomButton';
-import RecordingsSection from '@/components/Recordings'; // Update the path as needed
+import RecordingsSection from '../recording'; // Import the section
 
 const Home = () => {
   const router = useRouter();
@@ -13,7 +13,7 @@ const Home = () => {
       <ThemedText className="font-psemibold text-2xl mb-8">
         Welcome to Anxiety Helper
       </ThemedText>
-      
+
       <CustomButton
         title="Talk to AI Assistant"
         handlePress={() => router.push('/chat')}
@@ -35,6 +35,8 @@ const Home = () => {
         variant="primary"
         isLoading={false}
       />
+      
+      {/* Render RecordingsSection here */}
       <RecordingsSection />
     </ThemedView>
   );
