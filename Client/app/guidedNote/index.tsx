@@ -39,7 +39,7 @@ const DirectedNoteScreen: React.FC = () => {
     };
 
     try {
-      const response = await fetch(`${config.API_URL}/directNotes`, {
+      const response = await fetch(`${config.API_URL}/users/${userId}/saveGuidedNotes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,14 +105,14 @@ const DirectedNoteScreen: React.FC = () => {
       <AnxietySlider anxietyRating={anxietyRating} setAnxietyRating={setAnxietyRating} />
 
       {[
-        { icon: 'text', label: 'Describe your current experience with anxiety', value: description, onChange: setDescription },
-        { icon: 'alert-circle', label: 'What might have triggered this anxiety episode?', value: trigger, onChange: setTrigger },
-        { icon: 'heart', label: "Are there any coping strategies you're using?", value: copingStrategies, onChange: setCopingStrategies },
-        { icon: 'pulse', label: "Describe any physical sensations you're feeling", value: physicalSymptoms, onChange: setPhysicalSymptoms },
-        { icon: 'happy', label: 'How would you describe your emotional state?', value: emotionalState, onChange: setEmotionalState },
-        { icon: 'chatbubble', label: 'What thoughts are you having right now?', value: selfTalk, onChange: setSelfTalk },
+        { label: 'Describe your current experience with anxiety', value: description, onChange: setDescription },
+        { label: 'What might have triggered this anxiety episode?', value: trigger, onChange: setTrigger },
+        { label: "Are there any coping strategies you're using?", value: copingStrategies, onChange: setCopingStrategies },
+        { label: "Describe any physical sensations you're feeling", value: physicalSymptoms, onChange: setPhysicalSymptoms },
+        { label: 'How would you describe your emotional state?', value: emotionalState, onChange: setEmotionalState },
+        { label: 'What thoughts are you having right now?', value: selfTalk, onChange: setSelfTalk },
       ].map((field, index) => (
-        <TextInputField key={index} icon={field.icon} label={field.label} value={field.value} onChange={field.onChange} />
+        <TextInputField key={index} label={field.label} value={field.value} onChange={field.onChange} />
       ))}
 
 <SubmitButton onPress={handleSubmit} />

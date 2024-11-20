@@ -24,6 +24,25 @@ export interface IPatient extends IBaseModel {
         selectedMusicType: string | null;
       };
     };
+    guidedNotes: [
+      {
+        anxietyRating: number;
+        description: string;
+        trigger: string;
+        copingStrategies: string;
+        physicalSymptoms: string;
+        emotionalState: string;
+        selfTalk: string;
+        timestamp: string;
+      }
+    ];
+    notes: [
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true }, 
+        content: string;
+        timestamp: string;
+      }
+    ];
   }
   
   const PatientSchema = new Schema({
@@ -49,7 +68,27 @@ export interface IPatient extends IBaseModel {
         enabled: { type: Boolean, default: false },
         selectedMusicType: { type: String, default: null }
       }
-    }
+    },
+    guidedNotes: [
+      {
+        anxietyRating: { type: Number, required: false },
+        description: { type: String, required: false },
+        trigger: { type: String, required: false },
+        copingStrategies: { type: String, required: false },
+        physicalSymptoms: { type: String, required: false },
+        emotionalState: { type: String, required: false },
+        selfTalk: { type: String, required: false },
+        timestamp: { type: String, required: false }
+      }
+    ],
+    notes: [
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true }, 
+
+        content: { type: String, required: false },
+        timestamp: { type: String, required: false }
+      }
+    ]
   });
   
   export const PatientModel = mongoose.model<IPatient>('Patient', PatientSchema);

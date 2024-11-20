@@ -4,9 +4,9 @@ import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 
 const NoteCard: React.FC<{
-  note: { _id: string; text: string; timestamp: string } | null;
-  setSelectedNote: (note: { _id: string; text: string; timestamp: string }) => void;
-  setEditedNote: (text: string) => void;
+  note: { _id: string; content: string; timestamp: string } | null;
+  setSelectedNote: (note: { _id: string; content: string; timestamp: string }) => void;
+  setEditedNote: (content: string) => void;
   setIsModalVisible: (visible: boolean) => void;
 }> = ({ note, setSelectedNote, setEditedNote, setIsModalVisible }) => {
   if (!note) return null;
@@ -15,7 +15,7 @@ const NoteCard: React.FC<{
     <TouchableOpacity
       onPress={() => {
         setSelectedNote(note);
-        setEditedNote(note.text);
+        setEditedNote(note.content);
         setIsModalVisible(true);
       }}
     >
@@ -44,7 +44,7 @@ const NoteCard: React.FC<{
             fontWeight: '600',
           }}
         >
-          {note.text}
+          {note.content}
         </ThemedText>
       </ThemedView>
     </TouchableOpacity>

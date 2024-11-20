@@ -11,8 +11,8 @@ import { useTheme } from '@/components/ThemeContext';
 
 const NotesSection: React.FC = () => {
   const [note, setNote] = useState<string>('');
-  const [notes, setNotes] = useState<{ _id: string; text: string; timestamp: string }[]>([]);
-  const [selectedNote, setSelectedNote] = useState<{ _id: string; text: string; timestamp: string } | null>(null);
+  const [notes, setNotes] = useState<{ _id: string; content: string; timestamp: string }[]>([]);
+  const [selectedNote, setSelectedNote] = useState<{ _id: string; content: string; timestamp: string } | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const userId = useAuth();
@@ -40,23 +40,39 @@ const NotesSection: React.FC = () => {
     AsyncStorage.setItem('draftNote', note);
   }, [note]);
 
+  const parseTimestamp = (timestamp: string): number => {
+    const [datePart, timePart] = timestamp.split(', ');
+    const [day, month, year] = datePart.split('.').map(Number);
+    const [hours, minutes, seconds] = timePart.split(':').map(Number);
+    // Create a Date object from parsed values
+    const date = new Date(year, month - 1, day, hours, minutes, seconds);
+    return date.getTime(); // Convert Date object to timestamp (milliseconds)
+  };
+  
+
   // Load notes from the server
   const loadNotes = async () => {
     if (!userId) return;
     try {
-      const response = await fetch(`${config.API_URL}/notes/latest?userId=${userId}`, {
+      const response = await fetch(`${config.API_URL}/users/${userId}/latest`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
-
+  
       if (!response.ok) throw new Error('Failed to fetch notes');
+  
+      const fetchedNotes = (await response.json()).notes;
 
-      const fetchedNotes = await response.json();
-      setNotes(Array.isArray(fetchedNotes) ? fetchedNotes : [fetchedNotes]);
+      const sortedNotes = Array.isArray(fetchedNotes)
+      ? fetchedNotes.sort((a, b) => parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp))
+      : [fetchedNotes];
+
+    setNotes(sortedNotes);
     } catch (error) {
       console.error('Failed to fetch notes', error);
     }
   };
+  
 
   useEffect(() => {
     loadNotes();
@@ -68,12 +84,11 @@ const NotesSection: React.FC = () => {
 
     const newNote = {
       userId,
-      text: note,
+      content: note,
       timestamp: getCurrentDateTime(),
     };
-
     try {
-      const response = await fetch(`${config.API_URL}/notes`, {
+      const response = await fetch(`${config.API_URL}/users/${userId}/addNotes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newNote),
@@ -98,7 +113,7 @@ const NotesSection: React.FC = () => {
     if (!userId || !noteId) return;
 
     try {
-      const response = await fetch(`${config.API_URL}/notes/${userId}/${noteId}`, {
+      const response = await fetch(`${config.API_URL}/users/${userId}/${noteId}`, {
         method: 'DELETE',
       });
 
@@ -112,39 +127,38 @@ const NotesSection: React.FC = () => {
     }
   };
 
-  // Save (update) an existing note
-  const saveNote = async () => {
-    if (editedNote.trim() === '') return;
+// Update a note in the database
+const updateNote = async (updatedNote: { _id: string; content: string; timestamp: string }) => {
+  if (!updatedNote._id) return;
 
-    const updatedNote = {
-      userId,
-      text: editedNote,
-      timestamp: getCurrentDateTime(),
-    };
+  try {
+    const response = await fetch(`${config.API_URL}/users/${userId}/${updatedNote._id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedNote),
+    });
 
-    try {
-      const response = await fetch(`${config.API_URL}/notes/${selectedNote?._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedNote),
-      });
+    if (!response.ok) throw new Error('Failed to update note');
 
-      if (!response.ok) throw new Error('Failed to update note');
-
-      loadNotes();
-      setIsModalVisible(false);
-      Alert.alert('Success', 'Note updated successfully!');
-    } catch (error) {
-      console.error('Error updating note:', error);
-      Alert.alert('Error', 'Failed to update note. Please try again.');
-    }
-  };
+    const savedNote = await response.json();
+    setNotes(prevNotes =>
+      prevNotes.map(note => (note._id === updatedNote._id ? savedNote : note))
+    ); 
+    setEditedNote('');
+    loadNotes(); 
+    Alert.alert('Success', 'Note updated successfully!');
+  } catch (error) {
+    console.error('Failed to update note', error);
+    Alert.alert('Error', 'Failed to update note. Please try again.');
+  }
+};
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9' }]}>
-      <View style={styles.header}>
-        {notes.length > 0 && <NoteCard note={notes[0]} setSelectedNote={setSelectedNote} setEditedNote={setEditedNote} setIsModalVisible={setIsModalVisible} />}
-      </View>
+<View style={styles.header}>
+  {notes.length > 0 && <NoteCard note={notes[0]} setSelectedNote={setSelectedNote} setEditedNote={setEditedNote} setIsModalVisible={setIsModalVisible} />}
+</View>
+
 
       <View>
         <NoteInput note={note} setNote={setNote} />
@@ -159,12 +173,28 @@ const NotesSection: React.FC = () => {
       <NoteModal
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
-        selectedNote={selectedNote}
-        setEditedNote={setEditedNote}
-        saveNote={saveNote}
-        deleteNote={deleteNote}
         editedNote={editedNote}
+        setEditedNote={setEditedNote}
+        saveNote={() => {
+          if (selectedNote) {
+            // Update existing note
+            const updatedNote = {
+              ...selectedNote,
+              content: editedNote, // Updated content
+              timestamp: getCurrentDateTime(), // Update timestamp
+            };
+            updateNote(updatedNote); // Call update method
+          } else {
+            // Add new note
+            addNote(); // Call addNote method
+          }
+          setIsModalVisible(false); // Close modal after saving
+        }}
+        deleteNote={deleteNote}
+        selectedNote={selectedNote}
       />
+
+
     </ScrollView>
   );
 };

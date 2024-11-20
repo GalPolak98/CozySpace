@@ -8,13 +8,12 @@ import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 
 interface TextInputFieldProps {
-  icon: string;
   label: string;
   value: string;
   onChange: (text: string) => void;
 }
 
-const TextInputField: React.FC<TextInputFieldProps> = ({ icon, label, value, onChange }) => {
+const TextInputField: React.FC<TextInputFieldProps> = ({ label, value, onChange }) => {
   const { theme: currentTheme } = useTheme();
 
 

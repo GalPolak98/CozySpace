@@ -1,11 +1,16 @@
 import React from 'react';
 import { TextInput } from 'react-native';
+import { useTheme } from '@/components/ThemeContext';  // Import the useTheme hook
 import ThemedView from '@/components/ThemedView';
+import { theme } from '@/Styles/Theme';  // Import theme for colors
 
 const NoteInput: React.FC<{
   note: string;
   setNote: (note: string) => void;
 }> = ({ note, setNote }) => {
+  const { theme: currentTheme } = useTheme();  // Get current theme
+  const colors = currentTheme === 'dark' ? theme.dark : theme.light;  // Select theme colors
+
   return (
     <ThemedView
       style={{
@@ -28,12 +33,12 @@ const NoteInput: React.FC<{
           textAlignVertical: 'top',
           lineHeight: 25,
           fontSize: 16,
-          color: '#4B5563',
+          color: colors.text,  // Dynamically set text color based on theme
           fontWeight: '400',
           borderRadius: 16,
         }}
         placeholder="Write your thoughts here..."
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor={colors.textSecondary}  // Dynamically set placeholder color based on theme
         value={note}
         onChangeText={setNote}
         multiline={true}
