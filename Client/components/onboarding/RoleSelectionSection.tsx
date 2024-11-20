@@ -15,14 +15,14 @@ export const RoleSelectionSection: React.FC<RoleSelectionProps> = ({
 
   return (
     <View className="space-y-8">
-      <Text style={{ color: colors.text }} className="text-xl font-pbold text-center">
+      <Text style={{ color: colors.text }} className="text-xl font-pbold">
         How would you like to use AnxiEase?
       </Text>
 
       {/* Patient Option */}
       <TouchableOpacity
         onPress={() => setUserType('patient')}
-        className={`p-6 rounded-xl border-2 ${userType === 'patient' ? 'border-primary' : 'border-border'}`}
+        className={`p-6 mb-4 mt-4 rounded-xl border-2 ${userType === 'patient' ? 'border-primary' : 'border-border'}`}
         style={{
           backgroundColor: colors.surface,
           borderColor: userType === 'patient' ? colors.primary : colors.border,

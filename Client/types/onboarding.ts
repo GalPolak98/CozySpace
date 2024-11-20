@@ -89,7 +89,7 @@ export interface RegistrationData {
         };
         musicTherapy: {
           enabled: boolean;
-          selectedMusicType: string | null;
+          selectedTrackId: string | null;
         };
       };
     };

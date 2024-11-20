@@ -21,7 +21,7 @@ export interface IPatient extends IBaseModel {
       };
       musicTherapy: {
         enabled: boolean;
-        selectedMusicType: string | null;
+        selectedTrackId: string | null;
       };
     };
 }
@@ -47,7 +47,7 @@ const PatientSchema = new Schema({
       },
       musicTherapy: {
         enabled: { type: Boolean, default: false },
-        selectedMusicType: { type: String, default: null }
+        selectedTrackId: { type: String, default: null }
       }
     }
 });
