@@ -1,97 +1,59 @@
-import mongoose, { Document, Schema } from 'mongoose';
+// models/User.ts
+import mongoose from 'mongoose';
+import { TherapistModel } from './Therapist';
+import { PatientModel } from './Patient';
 
-interface PersonalInfo {
-  firstName: string;
-  lastName: string;
-  email: string | null;
-}
-
-interface ProfessionalInfo {
-  educationLevel: string;
-  experienceLevel: string;
-  workplace: string;
-  specialization: string;
-  licenseNumber: string;
-}
-
-interface DataSharing {
-  anxietyTracking: boolean;
-  personalDocumentation: boolean;
-}
-
-interface TherapistInfo {
-  selectedTherapistId: string | null;
-  shareWithTherapist: boolean;
-  dataSharing: DataSharing;
-}
-
-interface SmartJewelry {
-  enabled: boolean;
-  vibrationAlerts: boolean;
-}
-
-interface MusicTherapy {
-  enabled: boolean;
-  selectedMusicType: string | null;
-}
-
-interface ToolsPreferences {
-  smartJewelry: SmartJewelry;
-  musicTherapy: MusicTherapy;
-}
-
-interface PatientInfo {
-  therapistInfo: TherapistInfo;
-  toolsPreferences: ToolsPreferences;
-}
-
-interface IUser extends Document {
+export interface IUser {
   userId: string;
-  timestamp: Date;
   userType: 'patient' | 'therapist';
-  personalInfo: PersonalInfo;
-  professionalInfo?: ProfessionalInfo;
-  patientInfo?: PatientInfo;
 }
 
-const UserSchema = new Schema<IUser>({
+const UserSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true },
-  timestamp: { type: Date, default: Date.now },
-  userType: { type: String, required: true, enum: ['patient', 'therapist'] },
-  personalInfo: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, default: null },
-  },
-  professionalInfo: {
-    educationLevel: String,
-    experienceLevel: String,
-    workplace: String,
-    specialization: String,
-    licenseNumber: String,
-  },
-  patientInfo: {
-    therapistInfo: {
-      selectedTherapistId: { type: String, default: null },
-      shareWithTherapist: { type: Boolean, default: false },
-      dataSharing: {
-        anxietyTracking: { type: Boolean, default: false },
-        personalDocumentation: { type: Boolean, default: false },
-      },
-    },
-    toolsPreferences: {
-      smartJewelry: {
-        enabled: { type: Boolean, default: false },
-        vibrationAlerts: { type: Boolean, default: false },
-      },
-      musicTherapy: {
-        enabled: { type: Boolean, default: false },
-        selectedMusicType: { type: String, default: null },
-      },
-    },
-  },
-}, {
-  collection: 'users'
+  userType: { type: String, required: true, enum: ['patient', 'therapist'] }
 });
 
-export default mongoose.model<IUser>('User', UserSchema);
+export const UserModel = mongoose.model<IUser>('User', UserSchema);
+
+// Updated UserService
+export class UserService {
+  async registerUser(userData: any) {
+    const session = await UserModel.startSession();
+    session.startTransaction();
+
+    try {
+      // Create base user with only userId and userType
+      const user = new UserModel({
+        userId: userData.userId,
+        userType: userData.userType
+      });
+      await user.save({ session });
+
+      // Create type-specific profile
+      if (userData.userType === 'patient') {
+        const patient = new PatientModel({
+          userId: userData.userId,
+          personalInfo: userData.personalInfo,
+          therapistInfo: userData.patientInfo.therapistInfo,
+          toolsPreferences: userData.patientInfo.toolsPreferences
+        });
+        await patient.save({ session });
+      } else {
+        const therapist = new TherapistModel({
+          userId: userData.userId,
+          personalInfo: userData.personalInfo,
+          professionalInfo: userData.professionalInfo,
+        });
+        await therapist.save({ session });
+      }
+
+      await session.commitTransaction();
+      return user;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+}

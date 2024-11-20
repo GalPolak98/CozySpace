@@ -24,7 +24,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
     if (pathname === '/chat/history') {
       router.back();
     } else {
-      router.replace('/(tabs)/home');
+      router.replace('/(patient)/home');
     }
   };
 

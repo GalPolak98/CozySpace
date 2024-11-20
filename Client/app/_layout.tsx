@@ -30,10 +30,12 @@ const InitialLayout = () => {
       >
         <Stack.Screen 
           name="(auth)" 
-          options={{}} 
+          options={{
+            gestureEnabled: false,
+          }} 
         />
         <Stack.Screen 
-          name="(tabs)" 
+          name="(patient)" 
           options={{ 
             headerTitle: "",
             headerLeft: () => null,
