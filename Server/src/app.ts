@@ -6,6 +6,7 @@ import connectToDatabase from './db';
 import { emailService } from './services/emailService';
 import { ParsedQs } from 'qs';
 import routes from './routes';
+import { sendPushNotification } from './services/pushNotificationService'
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +16,15 @@ const app: Express = express();
 
 // Set port
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
+
+const expoPushToken = process.env.EXPO_PUSH_TOKEN || ''; 
+
+setInterval(async () => {
+  const title = 'You are having anxiety attack';
+  const message = 'Please take care';
+  
+  await sendPushNotification(expoPushToken, title, message);
+}, 30000); 
 
 // Middleware
 app.use(cors());

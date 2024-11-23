@@ -13,13 +13,16 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.expo.notificationsapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "dev.expo.notificationsapp",
+      "googleServicesFile": "./googleServicesFile"
     },
     "web": {
       "bundler": "metro",
@@ -33,6 +36,15 @@
     "experiments": {
       "typedRoutes": true
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "3dcc73fd-897e-4f1a-830a-645a5c236754"
+      }
+    },
+    "owner": "michalginat"
   }
 }

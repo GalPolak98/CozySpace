@@ -11,6 +11,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';
 import { AuthRoutingService } from '@/Services/authRoutingService';
+import { useNotification } from '@/context/NotificationContext';
+import config from '../env'
 
 const { width, height } = Dimensions.get('window');
 
@@ -55,6 +57,7 @@ export default function Index() {
   const slidesRef = useRef<FlatList>(null);
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
+  const { notification, expoPushToken, error } = useNotification();
 
   useEffect(() => {
     let isSubscribed = true;
@@ -191,6 +194,23 @@ export default function Index() {
     return <Loader isLoading={true} />;
   }
 
+  useEffect(() => {
+    const sendPushTokenToServer = async () => {
+      const token = expoPushToken;  
+      await fetch(`${config.API_URL}/save-push-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+    };
+  
+    if (expoPushToken) {
+      sendPushTokenToServer();
+    }
+  }, [expoPushToken]);
+  
   return (
     <ThemedView className="flex-1">
       <View className="flex-1">

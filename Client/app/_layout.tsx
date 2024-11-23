@@ -8,12 +8,15 @@ import { ThemeProvider, useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
 import ThemeToggle from '@/components/ThemeToggle';
 import Loader from '@/components/Loader';
+import { NotificationProvider } from "@/context/NotificationContext";
+
 
 const InitialLayout = () => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
   return (
+    <NotificationProvider>
     <>
       <StatusBar 
         barStyle={currentTheme === 'light' ? "dark-content" : "light-content"}
@@ -72,6 +75,7 @@ const InitialLayout = () => {
         />
       </Stack>
     </>
+    </NotificationProvider>
   );
 };
 
