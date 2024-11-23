@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView, 
   Platform,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../services/firebaseConfig';
@@ -188,7 +189,13 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
       className="flex-1"
     >
       <Loader isLoading={isLoading} />
-      
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
+      >
       <View className="flex-1 justify-between p-6">
         <View className="mt-8 items-center">
           <Text style={{ color: colors.text }} className="text-4xl font-pextrabold mb-2">
@@ -268,6 +275,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
           </Text>
         </View>
       </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };

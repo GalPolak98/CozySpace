@@ -26,7 +26,7 @@ export const FeatureOption: React.FC<FeatureOptionProps> = ({
   return (
     <TouchableOpacity
       onPress={onToggle}
-      className="bg-surface rounded-xl overflow-hidden"
+      className="bg-surface rounded-s overflow-hidden"
       style={{
         shadowColor: colors.text,
         shadowOffset: { width: 0, height: 2 },

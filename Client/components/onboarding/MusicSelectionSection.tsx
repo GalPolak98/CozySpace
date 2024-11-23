@@ -65,7 +65,7 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
 
   return (
     <View className="space-y-4">
-      <Text style={{ color: colors.text }} className="font-pmedium text-lg mb-2">
+      <Text style={{ color: colors.text }} className="font-pmedium text-lg mt-4 mb-1">
         Select Music Type
       </Text>
       <FlatList
