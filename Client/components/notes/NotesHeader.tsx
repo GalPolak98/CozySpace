@@ -16,7 +16,7 @@ const NoteHeader: React.FC<NoteHeaderProps> = ({ toggleTheme }) => {
   const colors = theme[currentTheme]; // Get theme colors
 
   const handleBack = () => {
-    router.replace('/(tabs)/home');
+    router.replace('/(patient)/home');
   };
 
   return (
