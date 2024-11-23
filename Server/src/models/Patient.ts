@@ -24,9 +24,34 @@ export interface IPatient extends IBaseModel {
         selectedTrackId: string | null;
       };
     };
-}
-
-const PatientSchema = new Schema({
+    guidedNotes: [
+      {
+        anxietyRating: number;
+        description: string;
+        trigger: string;
+        copingStrategies: string;
+        physicalSymptoms: string;
+        emotionalState: string;
+        selfTalk: string;
+        timestamp: string;
+      }
+    ];
+    notes: [
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true }, 
+        content: string;
+        timestamp: string;
+      }
+    ];
+    recordings: [
+      {
+        uri: string;
+        timestamp: string;
+      }
+    ];
+  }
+  
+  const PatientSchema = new Schema({
     ...baseModelFields,
     personalInfo: {
       firstName: { type: String, required: true },
@@ -49,7 +74,33 @@ const PatientSchema = new Schema({
         enabled: { type: Boolean, default: false },
         selectedTrackId: { type: String, default: null }
       }
-    }
-});
+    },
+    guidedNotes: [
+      {
+        anxietyRating: { type: Number, required: false },
+        description: { type: String, required: false },
+        trigger: { type: String, required: false },
+        copingStrategies: { type: String, required: false },
+        physicalSymptoms: { type: String, required: false },
+        emotionalState: { type: String, required: false },
+        selfTalk: { type: String, required: false },
+        timestamp: { type: String, required: false }
+      }
+    ],
+    notes: [
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true }, 
 
-export const PatientModel = mongoose.model<IPatient>('Patient', PatientSchema);
+        content: { type: String, required: false },
+        timestamp: { type: String, required: false }
+      }
+    ],
+    recordings: [
+      {
+        uri: { type: String, required: true },
+        timestamp: { type: String, required: true },
+      }
+    ]
+  });
+  
+  export const PatientModel = mongoose.model<IPatient>('Patient', PatientSchema);

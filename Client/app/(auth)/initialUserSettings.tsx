@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
-import { auth } from '@/services/firebaseConfig';
+import { auth } from '@/Services/firebaseConfig';
 import { OnboardingContainer } from '@/components/onboarding/OnboardingContainer';
 import { OnboardingStep } from '@/components/onboarding/OnboardingStep';
 import { RoleSelectionSection } from '@/components/onboarding/RoleSelectionSection';
@@ -11,7 +11,7 @@ import { PatientCustomizationStep } from '@/components/onboarding/PatientCustomi
 import { TherapistQualificationsSection } from '@/components/onboarding/TherapistQualificationsSection';
 import { DataShareOptions, RegistrationData } from '@/types/onboarding';
 import { CompletionStep } from '@/components/onboarding/CompletionStep';
-import { userService } from '@/services/userService';
+import { userService } from '@/Services/userService';
 
 export const InitialRegistrationScreen: React.FC = () => {
   // Basic navigation state

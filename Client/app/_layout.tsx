@@ -42,6 +42,8 @@ const InitialLayout = () => {
             gestureEnabled: false,
           }} 
         />
+
+
         <Stack.Screen 
           name="(therapist)" 
           options={{ 

@@ -20,6 +20,7 @@ const PORT: number = parseInt(process.env.PORT || '3000', 10);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/api', routes);
 
 // Types
 interface ApiError extends Error {

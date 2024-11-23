@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, KeyboardAvoidingView,  Keyboard,} from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { createChatService } from '@/services/chatService';
+import { createChatService } from '@/Services/chatService';
 import ChatContainer from '@/components/chat/ChatContainer';
 import ChatList from '@/components/chat/ChatList';
 import ChatInput from '@/components/chat/ChatInput';

@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../services/firebaseConfig';
+import { auth } from '../../Services/firebaseConfig';
 import { router, Link } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';
@@ -16,8 +16,8 @@ import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
-import { AuthRoutingService } from '@/services/authRoutingService';
-import { authManager } from '@/services/authManager';
+import { AuthRoutingService } from '@/Services/authRoutingService';
+import { authManager } from '@/Services/authManager';
 
 // Firebase error messages mapping
 const getErrorMessage = (code: string) => {
