@@ -28,7 +28,7 @@ export class AuthRoutingService {
           switch (userData.userType) {
             case 'patient':
               console.log('Routing patient to home');
-              router.replace('/(tabs)/home');
+              router.replace('/(patient)/home');
               break;
             case 'therapist':
               console.log('Routing therapist to home');
@@ -73,7 +73,7 @@ export class AuthRoutingService {
         if (userData?.userType) {
           switch (userData.userType) {
             case 'patient':
-              router.replace('/(tabs)/home');
+              router.replace('/(patient)/home');
               break;
             case 'therapist':
               router.replace('/(therapist)/home');

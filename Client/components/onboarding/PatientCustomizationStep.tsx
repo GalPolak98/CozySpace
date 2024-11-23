@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text } from 'react-native';
 import { FeatureOption } from './FeatureOption';
 import { MusicSelectionSection } from './MusicSelectionSection';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/Styles/Theme';
+import { MusicPlayer } from '../MusicPlayer';
 
 interface PatientCustomizationStepProps {
   useSmartJewelry: boolean;
@@ -14,6 +15,8 @@ interface PatientCustomizationStepProps {
   setPlayMusic: (value: boolean) => void;
   selectedMusic: string | null;
   setSelectedMusic: (value: string) => void;
+  selectedTrack: string | null; 
+  setSelectedTrack: (value: string | null) => void; 
 }
 
 export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> = ({
@@ -25,9 +28,24 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
   setPlayMusic,
   selectedMusic,
   setSelectedMusic,
+  selectedTrack,
+  setSelectedTrack,
 }) => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
+
+  const handleMusicToggle = (value: boolean) => {
+    setPlayMusic(value);
+    if (!value) {
+      setSelectedMusic('');
+      setSelectedTrack(null);
+    }
+  };
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedMusic(category);
+    setSelectedTrack(null); // Reset track selection when category changes
+  };
 
   return (
     <View className="space-y-6">
@@ -36,7 +54,7 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
         <Text style={{ color: colors.text }} className="text-lg font-pbold">
           Smart Jewelry Integration
         </Text>
-        
+
         <FeatureOption
           title="Enable Smart Jewelry"
           description="Connect your AnxiEase smart jewelry"
@@ -66,16 +84,29 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
           title="Enable Music Therapy"
           description="Use calming music to help manage anxiety"
           isEnabled={playMusic}
-          onToggle={() => setPlayMusic(!playMusic)}
+          onToggle={() => {
+            setPlayMusic(!playMusic);
+            if (!playMusic) {
+              setSelectedMusic('');
+              setSelectedTrack(null);
+            }
+          }}
           iconName={playMusic ? 'musical-notes' : 'musical-notes-outline'}
         />
 
-        {playMusic && (
+      {playMusic && (
+        <View className="space-y-4">
           <MusicSelectionSection
             selectedMusic={selectedMusic}
-            setSelectedMusic={setSelectedMusic}
+            setSelectedMusic={category => {
+              setSelectedMusic(category);
+              setSelectedTrack(null);
+            }}
+            selectedTrack={selectedTrack}
+            setSelectedTrack={setSelectedTrack}
           />
-        )}
+        </View>
+      )}
       </View>
     </View>
   );

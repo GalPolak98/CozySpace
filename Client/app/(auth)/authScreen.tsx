@@ -61,7 +61,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
   const colors = theme[currentTheme];
   const isMounted = useRef(true);
   const navigationInProgress = useRef(false);
-  const newUserCreated = useRef(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // Set up auth listener once on mount
   useEffect(() => {
@@ -147,10 +147,21 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
       return;
     }
 
+    if (mode === 'signup') {
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+      if (password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return;
+      }
+    }
+
     setIsLoading(true);
     setError(null);
     navigationInProgress.current = false;
-    authManager.reset(); // Reset the auth manager state
+    authManager.reset();
 
     try {
       console.log('Attempting authentication for mode:', mode);
@@ -162,7 +173,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
     } catch (err: any) {
       console.error('Auth error:', err);
       setError(getErrorMessage(err.code));
-      authManager.setProcessing(false); // Reset processing state on error
+      authManager.setProcessing(false);
     } finally {
       if (isMounted.current) {
         setIsLoading(false);
@@ -179,19 +190,15 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
       <Loader isLoading={isLoading} />
       
       <View className="flex-1 justify-between p-6">
-        {/* Header Section */}
-        <View className="mt-12 items-center">
+        <View className="mt-8 items-center">
           <Text style={{ color: colors.text }} className="text-4xl font-pextrabold mb-2">
             {mode === 'signin' ? 'Welcome Back!' : 'Create Account'}
           </Text>
-          <Text style={{ color: colors.textSecondary }} className="font-pregular text-xl">
-            {mode === 'signin' 
-              ? 'Sign in to continue' 
-              : 'Begin your journey with us'}
+          <Text style={{ color: colors.textSecondary }} className="font-pregular text-xl mb-4">
+            {mode === 'signin' ? 'Sign in to continue' : 'Begin your journey with us'}
           </Text>
         </View>
 
-        {/* Form Section */}
         <View className="w-full">
           <CustomInput
             value={email}
@@ -211,6 +218,18 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
             placeholder="Password"
             isPassword
           />
+          
+          {mode === 'signup' && (
+            <CustomInput
+              value={confirmPassword}
+              onChangeText={(text: string) => {
+                setConfirmPassword(text);
+                setError(null);
+              }}
+              placeholder="Confirm Password"
+              isPassword
+            />
+          )}
           
           {error && (
             <Text style={{ color: colors.error }} className="mb-4 text-center font-pmedium">
@@ -232,18 +251,17 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
               href={mode === 'signin' ? '/sign-up' : '/sign-in'} 
               asChild
             >
-              <TouchableOpacity>
-                <Text style={{ color: colors.textSecondary }} className="text-center font-pmedium p-5">
-                  {mode === 'signin' 
-                    ? "Don't have an account? Sign Up" 
-                    : 'Already have an account? Sign In'}
-                </Text>
+              <TouchableOpacity className="py-2">
+                  <Text style={{ color: colors.primary }} className="text-center font-pmedium">
+                    {mode === 'signin' 
+                      ? "Don't have an account? Sign Up" 
+                      : 'Already have an account? Sign In'}
+                  </Text>
               </TouchableOpacity>
             </Link>
           </View>
         </View>
 
-        {/* Bottom Section */}
         <View className="mb-6">
           <Text style={{ color: colors.textSecondary }} className="text-center font-plight text-sm">
             By continuing, you agree to our Terms of Service and Privacy Policy

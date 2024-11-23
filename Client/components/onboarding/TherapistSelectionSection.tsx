@@ -36,8 +36,6 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
     const fetchTherapists = async () => {
       try {
         const url = `${ENV.EXPO_PUBLIC_SERVER_URL}/api/therapists`;
-        console.log('Fetching from:', url);
-
         const response = await fetch(url, {
           method: 'GET',
           headers: {
@@ -46,27 +44,22 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
           }
         });
 
-        console.log('Response status:', response.status);
-        const text = await response.text();
-        console.log('Raw response:', text);
-
         if (!response.ok) {
-          throw new Error(`Server returned ${response.status}: ${text}`);
+          throw new Error(`Server returned ${response.status}`);
         }
 
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          console.error('Parse error:', e);
-          throw new Error('Invalid response format');
-        }
-
+        const data = await response.json();
         if (!data.therapists) {
           throw new Error('No therapists data in response');
         }
 
-        setTherapists(data.therapists);
+        // Add "No therapist" option at the beginning
+        const therapistsWithNone = [
+          { id: 'none', label: 'I don\'t want to work with a therapist now', sublabel: 'You can select a therapist later' },
+          ...data.therapists
+        ];
+        
+        setTherapists(therapistsWithNone);
       } catch (err) {
         console.error('Fetch error:', err);
         setError(err instanceof Error ? err.message : 'Failed to load therapists');
@@ -77,6 +70,16 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
 
     fetchTherapists();
   }, []);
+
+  // Reset data sharing options when "No therapist" is selected
+  useEffect(() => {
+    if (selectedTherapist === 'none') {
+      setDataShareOptions({
+        anxietyTracking: false,
+        personalDocumentation: false
+      });
+    }
+  }, [selectedTherapist, setDataShareOptions]);
 
   if (loading) {
     return (
@@ -96,63 +99,64 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
     );
   }
 
-
   return (
     <View className="space-y-6">
       <CustomDropdown
-       label="Select Your Therapist"
-       options={therapists}
-       value={selectedTherapist}
-       onChange={(id) => setSelectedTherapist(id)}
-       placeholder="Choose a therapist to work with"
+        label="Select Your Therapist"
+        options={therapists}
+        value={selectedTherapist}
+        onChange={(id) => setSelectedTherapist(id)}
+        placeholder="Choose a therapist to work with"
       />
 
-      <View className="bg-surface p-6 rounded-xl">
-        <Text style={{ color: colors.text }} className="text-lg font-pbold mb-4">
-          Data Sharing Settings
-        </Text>
-
-        <View className="space-y-5">
-          {DATA_SHARING_OPTIONS.map((option) => (
-            <TouchableOpacity 
-              key={option.id} 
-              onPress={() => {
-                setDataShareOptions(prev => ({
-                  ...prev,
-                  [option.id]: !prev[option.id]
-                }));
-              }}
-              className="flex-row items-start"
-            >
-              <View className="mr-4">
-                <CustomCheckbox
-                  checked={dataShareOptions[option.id]}
-                  onCheckedChange={(checked) => {
-                    setDataShareOptions(prev => ({
-                      ...prev,
-                      [option.id]: checked
-                    }));
-                  }}
-                />
-              </View>
-              <View className="flex-1">
-                <Text style={{ color: colors.text }} className="font-pmedium text-base">
-                  {option.label}
-                </Text>
-                <Text style={{ color: colors.textSecondary }} className="text-sm mt-1">
-                  {option.description}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View className="mt-4 p-4 bg-primary/10 rounded-lg">
-          <Text style={{ color: colors.text }} className="text-sm font-pregular">
-            Your therapist will only see the data you choose to share. You can change these settings at any time.
+      {selectedTherapist && selectedTherapist !== 'none' && (
+        <View className="bg-surface p-6 rounded-xl">
+          <Text style={{ color: colors.text }} className="text-lg font-pbold mb-4">
+            Data Sharing Settings
           </Text>
+
+          <View className="space-y-5">
+            {DATA_SHARING_OPTIONS.map((option) => (
+              <TouchableOpacity 
+                key={option.id} 
+                onPress={() => {
+                  setDataShareOptions(prev => ({
+                    ...prev,
+                    [option.id]: !prev[option.id]
+                  }));
+                }}
+                className="flex-row items-start"
+              >
+                <View className="mr-4">
+                  <CustomCheckbox
+                    checked={dataShareOptions[option.id]}
+                    onCheckedChange={(checked) => {
+                      setDataShareOptions(prev => ({
+                        ...prev,
+                        [option.id]: checked
+                      }));
+                    }}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text style={{ color: colors.text }} className="font-pmedium text-base">
+                    {option.label}
+                  </Text>
+                  <Text style={{ color: colors.textSecondary }} className="text-sm mt-1">
+                    {option.description}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <View className="mt-4 p-4 bg-primary/10 rounded-lg">
+            <Text style={{ color: colors.text }} className="text-sm font-pregular">
+              Your therapist will only see the data you choose to share. You can change these settings at any time.
+            </Text>
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 };

@@ -32,6 +32,7 @@ export const InitialRegistrationScreen: React.FC = () => {
   const [useSmartJewelry, setUseSmartJewelry] = useState(false);
   const [playMusic, setPlayMusic] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
+  const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
 
   // Therapist-specific state
   const [educationLevel, setEducationLevel] = useState<string | null>(null);
@@ -90,12 +91,22 @@ export const InitialRegistrationScreen: React.FC = () => {
         }
         return true;
 
-      case 3:
-        if (userType === 'patient' && playMusic && !selectedMusic) {
-          Alert.alert('Error', 'Please select a music type or disable music therapy');
-          return false;
-        }
-        return true;
+        case 3:
+          case 3:
+            if (userType === 'patient') {
+              if (playMusic) {
+                if (!selectedMusic) {
+                  Alert.alert('Error', 'Please select a music category');
+                  return false;
+                }
+                if (!selectedTrack) {
+                  Alert.alert('Error', 'Please select a specific track');
+                  return false;
+                }
+              }
+              return true; 
+            }
+            return true;
 
       default:
         return true;
@@ -145,7 +156,7 @@ export const InitialRegistrationScreen: React.FC = () => {
                   },
                   musicTherapy: {
                     enabled: playMusic,
-                    selectedMusicType: selectedMusic,
+                    selectedTrackId: selectedTrack,
                   },
                 },
               }
@@ -161,7 +172,7 @@ export const InitialRegistrationScreen: React.FC = () => {
       if (userType === 'therapist') {
         router.replace('/(therapist)/home');
       } else {
-        router.replace('/(tabs)/home');
+        router.replace('/(patient)/home');
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -282,6 +293,8 @@ export const InitialRegistrationScreen: React.FC = () => {
               setPlayMusic={setPlayMusic}
               selectedMusic={selectedMusic}
               setSelectedMusic={setSelectedMusic}
+              selectedTrack={selectedTrack}
+              setSelectedTrack={setSelectedTrack}
             />
           </OnboardingStep>
         );
