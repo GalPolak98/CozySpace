@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Animated, Modal, SafeAreaView } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomDropdownProps, OptionType } from '@/types/onboarding';
 

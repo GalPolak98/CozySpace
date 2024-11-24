@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import ChatHeader from '@/components/chat/ChatHeader';
 import { ChatContextProvider, useChatContext } from '@/context/ChatContext';
 

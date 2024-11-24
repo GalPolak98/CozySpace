@@ -10,7 +10,7 @@ import { useChatContext } from '@/context/ChatContext';
 import { getRandomInitialMessage } from '@/constants/messages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 
 const ChatScreen = () => {
   const { 

@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import ThemedText from '@/components/ThemedText';
 
 interface CustomButtonProps {

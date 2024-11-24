@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import { CustomDropdown } from '@/components/CustomDropdown';
 import { TherapistSelectionProps, OptionType } from '@/types/onboarding';
 import { CustomCheckbox } from '@/components/CustomCheckbox';

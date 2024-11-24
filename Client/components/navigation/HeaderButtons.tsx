@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import ThemeToggle from '@/components/ThemeToggle';
 import { auth } from '@/services/firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';

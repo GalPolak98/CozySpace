@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import React from "react";
 import { ThemeProvider, useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import ThemeToggle from '@/components/ThemeToggle';
 import Loader from '@/components/Loader';
 

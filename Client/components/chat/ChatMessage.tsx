@@ -12,7 +12,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import ThemedText from '@/components/ThemedText';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import * as Haptics from 'expo-haptics';
 
 interface ChatMessageProps {

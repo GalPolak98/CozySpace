@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Pressable, TextInput, View, Text, KeyboardTypeOptions } from "react-native";
 import { useTheme } from "./ThemeContext";
-import { theme } from "../Styles/Theme";
+import { theme } from "../styles/Theme";
 
 interface CustomInputProps {
   value: string;

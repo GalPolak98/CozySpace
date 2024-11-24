@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { MusicPlayer } from '../MusicPlayer';
 import { musicData } from '@/types/musicData';

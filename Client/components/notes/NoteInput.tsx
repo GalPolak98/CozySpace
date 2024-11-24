@@ -2,7 +2,7 @@ import React from 'react';
 import { TextInput } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';  // Import the useTheme hook
 import ThemedView from '@/components/ThemedView';
-import { theme } from '@/Styles/Theme';  // Import theme for colors
+import { theme } from '@/styles/Theme';  // Import theme for colors
 
 const NoteInput: React.FC<{
   note: string;

@@ -14,7 +14,7 @@ import { useChatContext } from '@/context/ChatContext';
 import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 
 const ChatHistory = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);

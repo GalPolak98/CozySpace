@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import CustomInput from '@/components/CustomInput';
 import { CustomDropdown } from '@/components/CustomDropdown';
 import { TherapistQualificationsProps } from '@/types/onboarding';

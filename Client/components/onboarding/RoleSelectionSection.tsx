@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import { RoleSelectionProps } from '@/types/onboarding';
 import { Ionicons } from '@expo/vector-icons';
 

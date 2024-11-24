@@ -3,7 +3,7 @@ import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext'; 
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import ThemedText from '@/components/ThemedText';
 
 interface NoteHeaderProps {

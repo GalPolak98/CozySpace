@@ -3,7 +3,7 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import { Platform, StyleSheet } from 'react-native';
 
 export default function TabLayout() {

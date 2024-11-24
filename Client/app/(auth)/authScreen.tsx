@@ -15,7 +15,7 @@ import Loader from '@/components/Loader';
 import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import { AuthRoutingService } from '@/services/authRoutingService';
 import { authManager } from '@/services/authManager';
 

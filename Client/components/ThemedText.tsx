@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, TextProps } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 
 interface ThemedTextProps extends TextProps {
   variant?: 'default' | 'secondary' | 'primary' | 'error';

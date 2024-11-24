@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { FeatureOption } from './FeatureOption';
 import { MusicSelectionSection } from './MusicSelectionSection';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import { MusicPlayer } from '../MusicPlayer';
 
 interface PatientCustomizationStepProps {
