@@ -1,7 +1,7 @@
 // services/authRoutingService.ts
 import { router } from 'expo-router';
-import { auth } from '@/Services/firebaseConfig';
-import { userService } from '@/Services/userService';
+import { auth } from '@/services/firebaseConfig';
+import { userService } from '@/services/userService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class AuthRoutingService {
