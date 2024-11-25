@@ -8,8 +8,14 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { auth } from '@/services/firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authManager } from '@/services/authManager';
+import LanguageToggle from './LanguageToggle';
 
-export const HeaderRight = () => <ThemeToggle />;
+export const HeaderRight = () => (
+  <View className="flex-row items-center">
+    <LanguageToggle />
+    <ThemeToggle />
+  </View>
+);
 
 export const HeaderLeft = () => {
   const { theme: currentTheme } = useTheme();

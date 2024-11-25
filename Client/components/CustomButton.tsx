@@ -33,7 +33,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     
     switch (variant) {
       case 'secondary':
-        return baseStyles + `bg-${currentTheme === 'dark' ? 'black-200' : 'gray-100'} ${containerStyles}`;
+        return baseStyles + `bg-${currentTheme === 'dark' ? 'black-200' : 'white-100'} ${containerStyles}`;
       case 'outline':
         return baseStyles + `bg-transparent border-2 border-secondary ${containerStyles}`;
       default: // primary
@@ -46,7 +46,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       case 'outline':
         return colors.primary;
       case 'secondary':
-        return currentTheme === 'dark' ? colors.text : colors.primary;
+        return colors.text;
       default: // primary
         return currentTheme === 'light' ? '#000000' : '#FFFFFF';
     }

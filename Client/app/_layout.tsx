@@ -6,8 +6,9 @@ import { StatusBar } from 'react-native';
 import React from "react";
 import { ThemeProvider, useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
-import ThemeToggle from '@/components/ThemeToggle';
 import Loader from '@/components/Loader';
+import { LanguageProvider } from "@/context/LanguageContext";
+import { HeaderRight } from "@/components/navigation/HeaderButtons";
 
 const InitialLayout = () => {
   const { theme: currentTheme } = useTheme();
@@ -60,6 +61,8 @@ const InitialLayout = () => {
               fontFamily: 'Poppins-SemiBold',
               color: colors.text,
             },
+            headerShown: true,
+            headerRight: HeaderRight,
           }}
         />
         <Stack.Screen 
@@ -100,8 +103,10 @@ export default function RootLayout() {
   }
 
   return (
+    <LanguageProvider>
     <ThemeProvider>
       <InitialLayout />
     </ThemeProvider>
+    </LanguageProvider>
   );
 }
