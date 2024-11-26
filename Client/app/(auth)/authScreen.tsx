@@ -237,7 +237,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
               <TouchableOpacity className="py-2">
                 <ThemedText 
                   variant="primary" 
-                  className="text-center font-pmedium"
+                  className="text-center font-pmedium text-lg"
                 >
                   {mode === 'signin' ? t.auth.noAccount : t.auth.haveAccount}
                 </ThemedText>
@@ -250,7 +250,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
           <ThemedText 
             variant="secondary" 
             className="text-center font-plight text-sm"
-            isRTL={isRTL}
           >
             {t.auth.termsNotice}
           </ThemedText>

@@ -2,6 +2,7 @@ import React from 'react';
 import Slider from "@react-native-community/slider";
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 
@@ -12,6 +13,7 @@ interface AnxietySliderProps {
 
 const AnxietySlider: React.FC<AnxietySliderProps> = ({ anxietyRating, setAnxietyRating }) => {
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
 
   const getColorForRating = (rating: number) => {
     if (rating <= 3) return '#4CAF50';  // Green
@@ -20,9 +22,9 @@ const AnxietySlider: React.FC<AnxietySliderProps> = ({ anxietyRating, setAnxiety
   };
 
   const getLabelText = (rating: number) => {
-    if (rating <= 3) return 'Low Anxiety';
-    if (rating <= 7) return 'Moderate Anxiety';
-    return 'High Anxiety';
+    if (rating <= 3) return t.anxiety.lowAnxiety;
+    if (rating <= 7) return t.anxiety.moderateAnxiety;
+    return t.anxiety.highAnxiety;
   };
 
   return (
@@ -35,23 +37,28 @@ const AnxietySlider: React.FC<AnxietySliderProps> = ({ anxietyRating, setAnxiety
     ]}>
       <ThemedText style={[
         styles.label,
-        { color: currentTheme === 'dark' ? '#FFFFFF' : '#333333' }
+        { 
+          color: currentTheme === 'dark' ? '#FFFFFF' : '#333333',
+          textAlign: isRTL ? 'right' : 'left' 
+        }
       ]}>
-        How would you rate your current anxiety level?
+        {t.anxiety.ratingQuestion}
       </ThemedText>
       
-      {/* Color bands indicator */}
-      <View style={styles.colorBandsContainer}>
+      <View style={[styles.colorBandsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View style={[styles.colorBand, { backgroundColor: '#4CAF50' }]} />
         <View style={[styles.colorBand, { backgroundColor: '#FFC107' }]} />
         <View style={[styles.colorBand, { backgroundColor: '#FF5252' }]} />
       </View>
       
-      {/* Number scale */}
-      <View style={styles.scaleContainer}>
-        <ThemedText style={[styles.scaleText, { color: currentTheme === 'dark' ? '#888' : '#666' }]}>0</ThemedText>
+      <View style={[styles.scaleContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <ThemedText style={[styles.scaleText, { color: currentTheme === 'dark' ? '#888' : '#666' }]}>
+          0
+        </ThemedText>
         <ThemedText style={[styles.scaleText, { color: currentTheme === 'dark' ? '#888' : '#666' }]}>5</ThemedText>
-        <ThemedText style={[styles.scaleText, { color: currentTheme === 'dark' ? '#888' : '#666' }]}>10</ThemedText>
+        <ThemedText style={[styles.scaleText, { color: currentTheme === 'dark' ? '#888' : '#666' }]}>
+          10
+        </ThemedText>
       </View>
 
       <Slider
@@ -63,13 +70,17 @@ const AnxietySlider: React.FC<AnxietySliderProps> = ({ anxietyRating, setAnxiety
         minimumTrackTintColor={getColorForRating(anxietyRating)}
         maximumTrackTintColor={currentTheme === 'dark' ? '#444' : '#E0E0E0'}
         thumbTintColor={getColorForRating(anxietyRating)}
-        style={styles.slider}
+        style={[styles.slider, { transform: [{ scaleX: isRTL ? -1 : 1 }] }]}
       />
 
-      <View style={styles.resultContainer}>
+      <View style={[styles.resultContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <ThemedText style={[
           styles.rating,
-          { color: getColorForRating(anxietyRating) }
+          { 
+            color: getColorForRating(anxietyRating),
+            marginRight: isRTL ? 0 : 12,
+            marginLeft: isRTL ? 12 : 0
+          }
         ]}>
           {anxietyRating.toFixed(0)}
         </ThemedText>

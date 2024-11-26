@@ -3,43 +3,50 @@ import { useRouter } from 'expo-router';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 import CustomButton from '@/components/CustomButton';
-import RecordingsSection from '../recording'; // Import the section
+import RecordingsSection from '../recording';
+import { useLanguage } from '@/context/LanguageContext';
 
-const Home = () => {
+const HomePatient = () => {
   const router = useRouter();
+  const { isRTL, t } = useLanguage();
 
   return (
     <ThemedView className="flex-1 items-center justify-center">
-      <ThemedText className="font-psemibold text-2xl mb-8">
-        Welcome to Anxiety Helper
+      <ThemedText 
+        className="font-psemibold text-2xl mb-8"
+        isRTL={isRTL}
+      >
+        {t.common.welcome}
       </ThemedText>
 
       <CustomButton
-        title="Talk to AI Assistant"
+        title={t.homePatient.talkToAI}
         handlePress={() => router.push('/chat')}
         containerStyles="flex-row items-center space-x-2"
         variant="primary"
         isLoading={false}
+        isRTL={isRTL}
       />
       <CustomButton
-        title="Guided Documenting"
+        title={t.homePatient.guidedDocumenting}
         handlePress={() => router.push('/guidedNote')}
         containerStyles="flex-row items-center space-x-2"
         variant="primary"
         isLoading={false}
+        isRTL={isRTL}
       />
       <CustomButton
-        title="Document Now"
+        title={t.homePatient.documentNow}
         handlePress={() => router.push('/directNote')}
         containerStyles="flex-row items-center space-x-2"
         variant="primary"
         isLoading={false}
+        isRTL={isRTL}
       />
       
-      {/* Render RecordingsSection here */}
       <RecordingsSection />
     </ThemedView>
   );
 };
 
-export default Home;
+export default HomePatient;

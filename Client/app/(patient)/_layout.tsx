@@ -3,11 +3,13 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, I18nManager } from 'react-native';
 
 export default function TabLayout() {
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
   const colors = theme[currentTheme];
 
   return (
@@ -25,6 +27,7 @@ export default function TabLayout() {
           fontFamily: 'Poppins-SemiBold',
           fontSize: 17,
           color: colors.text,
+          textAlign: isRTL ? 'right' : 'left',
         },
         tabBarStyle: {
           backgroundColor: colors.bottomBar,
@@ -52,18 +55,20 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontFamily: 'Poppins-Medium',
           fontSize: 12,
+          textAlign: isRTL ? 'right' : 'left',
         },
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home',
+          title: t.tabsPatient.home,
+          headerTitle: "",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon 
               name={focused ? 'home' : 'home-outline'} 
               color={color}
-              size={24} // Explicitly set icon size
+              size={24}
             />
           ),
         }}
@@ -71,7 +76,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t.tabsPatient.profile,
+          headerTitle: "",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon 
               name={focused ? 'code-slash' : 'code-slash-outline'} 

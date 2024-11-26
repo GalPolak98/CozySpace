@@ -4,19 +4,21 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import useAudioRecordingPermission from '../../hooks/useRecordingPermission';
 import useAuth from '../../hooks/useAuth';
-import config from '../../env';
 import RecordingButton from '../../components/RecordButton';
+import { useLanguage } from '@/context/LanguageContext';
+import ENV from '../../env';
 
 const RecordingsSection: React.FC = () => {
   const [recording, setRecording] = useState<boolean>(false);
   const [recordings, setRecordings] = useState<{ uri: string; timestamp: string }[]>([]);
   const { permissionResponse, requestPermission } = useAudioRecordingPermission();
   const userId = useAuth();
-  const recordingInstance = useRef<Audio.Recording | null>(null); // Ref to store recording instance
+  const recordingInstance = useRef<Audio.Recording | null>(null);
+  const { t, isRTL } = useLanguage();
 
   const getCurrentDateTime = () => {
     const now = new Date();
-    return now.toLocaleString();
+    return now.toLocaleString(isRTL ? 'he-IL' : 'en-US');
   };
 
   const startRecording = async () => {
@@ -25,40 +27,35 @@ const RecordingsSection: React.FC = () => {
         await requestPermission();
       }
       if (permissionResponse?.status === 'granted') {
-        // Check if a recording is already in progress
         if (recordingInstance.current) {
-          Alert.alert('Error', 'A recording is already in progress.');
+          Alert.alert(t.common.error, t.recording.alreadyInProgress);
           return;
         }
 
-        // Set audio mode for recording
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
 
-        // Create a new recording session
         const { recording } = await Audio.Recording.createAsync(
           Audio.RecordingOptionsPresets.HIGH_QUALITY
         );
-        recordingInstance.current = recording; // Store the recording instance
+        recordingInstance.current = recording;
         setRecording(true);
       }
     } catch (err) {
       console.error('Failed to start recording', err);
-      Alert.alert('Error', 'Failed to start recording.');
+      Alert.alert(t.common.error, t.recording.startError);
     }
   };
 
   const stopRecording = async () => {
     if (recordingInstance.current) {
       try {
-        // Stop and unload the recording
         await recordingInstance.current.stopAndUnloadAsync();
         const uri = recordingInstance.current.getURI();
-        setRecording(false);  // Stop recording
+        setRecording(false);
 
-        // Reset the recording instance
         recordingInstance.current = null;
 
         await Audio.setAudioModeAsync({
@@ -66,7 +63,6 @@ const RecordingsSection: React.FC = () => {
         });
 
         if (uri) {
-          // Convert URI to base64
           const base64String = await FileSystem.readAsStringAsync(uri, {
             encoding: FileSystem.EncodingType.Base64,
           });
@@ -77,8 +73,7 @@ const RecordingsSection: React.FC = () => {
             timestamp: getCurrentDateTime(),
           };
 
-          // Save the recording to the server
-          const response = await fetch(`${config.API_URL}/users/${userId}/saveRecording`, {
+          const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/users/${userId}/saveRecording`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -88,17 +83,17 @@ const RecordingsSection: React.FC = () => {
 
           if (!response.ok) {
             const errorResponse = await response.json();
-            throw new Error(errorResponse.message || 'Failed to save recording');
+            throw new Error(errorResponse.message || t.recording.saveError);
           }
 
           const savedRecording = await response.json();
           setRecordings((prevRecordings) => [...prevRecordings, savedRecording]);
 
-          Alert.alert('Success', 'Recording saved successfully!');
+          Alert.alert(t.common.success, t.recording.saveSuccess);
         }
       } catch (error) {
         console.error('Failed to save recording', error);
-        Alert.alert('Error', 'Failed to save recording. Please try again.');
+        Alert.alert(t.common.error, t.recording.saveError);
       }
     }
   };

@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface TextInputFieldProps {
   label: string;
@@ -15,24 +16,38 @@ interface TextInputFieldProps {
 
 const TextInputField: React.FC<TextInputFieldProps> = ({ label, value, onChange }) => {
   const { theme: currentTheme } = useTheme();
-
-
+  const { t, isRTL } = useLanguage();
 
   return (
     <ThemedView style={styles.section}>
-      <ThemedText style={[styles.label, { color: currentTheme === 'dark' ? '#FFF' : '#333' }]}>
+      <ThemedText 
+        style={[
+          styles.label, 
+          { 
+            color: currentTheme === 'dark' ? '#FFF' : '#333',
+            textAlign: isRTL ? 'right' : 'left'
+          }
+        ]}
+      >
         {label}
       </ThemedText>
       <TextInput
         multiline
         value={value}
         onChangeText={onChange}
-        style={[styles.input, { color: currentTheme === 'dark' ? '#FFF' : '#333', borderColor: currentTheme === 'dark' ? '#666' : '#CCC' }]}
+        style={[
+          styles.input, 
+          { 
+            color: currentTheme === 'dark' ? '#FFF' : '#333', 
+            borderColor: currentTheme === 'dark' ? '#666' : '#CCC',
+            textAlign: isRTL ? 'right' : 'left',
+            writingDirection: isRTL ? 'rtl' : 'ltr'
+          }
+        ]}
       />
     </ThemedView>
   );
 };
-
 
 
 const styles = StyleSheet.create({

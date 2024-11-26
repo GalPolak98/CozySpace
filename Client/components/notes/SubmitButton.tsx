@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import ThemedText from '../ThemedText';
 
 interface SubmitButtonProps {
@@ -9,11 +10,11 @@ interface SubmitButtonProps {
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({ onPress }) => {
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
 
-  // Define button colors based on the theme
   const buttonColors = {
-    light: '#0B72B8', // Blue for light theme
-    dark: '#5A9BD3', // Lighter blue for dark theme
+    light: '#0B72B8',
+    dark: '#5A9BD3',
   };
 
   return (
@@ -21,7 +22,9 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({ onPress }) => {
       style={[styles.submitButton, { backgroundColor: buttonColors[currentTheme] }]}
       onPress={onPress}
     >
-      <ThemedText style={styles.submitText}>Submit</ThemedText>
+      <ThemedText style={styles.submitText} isRTL={isRTL}>
+        {t.common.submit}
+      </ThemedText>
     </TouchableOpacity>
   );
 };

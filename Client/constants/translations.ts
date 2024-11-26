@@ -13,7 +13,11 @@ export const translations = {
           getStarted: 'Get Started',
           logout: 'Logout',
           cancel: 'Cancel',
+          save: 'Save',
+          delete: 'Delete',
+          submit: 'Submit',
           error: 'Error',
+          success: 'Success',
           logoutConfirm: 'Are you sure you want to logout?',
           logoutError: 'Failed to logout. Please try again.'
         },
@@ -67,6 +71,55 @@ export const translations = {
             passwordsNoMatch: 'Passwords do not match',
             authFailed: 'Failed to complete authentication'
           },
+          homePatient: {
+            talkToAI: 'Talk to AI Assistant',
+            guidedDocumenting: 'Guided Documenting',
+            documentNow: 'Document Now'
+          },
+          recording: {
+            startRecording: 'Start Recording',
+            stopRecording: 'Stop Recording',
+            alreadyInProgress: 'A recording is already in progress.',
+            startError: 'Failed to start recording.',
+            saveError: 'Failed to save recording. Please try again.',
+            saveSuccess: 'Recording saved successfully!',
+          },
+          tabsPatient: {
+            home: 'Home',
+            profile: 'Profile'
+          },
+          note: {
+            placeholder: 'Write your thoughts here...',
+            editNote: 'Edit Note',
+            documenting: 'Documenting',
+            latestNote: 'Latest Note',
+            addNote: 'Add Note',
+            fetchError: 'Failed to fetch notes. Please try again.',
+            saveSuccess: 'Note saved successfully!',
+            saveError: 'Failed to save note. Please try again.',
+            deleteSuccess: 'Note deleted successfully!',
+            deleteError: 'Failed to delete note. Please try again.',
+            updateSuccess: 'Note updated successfully!',
+            updateError: 'Failed to update note. Please try again.',
+          },
+          directedNote: {
+            notAuthenticated: 'User is not authenticated.',
+            submitSuccess: 'Your responses have been submitted.',
+            submitFailed: 'Something went wrong. Please try again.',
+            connectionError: 'Unable to submit the note at the moment. Please check your connection.',
+            describeExperience: 'Describe your current experience with anxiety',
+            describeTrigger: 'What might have triggered this anxiety episode?',
+            copingStrategies: "Are there any coping strategies you're using?",
+            physicalSensations: "Describe any physical sensations you're feeling",
+            emotionalState: 'How would you describe your emotional state?',
+            currentThoughts: 'What thoughts are you having right now?',
+          },
+          anxiety: {
+            ratingQuestion: 'How would you rate your current anxiety level?',
+            lowAnxiety: 'Low Anxiety',
+            moderateAnxiety: 'Moderate Anxiety',
+            highAnxiety: 'High Anxiety'
+          },
       },
     },
     he: {
@@ -82,7 +135,11 @@ export const translations = {
           getStarted: 'בואו נתחיל',
           logout: 'התנתק',
           cancel: 'בטל',
+          save: 'שמור',
+          delete: 'מחק',
+          submit: 'שלח',
           error: 'שגיאה',
+          success: 'הצלחה',
           logoutConfirm: 'האם אתה בטוח שברצונך להתנתק?',
           logoutError: 'ההתנתקות נכשלה. אנא נסה שוב.'
         },
@@ -135,6 +192,55 @@ export const translations = {
             fillAllFields: 'אנא מלא את כל השדות',
             passwordsNoMatch: 'הסיסמאות אינן תואמות',
             authFailed: 'ההתחברות נכשלה'
+          },
+          homePatient: {
+            talkToAI: 'שוחח עם עוזר AI',
+            guidedDocumenting: 'תיעוד מונחה',
+            documentNow: 'תעד עכשיו'
+          },
+          recording: {
+            startRecording: 'התחל הקלטה',
+            stopRecording: 'עצור הקלטה',
+            alreadyInProgress: 'הקלטה כבר מתבצעת.',
+            startError: 'נכשל בהתחלת ההקלטה.',
+            saveError: 'נכשל בשמירת ההקלטה. אנא נסה שוב.',
+            saveSuccess: 'ההקלטה נשמרה בהצלחה!',
+          },
+          tabsPatient: {
+            home: 'בית',
+            profile: 'פרופיל'
+          },
+          note: {
+            placeholder: 'כתוב את המחשבות שלך כאן...',
+            editNote: 'ערוך פתק',
+            documenting: 'תיעוד',
+            latestNote: 'הפתק האחרון',
+            addNote: 'הוסף פתק',
+            fetchError: 'נכשל בטעינת הפתקים. אנא נסה שוב.',
+            saveSuccess: 'הפתק נשמר בהצלחה!',
+            saveError: 'נכשל בשמירת הפתק. אנא נסה שוב.',
+            deleteSuccess: 'הפתק נמחק בהצלחה!',
+            deleteError: 'נכשל במחיקת הפתק. אנא נסה שוב.',
+            updateSuccess: 'הפתק עודכנה בהצלחה!',
+            updateError: 'נכשל בעדכון הפתק. אנא נסה שוב.',
+          },
+          directedNote: {
+            notAuthenticated: 'המשתמש אינו מחובר.',
+            submitSuccess: 'התשובות שלך נשלחו בהצלחה.',
+            submitFailed: 'משהו השתבש. אנא נסה שוב.',
+            connectionError: 'לא ניתן לשלוח את ההערה כרגע. אנא בדוק את החיבור שלך.',
+            describeExperience: 'תאר את החוויה הנוכחית שלך עם חרדה',
+            describeTrigger: 'מה יכול היה לגרום להתקף החרדה הזה?',
+            copingStrategies: 'האם אתה משתמש באסטרטגיות התמודדות כלשהן?',
+            physicalSensations: 'תאר תחושות גופניות שאתה מרגיש',
+            emotionalState: 'כיצד היית מתאר את מצבך הרגשי?',
+            currentThoughts: 'אילו מחשבות עוברות לך בראש כרגע?',
+          },
+          anxiety: {
+            ratingQuestion: 'כיצד היית מדרג את רמת החרדה הנוכחית שלך?',
+            lowAnxiety: 'חרדה נמוכה',
+            moderateAnxiety: 'חרדה בינונית',
+            highAnxiety: 'חרדה גבוהה'
           },
       },
     },

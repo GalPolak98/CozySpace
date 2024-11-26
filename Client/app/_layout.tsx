@@ -44,7 +44,6 @@ const InitialLayout = () => {
           }} 
         />
 
-
         <Stack.Screen 
           name="(therapist)" 
           options={{ 

@@ -1,15 +1,17 @@
 import React from 'react';
-import { TextInput } from 'react-native';
-import { useTheme } from '@/components/ThemeContext';  // Import the useTheme hook
+import { TextInput, I18nManager } from 'react-native';
+import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import ThemedView from '@/components/ThemedView';
-import { theme } from '@/styles/Theme';  // Import theme for colors
+import { theme } from '@/styles/Theme';
 
 const NoteInput: React.FC<{
   note: string;
   setNote: (note: string) => void;
 }> = ({ note, setNote }) => {
-  const { theme: currentTheme } = useTheme();  // Get current theme
-  const colors = currentTheme === 'dark' ? theme.dark : theme.light;  // Select theme colors
+  const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
+  const colors = currentTheme === 'dark' ? theme.dark : theme.light;
 
   return (
     <ThemedView
@@ -33,12 +35,14 @@ const NoteInput: React.FC<{
           textAlignVertical: 'top',
           lineHeight: 25,
           fontSize: 16,
-          color: colors.text,  // Dynamically set text color based on theme
+          color: colors.text,
           fontWeight: '400',
           borderRadius: 16,
+          textAlign: isRTL ? 'right' : 'left',
+          writingDirection: isRTL ? 'rtl' : 'ltr',
         }}
-        placeholder="Write your thoughts here..."
-        placeholderTextColor={colors.textSecondary}  // Dynamically set placeholder color based on theme
+        placeholder={t.note.placeholder}
+        placeholderTextColor={colors.textSecondary}
         value={note}
         onChangeText={setNote}
         multiline={true}

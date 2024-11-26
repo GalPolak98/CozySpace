@@ -30,7 +30,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
   return (
     <View className="w-full mb-4">
-      <ThemedText variant="default" className="w-full bg-red-400 color font-pmedium mb-2 rtl text-sm" isRTL={isRTL}>
+      <ThemedText variant="default" className="w-full color font-pmedium mb-2 rtl text-sm" isRTL={isRTL}>
         {placeholder}
       </ThemedText>
       <View className="relative">

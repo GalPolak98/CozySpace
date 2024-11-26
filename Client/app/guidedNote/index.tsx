@@ -5,8 +5,9 @@ import AnxietySlider from '../../components/notes/AnxietySlider';
 import TextInputField from '../../components/notes/TextInputField';
 import SubmitButton from '../../components/notes/SubmitButton';
 import useAuth from '../../hooks/useAuth';
-import config from '../../env';
 import { useTheme } from '@/components/ThemeContext';
+import ENV from '../../env';
+import { useLanguage } from '@/context/LanguageContext';
 
 const DirectedNoteScreen: React.FC = () => {
   const [anxietyRating, setAnxietyRating] = useState(5);
@@ -18,10 +19,11 @@ const DirectedNoteScreen: React.FC = () => {
   const [selfTalk, setSelfTalk] = useState('');
   const userId = useAuth();
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
 
   const handleSubmit = async () => {
     if (!userId) {
-      Alert.alert('Error', 'User is not authenticated.');
+      Alert.alert(t.common.error, t.directedNote.notAuthenticated);
       return;
     }
 
@@ -39,7 +41,7 @@ const DirectedNoteScreen: React.FC = () => {
     };
 
     try {
-      const response = await fetch(`${config.API_URL}/users/${userId}/saveGuidedNotes`, {
+      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/users/${userId}/saveGuidedNotes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,13 +50,13 @@ const DirectedNoteScreen: React.FC = () => {
       });
 
       if (response.ok) {
-        Alert.alert('Submission Successful', 'Your responses have been submitted.');
+        Alert.alert(t.common.success, t.directedNote.submitSuccess);
         await AsyncStorage.removeItem('@formData');
       } else {
-        Alert.alert('Submission Failed', 'Something went wrong. Please try again.');
+        Alert.alert(t.common.error, t.directedNote.submitFailed);
       }
     } catch (error) {
-      Alert.alert('Error', 'Unable to submit the note at the moment. Please check your connection.');
+      Alert.alert(t.common.error, t.directedNote.connectionError);
     }
   };
 
@@ -105,12 +107,12 @@ const DirectedNoteScreen: React.FC = () => {
       <AnxietySlider anxietyRating={anxietyRating} setAnxietyRating={setAnxietyRating} />
 
       {[
-        { label: 'Describe your current experience with anxiety', value: description, onChange: setDescription },
-        { label: 'What might have triggered this anxiety episode?', value: trigger, onChange: setTrigger },
-        { label: "Are there any coping strategies you're using?", value: copingStrategies, onChange: setCopingStrategies },
-        { label: "Describe any physical sensations you're feeling", value: physicalSymptoms, onChange: setPhysicalSymptoms },
-        { label: 'How would you describe your emotional state?', value: emotionalState, onChange: setEmotionalState },
-        { label: 'What thoughts are you having right now?', value: selfTalk, onChange: setSelfTalk },
+        { label: t.directedNote.describeExperience, value: description, onChange: setDescription },
+        { label: t.directedNote.describeTrigger, value: trigger, onChange: setTrigger },
+        { label: t.directedNote.copingStrategies, value: copingStrategies, onChange: setCopingStrategies },
+        { label: t.directedNote.physicalSensations, value: physicalSymptoms, onChange: setPhysicalSymptoms },
+        { label: t.directedNote.emotionalState, value: emotionalState, onChange: setEmotionalState },
+        { label: t.directedNote.currentThoughts, value: selfTalk, onChange: setSelfTalk },
       ].map((field, index) => (
         <TextInputField key={index} label={field.label} value={field.value} onChange={field.onChange} />
       ))}

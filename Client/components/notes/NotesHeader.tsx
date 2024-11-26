@@ -1,56 +1,83 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Text, StatusBar, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useTheme } from '@/components/ThemeContext'; 
+import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import ThemedText from '@/components/ThemedText';
+import { HeaderRight } from '../navigation/HeaderButtons';
+
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 0;
 
 interface NoteHeaderProps {
   toggleTheme: () => void;
 }
 
 const NoteHeader: React.FC<NoteHeaderProps> = ({ toggleTheme }) => {
-  const { theme: currentTheme } = useTheme(); // Access current theme
+  const { theme: currentTheme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
-  const colors = theme[currentTheme]; // Get theme colors
+  const colors = theme[currentTheme];
 
   const handleBack = () => {
     router.replace('/(patient)/home');
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.header }]}>
-      <TouchableOpacity onPress={handleBack}>
-        <Ionicons name="chevron-back" size={28} color={colors.text} />
-      </TouchableOpacity>
-      <ThemedText style={styles.title}>Documenting</ThemedText>
-      <TouchableOpacity onPress={toggleTheme}> 
-        <Ionicons
-          name={currentTheme === 'light' ? 'moon-outline' : 'sunny-outline'}
-          size={24}
-          color={colors.text}
-        />
-      </TouchableOpacity>
+    <View style={[styles.safeArea, { backgroundColor: colors.header }]}>
+      <View style={styles.container}>
+        <View style={styles.leftContainer}>
+          <TouchableOpacity onPress={handleBack}>
+            <Ionicons name="chevron-back" size={28} color={colors.text} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.titleContainer}>
+          <ThemedText style={styles.title}>
+            {t.note.documenting}
+          </ThemedText>
+        </View>
+
+        <View style={styles.rightContainer}>
+          <HeaderRight />
+        </View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    paddingTop: STATUSBAR_HEIGHT,
+  },
   container: {
     borderBottomWidth: 1,
     borderBottomColor: 'transparent',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
+  },
+  leftContainer: {
+    width: 40,
+    justifyContent: 'center',
+  },
+  titleContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 17,
     fontFamily: 'Poppins-SemiBold',
     textAlign: 'center',
-    flex: 1,
+  },
+  rightContainer: {
+    width: 40,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
 });
 
