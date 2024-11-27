@@ -1,46 +1,31 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import { useTheme } from '@/components/ThemeContext';
+import { View, ViewStyle } from 'react-native';
 import { useLanguage } from '@/context/LanguageContext';
-import ThemedText from '../ThemedText';
+import CustomButton from '../CustomButton';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SubmitButtonProps {
   onPress: () => void;
+  style?: string; 
 }
 
-const SubmitButton: React.FC<SubmitButtonProps> = ({ onPress }) => {
-  const { theme: currentTheme } = useTheme();
+const SubmitButton: React.FC<SubmitButtonProps> = ({ onPress, style = '' }) => {
   const { t, isRTL } = useLanguage();
-
-  const buttonColors = {
-    light: '#0B72B8',
-    dark: '#5A9BD3',
-  };
+  const insets = useSafeAreaInsets();
 
   return (
-    <TouchableOpacity
-      style={[styles.submitButton, { backgroundColor: buttonColors[currentTheme] }]}
-      onPress={onPress}
-    >
-      <ThemedText style={styles.submitText} isRTL={isRTL}>
-        {t.common.submit}
-      </ThemedText>
-    </TouchableOpacity>
+    <View style={{ marginBottom: insets.bottom }} 
+>
+    <CustomButton
+      title={t.common.submit}
+      handlePress={onPress}
+      containerStyles={`${style}`} 
+      variant="primary"
+      isLoading={false}
+      isRTL={isRTL}
+    />
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  submitButton: {
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  submitText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
 
 export default SubmitButton;
