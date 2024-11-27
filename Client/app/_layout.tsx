@@ -9,7 +9,15 @@ import { theme } from '@/Styles/Theme';
 import ThemeToggle from '@/components/ThemeToggle';
 import Loader from '@/components/Loader';
 import { NotificationProvider } from "@/context/NotificationContext";
+import * as Notifications from "expo-notifications"
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false
+  })
+});
 
 const InitialLayout = () => {
   const { theme: currentTheme } = useTheme();

@@ -49,6 +49,17 @@ export interface IPatient extends IBaseModel {
         timestamp: string;
       }
     ];
+    notifications: [  
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true },  // Add _id field
+        expoNotificationId: string;  // Note: in the interface we use string
+
+        notificationTimestamp: Date;
+        tapped: boolean;
+        anxietyDuration: number;  
+        favoriteRelaxationMethod: string;
+      }
+    ];
   }
   
   const PatientSchema = new Schema({
@@ -99,6 +110,17 @@ export interface IPatient extends IBaseModel {
       {
         uri: { type: String, required: true },
         timestamp: { type: String, required: true },
+      }
+    ],
+    notifications: [
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true },  // Add _id field
+        expoNotificationId: { type: String, required: true },  // Add this field to store Expo's notification ID
+
+        notificationTimestamp: { type: Date, required: false },
+        tapped: { type: Boolean, required: false },
+        anxietyDuration: { type: Number, required: false },
+        favoriteRelaxationMethod: { type: String, required: false },
       }
     ]
   });

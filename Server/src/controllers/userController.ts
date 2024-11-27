@@ -119,3 +119,31 @@ export const deleteNote: RequestHandler = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const saveNotification: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const notificationData = req.body;
+
+    const result = await userService.saveNotification(userId, notificationData);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateNotificationTappedStatus: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    let { expoNotificationId } = req.params;
+    const { tapped } = req.body;
+
+
+    await userService.updateNotificationTappedStatus(userId, expoNotificationId, tapped);
+    res.status(200).json({ success: true, message: 'Notification updated successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+

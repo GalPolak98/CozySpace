@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, getUserProfile, saveGuidedNotes, addNote,updateNote, saveRecording, getNotes, deleteNote} from '../controllers/userController';
+import { registerUser, getUserProfile, saveGuidedNotes, addNote,updateNote, saveRecording, updateNotificationTappedStatus,getNotes,saveNotification, deleteNote} from '../controllers/userController';
 
 const router = express.Router();
 
@@ -14,4 +14,6 @@ router.put('/:userId/:noteId', updateNote);
 
 router.post('/:userId/saveRecording', saveRecording);
 
+router.post('/:userId/notifications', saveNotification);
+router.patch('/:userId/notifications/:expoNotificationId', updateNotificationTappedStatus);
 export default router;

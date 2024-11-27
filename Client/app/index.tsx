@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';
 import { AuthRoutingService } from '@/Services/authRoutingService';
 import { useNotification } from '@/context/NotificationContext';
-import config from '../env'
+import config from '../env';
 
 const { width, height } = Dimensions.get('window');
 
@@ -58,13 +58,19 @@ export default function Index() {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const { notification, expoPushToken, error } = useNotification();
+  const viewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (viewableItems[0]) {
+      setCurrentIndex(Number(viewableItems[0].index));
+    }
+  }).current;
+  const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
+  // Authentication check effect
   useEffect(() => {
     let isSubscribed = true;
   
     const checkAuth = async () => {
       try {
-        // First check if we already have a token and a current user
         const existingToken = await AsyncStorage.getItem('userToken');
         
         if (existingToken && auth.currentUser) {
@@ -75,7 +81,6 @@ export default function Index() {
           return;
         }
   
-        // If no token or no current user, set up the listener
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
           if (!isSubscribed) return;
   
@@ -115,13 +120,26 @@ export default function Index() {
     };
   }, []);
 
-  const viewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    if (viewableItems[0]) {
-      setCurrentIndex(Number(viewableItems[0].index));
-    }
-  }).current;
-
-  const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+  // Push notification token effect
+  useEffect(() => {
+    const sendPushTokenToServer = async () => {
+      if (!expoPushToken) return;
+      
+      try {
+        await fetch(`${config.API_URL}/save-push-token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: expoPushToken }),
+        });
+      } catch (error) {
+        console.error('Error sending push token:', error);
+      }
+    };
+  
+    sendPushTokenToServer();
+  }, [expoPushToken]);
 
   const scrollTo = (index: number) => {
     if (slidesRef.current) {
@@ -194,23 +212,6 @@ export default function Index() {
     return <Loader isLoading={true} />;
   }
 
-  useEffect(() => {
-    const sendPushTokenToServer = async () => {
-      const token = expoPushToken;  
-      await fetch(`${config.API_URL}/save-push-token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
-      });
-    };
-  
-    if (expoPushToken) {
-      sendPushTokenToServer();
-    }
-  }, [expoPushToken]);
-  
   return (
     <ThemedView className="flex-1">
       <View className="flex-1">
