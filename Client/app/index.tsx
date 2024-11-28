@@ -124,36 +124,47 @@ export default function Index() {
     slidesRef.current?.scrollToIndex({ index });
   };
 
-  const Paginator = () => (
-    <View style={styles.paginatorContainer}>
-      {onboardingData.map((_, index) => {
-        const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-        
-        const dotWidth = scrollX.interpolate({
-          inputRange,
-          outputRange: [8, 24, 8],
-          extrapolate: 'clamp',
-        });
-
-        const opacity = scrollX.interpolate({
-          inputRange,
-          outputRange: [0.3, 1, 0.3],
-          extrapolate: 'clamp',
-        });
-
-        return (
-          <Animated.View
-            key={index}
-            style={[styles.dot, {
-              width: dotWidth,
-              opacity,
-              backgroundColor: colors.primary,
-            }]}
-          />
-        );
-      })}
-    </View>
-  );
+  const Paginator = () => {
+    const { isRTL } = useLanguage();
+    const dots = [...onboardingData];
+    if (isRTL) dots.reverse();
+  
+    return (
+      <View style={styles.paginatorContainer}>
+        {dots.map((_, index) => {
+          const adjustedIndex = isRTL ? dots.length - 1 - index : index;
+          const inputRange = [
+            (adjustedIndex - 1) * width, 
+            adjustedIndex * width, 
+            (adjustedIndex + 1) * width
+          ];
+          
+          const dotWidth = scrollX.interpolate({
+            inputRange,
+            outputRange: [8, 24, 8],
+            extrapolate: 'clamp',
+          });
+  
+          const opacity = scrollX.interpolate({
+            inputRange,
+            outputRange: [0.3, 1, 0.3],
+            extrapolate: 'clamp',
+          });
+  
+          return (
+            <Animated.View
+              key={index}
+              style={[styles.dot, {
+                width: dotWidth,
+                opacity,
+                backgroundColor: colors.primary,
+              }]}
+            />
+          );
+        })}
+      </View>
+    );
+  };
 
   const renderItem = ({ item }: { item: OnboardingItem }) => (
     <View style={[styles.slide, { width }]}>
