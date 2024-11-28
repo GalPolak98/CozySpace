@@ -74,7 +74,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     const elements = [];
 
     // Add icon based on effective position
-    if (icon && effectiveIconPosition === 'left') {
+    if (icon && !isRTL) {
       elements.push(
         <View key="icon-left" style={{ marginRight: 8 }}>
           {icon}
@@ -95,7 +95,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     );
 
     // Add icon based on effective position
-    if (icon && effectiveIconPosition === 'right') {
+    if (icon && isRTL) {
       elements.push(
         <View key="icon-right" style={{ marginLeft: 8 }}>
           {icon}
@@ -118,9 +118,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
     return (
       <View 
-        className="flex-row items-center justify-center"
-        style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
-      >
+        className="flex-row items-center justify-center"      >
         {elements}
       </View>
     );

@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import { Ionicons } from '@expo/vector-icons';
+import ThemedText from '@/components/ThemedText';
+import ThemedView from '@/components/ThemedView';
 
 interface CompletionStepProps {
   userType: 'patient' | 'therapist';
@@ -10,29 +13,26 @@ interface CompletionStepProps {
 
 export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
   const { theme: currentTheme } = useTheme();
+  const { isRTL, t } = useLanguage();
   const colors = theme[currentTheme];
 
   const getContent = () => {
     if (userType === 'therapist') {
       return {
-        title: "Welcome to AnxiEase Professional",
-        message: "Your professional profile has been set up successfully. You can now start helping patients manage their anxiety effectively.",
         features: [
-          "Access to patient anxiety tracking",
-          "Secure communication platform",
-          "Professional dashboard",
-          "Patient management tools"
+          t.therapistFeatures.patientTracking,
+          t.therapistFeatures.secureCommunication,
+          t.therapistFeatures.dashboard,
+          t.therapistFeatures.patientTools
         ]
       };
     }
     return {
-      title: "Welcome to AnxiEase",
-      message: "Your profile has been set up successfully. You're ready to start managing your anxiety with professional support.",
       features: [
-        "Real-time anxiety tracking",
-        "Smart jewelry integration",
-        "Music therapy tools",
-        "Professional support"
+        t.patientFeatures.anxietyTracking,
+        t.patientFeatures.smartJewelry,
+        t.patientFeatures.musicTherapy,
+        t.patientFeatures.professionalSupport
       ]
     };
   };
@@ -42,7 +42,6 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
   return (
     <View className="flex-1 items-center px-4">
       <View className="items-center space-y-8 w-full max-w-md">
-        {/* Icon Section */}
         <View className="py-8">
           <Ionicons 
             name="checkmark-circle" 
@@ -51,27 +50,27 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
           />
         </View>
         
-        {/* Content Section */}
         <View className="space-y-6 w-full">
           <View className="space-y-4">
-            <Text 
-              style={{ color: colors.text }} 
+            <ThemedText 
+              variant="primary"
               className="text-2xl font-pbold text-center"
             >
-              {content.title}
-            </Text>
+              {userType === 'therapist' ? t.completion.therapistTitle : t.completion.patientTitle}
+            </ThemedText>
             
-            <Text 
-              style={{ color: colors.textSecondary, marginTop:4 }} 
-              className="text-base font-pregular px-4"
+            <ThemedText 
+              variant="secondary"
+              className="text-base font-pregular px-4 text-center"
+              isRTL={isRTL}
             >
-              {content.message}
-            </Text>
+              {userType === 'therapist' ? t.completion.therapistMessage : t.completion.patientMessage}
+            </ThemedText>
           </View>
 
-          {/* Features Card */}
-          <View 
-            className="bg-surface rounded-xl p-6 space-y-4"
+          <ThemedView 
+            variant="surface"
+            className="rounded-xl p-6 space-y-4"
             style={{
               shadowColor: colors.text,
               shadowOffset: { width: 0, height: 2 },
@@ -80,18 +79,20 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
               elevation: 3,
             }}
           >
-            <Text 
-              style={{ color: colors.text }} 
+            <ThemedText 
+              variant="primary"
               className="font-pbold text-lg mb-2"
+              isRTL={isRTL}
             >
-              Available Features
-            </Text>
+              {t.completion.availableFeatures}
+            </ThemedText>
             
             <View className="space-y-4">
               {content.features.map((feature, index) => (
                 <View 
                   key={index} 
                   className="flex-row items-center space-x-3"
+                  style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
                 >
                   <View 
                     className="rounded-full p-1"
@@ -103,16 +104,17 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
                       color={colors.primary}
                     />
                   </View>
-                  <Text 
-                    style={{ color: colors.text }} 
+                  <ThemedText 
+                    variant="primary"
                     className="font-pmedium flex-1"
+                    isRTL={isRTL}
                   >
                     {feature}
-                  </Text>
+                  </ThemedText>
                 </View>
               ))}
             </View>
-          </View>
+          </ThemedView>
         </View>
       </View>
     </View>

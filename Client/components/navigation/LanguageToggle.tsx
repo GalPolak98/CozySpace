@@ -11,7 +11,7 @@ import { availableLanguages } from '@/constants/translations';
 
 const LanguageToggle = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { currentLanguage, changeLanguage, isChangingLanguage, t } = useLanguage();
+  const { currentLanguage, changeLanguage, t } = useLanguage();
 //   const { t } = useTranslation();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
@@ -20,14 +20,6 @@ const LanguageToggle = () => {
     setIsModalVisible(false);
     await changeLanguage(langCode);
   };
-
-  if (isChangingLanguage) {
-    return (
-      <View className="px-3 py-2">
-        <ActivityIndicator color={colors.primary} />
-      </View>
-    );
-  }
 
   return (
     <>

@@ -19,7 +19,12 @@ export const translations = {
           error: 'Error',
           success: 'Success',
           logoutConfirm: 'Are you sure you want to logout?',
-          logoutError: 'Failed to logout. Please try again.'
+          logoutError: 'Failed to logout. Please try again.',
+          enabled: 'Enabled',
+          enable: 'Enable',
+          back: 'Back',
+          continue: 'Continue',
+          complete: 'Complete',
         },
         onboarding: {
           welcome: {
@@ -50,7 +55,8 @@ export const translations = {
             signIn: 'Sign In',
             noAccount: "Don't have an account? Sign Up",
             haveAccount: 'Already have an account? Sign In',
-            termsNotice: 'By continuing, you agree to our Terms of Service and Privacy Policy'
+            termsNotice: 'By continuing, you agree to our Terms of Service and Privacy Policy',
+            authError: "Authentication error. Please try signing in again.",
           },
           errors: {
             invalidEmail: 'Please enter a valid email address',
@@ -69,7 +75,8 @@ export const translations = {
             unexpected: 'An unexpected error occurred',
             fillAllFields: 'Please fill in all fields',
             passwordsNoMatch: 'Passwords do not match',
-            authFailed: 'Failed to complete authentication'
+            authFailed: 'Failed to complete authentication',
+            error: "Error",
           },
           homePatient: {
             talkToAI: 'Talk to AI Assistant',
@@ -120,6 +127,107 @@ export const translations = {
             moderateAnxiety: 'Moderate Anxiety',
             highAnxiety: 'High Anxiety'
           },
+
+
+
+          roleSelection: {
+            title: 'How would you like to use AnxiEase?',
+            patientTitle: "I'm Seeking Help",
+            patientDescription: 'Get personalized support, track your anxiety levels, and connect with professional therapists',
+            therapistTitle: "I'm a Therapist",
+            therapistDescription: 'Help patients manage anxiety, monitor their progress, and provide professional support',
+          },
+          personalInfo: {
+            firstName: 'First Name',
+            lastName: 'Last Name',
+          },
+          therapistSelection: {
+            dropdownLabel: '',
+            dropdownPlaceholder: 'Choose a therapist to work with',
+            noTherapistOption: "I don't want to work with a therapist now",
+            noTherapistDesc: 'You can select a therapist later',
+            dataSharingTitle: 'Data Sharing Settings',
+            noTherapistsError: 'No therapists data in response',
+            loadError: 'Failed to load therapists',
+            anxietyTrackingLabel: 'Anxiety Tracking Reports',
+            anxietyTrackingDesc: 'Share your anxiety levels, triggers, and monitoring data',
+            personalDocLabel: 'Personal Documentation',
+            personalDocDesc: 'Share your personal notes, progress, and therapy-related documents',
+            privacyNotice: 'Your therapist will only see the data you choose to share. You can change these settings at any time.',
+          },
+          customization: {
+            smartJewelryTitle: 'Smart Jewelry Integration',
+            enableJewelry: 'Enable Smart Jewelry',
+            jewelryDescription: 'Connect your AnxiEase smart jewelry',
+            vibrationAlerts: 'Anxiety Alert Vibrations',
+            vibrationDescription: 'Activate gentle vibration when sensors detect anxiety',
+            musicTherapyTitle: 'Music Therapy',
+            enableMusic: 'Enable Music Therapy',
+            musicDescription: 'Use calming music to help manage anxiety',
+          },
+          music: {
+            selectType: 'Select Music Type',
+            tracksCount: '{count} tracks',
+            categories: {
+            natureSounds: 'Nature Sounds',
+            meditation: 'Meditation',
+            classical: 'Classical',
+            }
+        },
+        therapistQualifications: {
+            education: 'Educational Background',
+            selectEducation: 'Select your education level',
+            experience: 'Years of Experience',
+            selectExperience: 'Select your experience level',
+            workplace: 'Current Workplace',
+            workplacePlaceholder: 'e.g., Private Practice, Hospital Name',
+            specialization: 'Primary Specialization',
+            selectSpecialization: 'Select your specialization',
+            licenseNumber: 'Professional License Number',
+            licenseNumberPlaceholder: 'Enter your license number'
+          },
+
+          completion: {
+            therapistTitle: "Welcome to AnxiEase Professional",
+            therapistMessage: "Your professional profile has been set up successfully. You can now start helping patients manage their anxiety effectively.",
+            patientTitle: "Welcome to AnxiEase",
+            patientMessage: "Your profile has been set up successfully. You're ready to start managing your anxiety with professional support.",
+            availableFeatures: "Available Features"
+          },
+          therapistFeatures: {
+            patientTracking: "Access to patient anxiety tracking",
+            secureCommunication: "Secure communication platform",
+            dashboard: "Professional dashboard",
+            patientTools: "Patient management tools"
+          },
+          patientFeatures: {
+            anxietyTracking: "Real-time anxiety tracking",
+            smartJewelry: "Smart jewelry integration",
+            musicTherapy: "Music therapy tools",
+            professionalSupport: "Professional support"
+          },
+
+          registration: {
+            selectRole: "Please select your role to continue",
+            fillNames: "Please fill in both first and last name",
+            completeAllFields: "Please complete all professional information fields",
+            selectTherapist: "Please select a therapist to continue",
+            selectMusicCategory: "Please select a music category",
+            selectTrack: "Please select a specific track",
+            registrationFailed: "Failed to complete registration. Please try again.",
+            selectRoleSubtitle: "Let's start by selecting your role",
+            personalInfo: "Personal Information",
+            tellAboutYourself: "Tell us about yourself",
+            connectTherapist: "Connect with a Therapist",
+            chooseTherapist: "Choose your therapist and set sharing preferences",
+            professionalBackground: "Professional Background",
+            qualifications: "Tell us about your qualifications",
+            customizeExperience: "Customize Your Experience",
+            setupTools: "Set up your anxiety management tools",
+            allSet: "You're All Set!",
+            welcomeProfessional: "Welcome to the AnxiEase professional network",
+            startManaging: "Let's start managing your anxiety together"
+          }
       },
     },
     he: {
@@ -141,7 +249,12 @@ export const translations = {
           error: 'שגיאה',
           success: 'הצלחה',
           logoutConfirm: 'האם אתה בטוח שברצונך להתנתק?',
-          logoutError: 'ההתנתקות נכשלה. אנא נסה שוב.'
+          logoutError: 'ההתנתקות נכשלה. אנא נסה שוב.',
+          enabled: 'מופעל',
+          enable: 'הפעל',
+          back: 'חזור',
+          continue: 'המשך',
+          complete: 'סיים',
         },
         onboarding: {
           welcome: {
@@ -172,7 +285,8 @@ export const translations = {
             signIn: 'התחבר',
             noAccount: 'אין לך חשבון? הירשם',
             haveAccount: 'כבר יש לך חשבון? התחבר',
-            termsNotice: 'בהמשך, אתה מסכים לתנאי השירות ומדיניות הפרטיות שלנו'
+            termsNotice: 'בהמשך, אתה מסכים לתנאי השירות ומדיניות הפרטיות שלנו',
+            authError: "שגיאת אימות. אנא נסה להתחבר שוב.",
           },
           errors: {
             invalidEmail: 'אנא הזן כתובת אימייל תקינה',
@@ -191,7 +305,8 @@ export const translations = {
             unexpected: 'אירעה שגיאה בלתי צפויה',
             fillAllFields: 'אנא מלא את כל השדות',
             passwordsNoMatch: 'הסיסמאות אינן תואמות',
-            authFailed: 'ההתחברות נכשלה'
+            authFailed: 'ההתחברות נכשלה',
+            error: "שגיאה",
           },
           homePatient: {
             talkToAI: 'שוחח עם עוזר AI',
@@ -242,6 +357,106 @@ export const translations = {
             moderateAnxiety: 'חרדה בינונית',
             highAnxiety: 'חרדה גבוהה'
           },
+
+
+
+          roleSelection: {
+            title: 'כיצד תרצה להשתמש ב-AnxiEase?',
+            patientTitle: 'אני מחפש עזרה',
+            patientDescription: 'קבל תמיכה מותאמת אישית, עקוב אחר רמות החרדה שלך, והתחבר למטפל המקצועי שלך',
+            therapistTitle: 'אני מטפל',
+            therapistDescription: 'עזור למטופלים לנהל חרדה, עקוב אחר התקדמותם וספק להם תמיכה מקצועית',
+          },
+          personalInfo: {
+            firstName: 'שם פרטי',
+            lastName: 'שם משפחה',
+          },
+          therapistSelection: {
+            dropdownLabel: '',
+            dropdownPlaceholder: 'בחר מטפל לעבוד איתו',
+            noTherapistOption: 'איני מעוניין לעבוד עם מטפל כרגע',
+            noTherapistDesc: 'תוכל לבחור מטפל מאוחר יותר',
+            dataSharingTitle: 'הגדרות שיתוף מידע',
+            noTherapistsError: 'אין נתוני מטפלים בתשובה',
+            loadError: 'טעינת המטפלים נכשלה',
+            anxietyTrackingLabel: 'דוחות מעקב חרדה',
+            anxietyTrackingDesc: 'שתף את רמות החרדה, הטריגרים ונתוני המעקב שלך',
+            personalDocLabel: 'תיעוד אישי',
+            personalDocDesc: 'שתף את הפתקים האישיים, ההתקדמות והמסמכים הקשורים לטיפול שלך',
+            privacyNotice: 'המטפל שלך יראה רק את המידע שתבחר לשתף. תוכל לשנות הגדרות אלה בכל עת.',
+          },
+          customization: {
+            smartJewelryTitle: 'שילוב תכשיטים חכמים',
+            enableJewelry: 'הפעל תכשיט חכם',
+            jewelryDescription: 'התחבר לתכשיטים החכמים של AnxiEase',
+            vibrationAlerts: 'התראות רטט לחרדה',
+            vibrationDescription: 'הפעל רטט עדין בעת זיהוי חרדה ע"י החיישנים',
+            musicTherapyTitle: 'תרפיה במוזיקה',
+            enableMusic: 'הפעל תרפיה במוזיקה',
+            musicDescription: 'השתמש במוזיקה מרגיעה לניהול חרדה',
+          },
+          music: {
+            selectType: 'בחר סוג מוזיקה',
+            tracksCount: '{count} רצועות',
+            categories: {
+              natureSounds: 'צלילי טבע',
+              meditation: 'מדיטציה',
+              classical: 'קלאסי',
+            }
+          },
+          therapistQualifications: {
+            education: 'רקע השכלתי',
+            selectEducation: 'בחר את רמת ההשכלה שלך',
+            experience: 'שנות ניסיון',
+            selectExperience: 'בחר את רמת הניסיון שלך',
+            workplace: 'מקום עבודה נוכחי',
+            workplacePlaceholder: 'לדוגמה: קליניקה פרטית, שם בית חולים',
+            specialization: 'התמחות ראשית',
+            selectSpecialization: 'בחר את ההתמחות שלך',
+            licenseNumber: 'מספר רישיון מקצועי',
+            licenseNumberPlaceholder: 'הכנס את מספר הרישיון שלך'
+          },
+
+          completion: {
+            therapistTitle: "ברוכים הבאים ל-AnxiEase Professional",
+            therapistMessage: "הפרופיל המקצועי שלך הוגדר בהצלחה. כעת תוכל להתחיל לעזור למטופלים לנהל את החרדה שלהם ביעילות.",
+            patientTitle: "ברוכים הבאים ל-AnxiEase",
+            patientMessage: "הפרופיל שלך הוגדר בהצלחה. אתה מוכן להתחיל לנהל את החרדה שלך עם תמיכה מקצועית.",
+            availableFeatures: "תכונות זמינות"
+          },
+          therapistFeatures: {
+            patientTracking: "גישה לדוחות חרדה של מטופלים",
+            secureCommunication: "פלטפורמת תקשורת מאובטחת",
+            dashboard: "לוח בקרה מקצועי",
+            patientTools: "כלים לניהול מטופלים"
+          },
+          patientFeatures: {
+            anxietyTracking: "מעקב חרדה בזמן אמת",
+            smartJewelry: "שילוב תכשיטים חכמים",
+            musicTherapy: "כלי תרפיה במוזיקה",
+            professionalSupport: "תמיכה מקצועית"
+          },
+          registration: {
+            selectRole: "אנא בחר את תפקידך להמשך",
+            fillNames: "אנא מלא שם פרטי ושם משפחה",
+            completeAllFields: "אנא מלא את כל שדות המידע המקצועי",
+            selectTherapist: "אנא בחר מטפל להמשך",
+            selectMusicCategory: "אנא בחר קטגוריית מוזיקה",
+            selectTrack: "אנא בחר שיר ספציפי",
+            registrationFailed: "ההרשמה נכשלה. אנא נסה שוב.",
+            selectRoleSubtitle: "בוא נתחיל בבחירת תפקידך",
+            personalInfo: "מידע אישי",
+            tellAboutYourself: "ספר לנו על עצמך",
+            connectTherapist: "התחבר למטפל",
+            chooseTherapist: "בחר את המטפל שלך והגדר העדפות שיתוף",
+            professionalBackground: "רקע מקצועי",
+            qualifications: "ספר לנו על הכישורים שלך",
+            customizeExperience: "התאם אישית את החוויה שלך",
+            setupTools: "הגדר את כלי ניהול החרדה שלך",
+            allSet: "הכל מוכן!",
+            welcomeProfessional: "ברוכים הבאים לרשת המקצועית של AnxiEase",
+            startManaging: "בוא נתחיל לנהל את החרדה שלך יחד"
+          }
       },
     },
   };

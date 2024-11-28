@@ -214,7 +214,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
             <ThemedText 
               variant="error" 
               className="mb-4 text-center font-pmedium"
-              isRTL={isRTL}
             >
               {error}
             </ThemedText>

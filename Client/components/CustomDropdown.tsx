@@ -5,12 +5,17 @@ import { theme } from '@/styles/Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomDropdownProps, OptionType } from '@/types/onboarding';
 
-export const CustomDropdown: React.FC<CustomDropdownProps> = ({
+interface ExtendedCustomDropdownProps extends CustomDropdownProps {
+  isRTL?: boolean;
+}
+
+export const CustomDropdown: React.FC<ExtendedCustomDropdownProps> = ({
   options,
   value,
   onChange,
   placeholder,
-  label
+  label,
+  isRTL = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { theme: currentTheme } = useTheme();
@@ -21,26 +26,43 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   return (
     <View className="mb-4">
       {label && (
-        <Text style={{ color: colors.text }} className="font-pmedium mb-2">
+        <Text 
+          style={{ 
+            color: colors.text,
+            textAlign: isRTL ? 'right' : 'left'
+          }} 
+          className="font-pmedium mb-2"
+        >
           {label}
         </Text>
       )}
       
       <TouchableOpacity
         onPress={() => setIsOpen(true)}
-        className="flex-row items-center justify-between p-4 border rounded-lg"
+        className="p-4 border rounded-lg"
         style={{ 
           borderColor: colors.border,
-          backgroundColor: colors.surface
+          backgroundColor: colors.surface,
+          flexDirection: isRTL ? 'row-reverse' : 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between'
         }}
       >
         <Text 
-          style={{ color: selectedOption ? colors.text : colors.textSecondary }}
+          style={{ 
+            color: selectedOption ? colors.text : colors.textSecondary,
+            textAlign: isRTL ? 'right' : 'left'
+          }}
           className="font-pregular"
         >
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
-        <Ionicons name="chevron-down" size={20} color={colors.text} />
+        <Ionicons 
+          name={isRTL ? "chevron-down" : "chevron-down"} 
+          size={20} 
+          color={colors.text}
+          style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }}
+        />
       </TouchableOpacity>
 
       <Modal
@@ -59,10 +81,22 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
               className="bg-white rounded-t-xl max-h-[70%]"
               style={{ backgroundColor: colors.background }}
             >
-              <View className="p-4 border-b flex-row justify-between items-center" 
-                style={{ borderColor: colors.border }}
+              <View 
+                className="p-4 border-b" 
+                style={{ 
+                  borderColor: colors.border,
+                  flexDirection: isRTL ? 'row-reverse' : 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
               >
-                <Text style={{ color: colors.text }} className="text-lg font-pbold">
+                <Text 
+                  style={{ 
+                    color: colors.text,
+                    textAlign: isRTL ? 'right' : 'left'
+                  }} 
+                  className="text-lg font-pbold"
+                >
                   {label}
                 </Text>
                 <TouchableOpacity onPress={() => setIsOpen(false)}>
@@ -82,25 +116,46 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
                     className="p-4 border-b"
                     style={{ borderColor: colors.border }}
                   >
-                    <View className="flex-row justify-between items-center">
-                      <View>
-                        <Text style={{ color: colors.text }} className="font-pmedium">
+                    <View 
+                      style={{ 
+                        flexDirection: isRTL ? 'row-reverse' : 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
+                        <Text 
+                          style={{ 
+                            color: colors.text,
+                            textAlign: isRTL ? 'right' : 'left'
+                          }} 
+                          className="font-pmedium"
+                        >
                           {item.label}
                         </Text>
                         {item.sublabel && (
-                          <Text style={{ color: colors.textSecondary }} className="font-pregular text-sm mt-1">
+                          <Text 
+                            style={{ 
+                              color: colors.textSecondary,
+                              textAlign: isRTL ? 'right' : 'left'
+                            }} 
+                            className="font-pregular text-sm mt-1"
+                          >
                             {item.sublabel}
                           </Text>
                         )}
                       </View>
                       {value === item.id && (
-                        <Ionicons name="checkmark-circle" size={24} color={colors.primary} />
+                        <Ionicons 
+                          name="checkmark-circle" 
+                          size={24} 
+                          color={colors.primary}
+                        />
                       )}
                     </View>
                   </TouchableOpacity>
                 )}
               />
-              {/* Adding padding at the bottom */}
               <View style={{ paddingBottom: 20 }} />
             </View>
           </SafeAreaView>
