@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 import CustomButton from '@/components/CustomButton';
-import RecordingsSection from '../recording'; // Import the section
+import RecordingsSection from '../recording'; 
 
 const Home = () => {
   const router = useRouter();

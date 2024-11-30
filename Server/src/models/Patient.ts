@@ -51,8 +51,8 @@ export interface IPatient extends IBaseModel {
     ];
     notifications: [  
       {
-        _id: { type: Schema.Types.ObjectId, auto: true },  // Add _id field
-        expoNotificationId: string;  // Note: in the interface we use string
+        _id: { type: Schema.Types.ObjectId, auto: true }, 
+        expoNotificationId: string;  
 
         notificationTimestamp: Date;
         tapped: boolean;
@@ -114,8 +114,8 @@ export interface IPatient extends IBaseModel {
     ],
     notifications: [
       {
-        _id: { type: Schema.Types.ObjectId, auto: true },  // Add _id field
-        expoNotificationId: { type: String, required: true },  // Add this field to store Expo's notification ID
+        _id: { type: Schema.Types.ObjectId, auto: true },  
+        expoNotificationId: { type: String, required: true },  
 
         notificationTimestamp: { type: Date, required: false },
         tapped: { type: Boolean, required: false },
