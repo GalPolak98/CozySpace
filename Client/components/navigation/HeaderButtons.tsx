@@ -12,7 +12,7 @@ import { authManager } from '@/services/authManager';
 import LanguageToggle from './LanguageToggle';
 
 export const HeaderRight = () => (
-  <View className="flex-row items-center">
+  <View className="flex-row">
     <LanguageToggle />
     <ThemeToggle />
   </View>

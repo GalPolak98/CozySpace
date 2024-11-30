@@ -73,7 +73,7 @@ const RecordingsSection: React.FC = () => {
             timestamp: getCurrentDateTime(),
           };
 
-          const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/users/${userId}/saveRecording`, {
+          const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/saveRecording`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

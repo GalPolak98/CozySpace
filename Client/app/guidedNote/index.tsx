@@ -41,7 +41,7 @@ const DirectedNoteScreen: React.FC = () => {
     };
 
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/users/${userId}/saveGuidedNotes`, {
+      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/saveGuidedNotes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

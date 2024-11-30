@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   View, 
   TextInput, 
@@ -13,6 +13,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import * as Haptics from 'expo-haptics';
 
@@ -32,8 +33,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
   style
 }) => {
   const { theme: currentTheme } = useTheme();
+  const { isRTL, t } = useLanguage();
   const colors = theme[currentTheme];
   const inputRef = useRef<TextInput>(null);
+  const [iconTransform, setIconTransform] = useState({ transform: [{ scaleX: 1 }, { scaleY: 1 }] });
+
+  useEffect(() => {
+    setIconTransform({ transform: [{ scaleX: isRTL ? -1 : 1 }, { scaleY: 1 }] });
+  }, [isRTL]);
 
   const handleSend = async () => {
     if (Platform.OS === 'ios') {
@@ -60,9 +67,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ['Paste', 'Cancel'],
+          options: [t.common.paste, t.common.cancel],
           cancelButtonIndex: 1,
-          title: 'Input Options',
+          title: t.common.inputOptions,
         },
         async (buttonIndex) => {
           if (buttonIndex === 0) {
@@ -72,77 +79,83 @@ const ChatInput: React.FC<ChatInputProps> = ({
       );
     } else {
       Alert.alert(
-        'Input Options',
+        t.common.inputOptions,
         '',
         [
-          { text: 'Paste', onPress: handlePaste },
-          { text: 'Cancel', style: 'cancel' },
+          { text: t.common.paste, onPress: handlePaste },
+          { text: t.common.cancel, style: 'cancel' },
         ],
         { cancelable: true }
       );
     }
   };
 
-  return (
-    <View style={style}>
-      <View style={styles.innerContainer}>
-        <View
-          style={[
-            styles.inputContainer,
-            {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            }
-          ]}
-        >
-          <Pressable 
-            onLongPress={handleLongPress} 
-            style={styles.inputWrapper}
-          >
-            <TextInput
-              ref={inputRef}
-              value={value}
-              onChangeText={onChangeText}
-              placeholder="Type your message..."
-              placeholderTextColor={colors.placeholder}
-              style={[
-                styles.input,
-                { color: colors.text }
-              ]}
-              multiline
-              maxLength={500}
-              contextMenuHidden={false}
-              returnKeyType="default"
-              textAlignVertical="center"
-              scrollEnabled={true}
-              keyboardType="default"
-              autoCapitalize="sentences"
-              selectionColor={colors.primary}
-            />
-          </Pressable>
-          
-          <TouchableOpacity
-            onPress={handleSend}
-            disabled={isLoading || !value.trim()}
+    return (
+      <View style={style}>
+        <View style={styles.innerContainer}>
+          <View
             style={[
-              styles.sendButton,
+              styles.inputContainer,
               {
-                backgroundColor: colors.primary,
-                opacity: isLoading || !value.trim() ? 0.5 : 1,
-              }
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+              isRTL && styles.inputContainerRTL
             ]}
           >
+            <Pressable 
+              onLongPress={handleLongPress} 
+              style={styles.inputWrapper}
+            >
+              <TextInput
+                ref={inputRef}
+                value={value}
+                onChangeText={onChangeText}
+                placeholder={t.common.typeMessage}
+                placeholderTextColor={colors.placeholder}
+                style={[
+                  styles.input,
+                  { color: colors.text },
+                  isRTL && styles.inputRTL
+                ]}
+                multiline
+                maxLength={500}
+                contextMenuHidden={false}
+                returnKeyType="default"
+                textAlignVertical="center"
+                scrollEnabled={true}
+                keyboardType="default"
+                autoCapitalize="sentences"
+                selectionColor={colors.primary}
+                textAlign={isRTL ? 'right' : 'left'}
+              />
+            </Pressable>
+            
+            <TouchableOpacity
+              onPress={handleSend}
+              disabled={isLoading || !value.trim()}
+              style={[
+                styles.sendButton,
+                {
+                  backgroundColor: colors.primary,
+                  opacity: isLoading || !value.trim() ? 0.5 : 1,
+                  marginLeft: isRTL ? 0 : 8,
+                  marginRight: isRTL ? 8 : 0
+                }
+              ]}
+            >
             <Ionicons 
               name="send" 
               size={20} 
               color="#FFFFFF"
+              style={iconTransform}
             />
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
-  );
-};
+    );
+  };
 
 const styles = StyleSheet.create({
   innerContainer: {
@@ -158,6 +171,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
+  inputContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
   inputWrapper: {
     flex: 1,
   },
@@ -169,10 +185,12 @@ const styles = StyleSheet.create({
     minHeight: 24,
     textAlignVertical: 'center',
   },
+  inputRTL: {
+    textAlign: 'right',
+  },
   sendButton: {
     borderRadius: 20,
     padding: 8,
-    marginLeft: 8,
   },
 });
 

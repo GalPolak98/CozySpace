@@ -56,7 +56,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
   const navigationInProgress = useRef(false);
   const { t, isRTL } = useLanguage();
 
-
   useEffect(() => {
     let unsubscribe: () => void;
 

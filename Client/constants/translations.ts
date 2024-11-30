@@ -25,6 +25,11 @@ export const translations = {
           back: 'Back',
           continue: 'Continue',
           complete: 'Complete',
+          typing: 'typing',
+          typeMessage: "Type your message...",
+          paste: "Paste",
+          copy: 'copy',
+          inputOptions: "Input Options"
         },
         onboarding: {
           welcome: {
@@ -227,6 +232,14 @@ export const translations = {
             allSet: "You're All Set!",
             welcomeProfessional: "Welcome to the AnxiEase professional network",
             startManaging: "Let's start managing your anxiety together"
+          },
+
+          chat: {
+            titleHistory: "Chat History",
+            deleteChat: "Delete Chat",
+            confirmDelete: "Are you sure you want to delete this chat?",
+            noMessages: "No messages",
+            noChatHistory: "No chat history yet"
           }
       },
     },
@@ -255,6 +268,11 @@ export const translations = {
           back: 'חזור',
           continue: 'המשך',
           complete: 'סיים',
+          typing: 'מקליד',
+          typeMessage: "הקלד את ההודעה שלך...",
+          paste: "הדבק",
+          copy: 'העתק',
+          inputOptions: "אפשרויות קלט",
         },
         onboarding: {
           welcome: {
@@ -456,6 +474,13 @@ export const translations = {
             allSet: "הכל מוכן!",
             welcomeProfessional: "ברוכים הבאים לרשת המקצועית של AnxiEase",
             startManaging: "בוא נתחיל לנהל את החרדה שלך יחד"
+          },
+          chat: {
+            titleHistory: "היסטוריית הצ'אט",
+            deleteChat: "מחק צ'אט",
+            confirmDelete: "האם אתה בטוח שברצונך למחוק צ'אט זה?",
+            noMessages: "אין הודעות",
+            noChatHistory: "אין עדיין היסטוריית צ'אט"
           }
       },
     },

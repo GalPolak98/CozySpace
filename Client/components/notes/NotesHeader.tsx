@@ -6,7 +6,7 @@ import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import ThemedText from '@/components/ThemedText';
-import { HeaderRight } from '../navigation/HeaderButtons';
+import {HeaderRight} from '@/components/navigation/HeaderButtons';
 
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 0;
 

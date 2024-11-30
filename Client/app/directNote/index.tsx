@@ -56,7 +56,7 @@ const NotesSection: React.FC = () => {
   const loadNotes = async () => {
     if (!userId) return;
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/users/${userId}/latest`, {
+      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -89,7 +89,7 @@ const NotesSection: React.FC = () => {
       timestamp: getCurrentDateTime(),
     };
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/users/${userId}/addNotes`, {
+      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/addNotes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newNote),
@@ -113,7 +113,7 @@ const NotesSection: React.FC = () => {
     if (!userId || !noteId) return;
 
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/users/${userId}/${noteId}`, {
+      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
         method: 'DELETE',
       });
 
@@ -131,7 +131,7 @@ const NotesSection: React.FC = () => {
     if (!updatedNote._id) return;
 
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/users/${userId}/${updatedNote._id}`, {
+      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedNote),

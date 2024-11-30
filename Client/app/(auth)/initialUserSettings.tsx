@@ -13,6 +13,7 @@ import { DataShareOptions, RegistrationData } from '@/types/onboarding';
 import { CompletionStep } from '@/components/onboarding/CompletionStep';
 import { userService } from '@/services/userService';
 import { useLanguage } from '@/context/LanguageContext';
+import useAuth from '@/hooks/useAuth';
 
 export const InitialRegistrationScreen: React.FC = () => {
   const { t } = useLanguage();
@@ -36,6 +37,7 @@ export const InitialRegistrationScreen: React.FC = () => {
   const [workplace, setWorkplace] = useState('');
   const [licenseNumber, setLicenseNumber] = useState('');
   const [screenKey, setScreenKey] = useState(0);
+  const userId = useAuth();
 
   const totalSteps = userType === 'patient' ? 4 : 3;
 
@@ -103,7 +105,6 @@ export const InitialRegistrationScreen: React.FC = () => {
 
   const handleComplete = async () => {
     try {
-      const userId = auth.currentUser?.uid;
       if (!userId || !userType) {
         Alert.alert(t.errors.error, t.auth.authError);
         return;

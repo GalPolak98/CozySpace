@@ -14,6 +14,7 @@ import ThemedText from '@/components/ThemedText';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
 import * as Haptics from 'expo-haptics';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ChatMessageProps {
   text: string;
@@ -28,6 +29,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender, timestamp }) =>
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [isHighlighted, setIsHighlighted] = useState(false);
   const screenHeight = Dimensions.get('window').height;
+  const { t, isRTL } = useLanguage();
 
   const handleCopyText = async () => {
     try {
@@ -87,6 +89,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender, timestamp }) =>
                 { color: sender === 'user' ? '#FFFFFF' : colors.text }
               ]}
               selectable={false}
+              isRTL={isRTL}
             >
               {text}
             </ThemedText>
@@ -129,7 +132,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender, timestamp }) =>
               ]}
               onPress={handleCopyText}
             >
-              <ThemedText style={styles.copyText}>Copy</ThemedText>
+              <ThemedText style={styles.copyText}>{t.common.copy}</ThemedText>
             </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
