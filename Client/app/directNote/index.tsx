@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Alert, ScrollView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useAuth from '../../hooks/useAuth';
 import NoteCard from '../../components/notes/NoteCard';
-import NotebookLines from '../../components/notes/NotebookLines';
-import NoteInput from '../../components/notes/NoteInput';
 import NoteModal from '../../components/notes/NoteModal';
 import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import ThemedText from '@/components/ThemedText';
 import ENV from '../../env';
+import NotebookInput from '../../components/notes/NoteInput';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { theme } from '@/styles/Theme';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const NotesSection: React.FC = () => {
   const [note, setNote] = useState<string>('');
@@ -18,8 +20,11 @@ const NotesSection: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const userId = useAuth();
-  const { theme: currentTheme } = useTheme();
   const { t, isRTL } = useLanguage();
+  const { theme: currentTheme } = useTheme();
+  const colors = theme[currentTheme];
+  const insets = useSafeAreaInsets();
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -153,43 +158,57 @@ const NotesSection: React.FC = () => {
   };
 
   return (
-    <ScrollView 
-      contentContainerStyle={[
-        styles.container, 
-        { 
-          backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9',
-          alignItems: isRTL ? 'flex-end' : 'flex-start'
-        }
-      ]}
-    >
-      <View style={[styles.header, { width: '100%' }]}>
-        {notes.length > 0 && (
-          <NoteCard 
-            note={notes[0]} 
-            setSelectedNote={setSelectedNote} 
-            setEditedNote={setEditedNote} 
-            setIsModalVisible={setIsModalVisible}
-          />
-        )}
-      </View>
+    <View style={[styles.container, { backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9' }]}>
+      <KeyboardAwareScrollView
+      keyboardOpeningTime={0}
+      keyboardShouldPersistTaps="handled"
+      scrollToOverflowEnabled={true}
+      enableOnAndroid={true}
+      enableAutomaticScroll={true}>
+        <View style={[styles.header, { width: '100%' }]}>
+          {notes.length > 0 && (
+            <NoteCard 
+              note={notes[0]} 
+              setSelectedNote={setSelectedNote} 
+              setEditedNote={setEditedNote} 
+              setIsModalVisible={setIsModalVisible}
+            />
+          )}
+        </View>        
 
-      <View style={{ width: '100%' }}>
-        <NoteInput note={note} setNote={setNote} />
-        <View style={styles.addNoteButton}>
+        <View 
+          style={[
+            styles.inputContainer, 
+            {
+              backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9',
+              paddingBottom: isKeyboardVisible ? 10 : insets.bottom
+            }
+          ]}
+        >
+        
+        <View style={{ width: '100%' }}>
+          <NotebookInput note={note} setNote={setNote} />
+        </View>
+        
+        <View style={[styles.addNoteButton, { width: '100%' }]}>
           <TouchableOpacity 
             onPress={addNote} 
             style={[
               styles.button, 
-              { backgroundColor: currentTheme === 'dark' ? '#4B5563' : '#007BFF' }
+              { 
+                backgroundColor: colors.primary,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }
             ]}
           >
-            <ThemedText style={styles.buttonText} isRTL={isRTL}>
+            <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
               {t.note.addNote}
             </ThemedText>
           </TouchableOpacity>
         </View>
-        <NotebookLines />
       </View>
+      </KeyboardAwareScrollView>
 
       <NoteModal
         isModalVisible={isModalVisible}
@@ -212,34 +231,29 @@ const NotesSection: React.FC = () => {
         deleteNote={deleteNote}
         selectedNote={selectedNote}
       />
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 25,
     flex: 1,
-    paddingBottom: 30,
-    backgroundColor: '#f9f9f9',
+  },
+  scrollContent: {
+    padding: 20,
+    flexGrow: 1,
   },
   header: {
-    marginBottom: 20,
+    padding: 20,
   },
-  noteInputContainer: {
-    marginTop: 20,
-    marginBottom: 40,
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+  inputContainer: {
+    position: 'relative',
+    left: 0,
+    right: 0,
+    padding: 20,
   },
   addNoteButton: {
-    marginBottom: 10,
-    alignItems: 'center',
+    marginTop: 10,
   },
   button: {
     paddingVertical: 12,
@@ -247,7 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 150,
+    marginBottom: 10,
   },
   buttonText: {
     color: '#fff',
@@ -256,4 +270,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotesSection;
+export default NotesSection; 

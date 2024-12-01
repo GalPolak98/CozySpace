@@ -257,6 +257,7 @@ public addInitialMessage(message: Message) {
           emergencyResponse.text = await this.translateText(emergencyResponse.text, 'en', 'he');
         }
         
+        this.conversationHistory.push(`Assistant: ${emergencyResponse}`);
         return emergencyResponse;
       }
   

@@ -1,5 +1,4 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, StatusBar } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
 import NotesHeader from '@/components/notes/NotesHeader';
@@ -16,10 +15,6 @@ const NotesLayoutInner = () => {
 
   return (
     <>
-      <StatusBar
-        backgroundColor={colors.header}
-        barStyle={currentTheme === 'light' ? 'dark-content' : 'light-content'}
-      />
       <Stack
         screenOptions={{
           header: () => <HeaderWrapper />,

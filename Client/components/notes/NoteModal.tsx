@@ -1,11 +1,12 @@
-import React from 'react';
-import { Modal, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Keyboard, Modal, Platform, TextInput, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface NoteModalProps {
   isModalVisible: boolean;
@@ -29,7 +30,25 @@ const NoteModal: React.FC<NoteModalProps> = ({
   const { theme: currentTheme } = useTheme();
   const { t, isRTL } = useLanguage();
   const colors = currentTheme === 'dark' ? theme.dark : theme.light;
+  const insets = useSafeAreaInsets();
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
+  useEffect(() => {
+    const keyboardWillShow = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setIsKeyboardVisible(true)
+    );
+    const keyboardWillHide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setIsKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardWillShow.remove();
+      keyboardWillHide.remove();
+    };
+  }, []);
+  
   return (
     <Modal
       animationType="fade"
@@ -43,6 +62,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          paddingBottom: isKeyboardVisible ? insets.bottom + 10 : insets.bottom,
         }}
       >
         <ThemedView
@@ -56,6 +76,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.25,
             shadowRadius: 4,
+            marginBottom: isKeyboardVisible ? 30 : 0 
           }}
         >
           <ThemedText 
