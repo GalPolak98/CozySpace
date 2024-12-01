@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import CustomInput from '@/components/CustomInput';
 import { PersonalInfoProps } from '@/types/onboarding';
@@ -12,21 +13,24 @@ export const PersonalInfoSection: React.FC<PersonalInfoProps> = ({
   setLastName,
 }) => {
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
   const colors = theme[currentTheme];
 
   return (
-    <View className="space-y-4">
+    <View className="space-y-4" style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
       <CustomInput
         value={firstName}
         onChangeText={setFirstName}
-        placeholder="First Name"
+        placeholder={t.personalInfo.firstName}
         autoCapitalize="words"
+        isRTL={isRTL}
       />
       <CustomInput
         value={lastName}
         onChangeText={setLastName}
-        placeholder="Last Name"
+        placeholder={t.personalInfo.lastName}
         autoCapitalize="words"
+        isRTL={isRTL}
       />
     </View>
   );

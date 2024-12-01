@@ -1,20 +1,22 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import ThemedText from '@/components/ThemedText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AnimatedDots from './AnimatedDots';
+import { HeaderRight } from '@/components/navigation/HeaderButtons';
 
 interface ChatHeaderProps {
   isTyping: boolean;
-  toggleTheme: () => void;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping }) => {
   const { theme: currentTheme } = useTheme();
+  const { isRTL, t } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
   const colors = theme[currentTheme];
@@ -37,35 +39,43 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
         borderBottomColor: colors.border
       }
     ]}>
-      <View style={styles.headerContent}>
-        <View style={styles.leftContainer}>
-          <TouchableOpacity
-            onPress={handleBack}
-            style={styles.backButton}
-          >
-            <Ionicons 
-              name="chevron-back" 
-              size={28} 
-              color={colors.text}
-            />
-          </TouchableOpacity>
-        </View>
+      <View style={[
+        styles.headerContent,
+      ]}>
+        <TouchableOpacity
+          onPress={handleBack}
+          style={styles.backButton}
+        >
+          <Ionicons 
+            name={"chevron-back"}
+            size={28} 
+            color={colors.text}
+          />
+        </TouchableOpacity>
 
         <View style={styles.titleContainer}>
           {pathname === '/chat/history' ? (
-            <ThemedText style={styles.title}>Chat History</ThemedText>
+            <ThemedText style={styles.title} isRTL={isRTL}>
+              {t.chat.titleHistory}
+            </ThemedText>
           ) : (
             <View>
-              <ThemedText style={styles.title}>Coral Care - Chat</ThemedText>
+              <ThemedText style={styles.title} isRTL={isRTL}>
+                Coral Care
+              </ThemedText>
               {isTyping && (
-                <View style={styles.typingContainer}>
+                <View style={[
+                  styles.typingContainer,
+                  isRTL && styles.typingContainerRTL
+                ]}>
                   <ThemedText 
                     style={[
                       styles.typingText,
                       { color: colors.textSecondary }
                     ]}
+                    isRTL={isRTL}
                   >
-                    typing
+                    {t.common.typing}
                   </ThemedText>
                   <AnimatedDots />
                 </View>
@@ -74,16 +84,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ isTyping, toggleTheme }) => {
           )}
         </View>
 
-        <TouchableOpacity
-          onPress={toggleTheme}
-          style={styles.themeButton}
-        >
-          <Ionicons
-            name={currentTheme === 'light' ? 'moon-outline' : 'sunny-outline'}
-            size={24}
-            color={colors.text}
-          />
-        </TouchableOpacity>
+        <View style={styles.rightContainer}>
+          <HeaderRight />
+        </View>
       </View>
     </View>
   );
@@ -98,19 +101,15 @@ const styles = StyleSheet.create({
     height: 44,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 8,
-  },
-  leftContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: 40,
   },
   backButton: {
     padding: 8,
+    width: 44,
   },
   titleContainer: {
     flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
@@ -118,9 +117,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
     textAlign: 'center',
   },
-  themeButton: {
-    padding: 8,
+  rightContainer: {
     width: 40,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   typingContainer: {
     flexDirection: 'row',
@@ -128,9 +129,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 2,
   },
+  typingContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
   typingText: {
     fontSize: 12,
     fontFamily: 'Poppins-Regular',
+    margin: 5,
   },
 });
 

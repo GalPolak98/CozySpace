@@ -3,8 +3,8 @@ import { View, Text } from 'react-native';
 import { FeatureOption } from './FeatureOption';
 import { MusicSelectionSection } from './MusicSelectionSection';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
-import { MusicPlayer } from '../MusicPlayer';
 
 interface PatientCustomizationStepProps {
   useSmartJewelry: boolean;
@@ -32,57 +32,59 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
   setSelectedTrack,
 }) => {
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
   const colors = theme[currentTheme];
-
-  const handleMusicToggle = (value: boolean) => {
-    setPlayMusic(value);
-    if (!value) {
-      setSelectedMusic('');
-      setSelectedTrack(null);
-    }
-  };
-
-  const handleCategorySelect = (category: string) => {
-    setSelectedMusic(category);
-    setSelectedTrack(null); // Reset track selection when category changes
-  };
 
   return (
     <View className="space-y-6">
       {/* Smart Jewelry Section */}
       <View className="bg-surface p-4 rounded-xl space-y-4">
-        <Text style={{ color: colors.text }} className="text-lg font-pbold">
-          Smart Jewelry Integration
+        <Text 
+          style={{ 
+            color: colors.text,
+            textAlign: isRTL ? 'right' : 'left' 
+          }} 
+          className="text-lg font-pbold"
+        >
+          {t.customization.smartJewelryTitle}
         </Text>
 
         <FeatureOption
-          title="Enable Smart Jewelry"
-          description="Connect your AnxiEase smart jewelry"
+          title={t.customization.enableJewelry}
+          description={t.customization.jewelryDescription}
           isEnabled={useSmartJewelry}
           onToggle={() => setUseSmartJewelry(!useSmartJewelry)}
           iconName={useSmartJewelry ? 'bluetooth' : 'bluetooth-outline'}
+          isRTL={isRTL}
         />
 
         {useSmartJewelry && (
           <FeatureOption
-            title="Anxiety Alert Vibrations"
-            description="Receive gentle vibrations during detected high anxiety moments"
+            title={t.customization.vibrationAlerts}
+            description={t.customization.vibrationDescription}
             isEnabled={enableVibrations}
             onToggle={() => setEnableVibrations(!enableVibrations)}
             iconName={enableVibrations ? 'pulse' : 'pulse-outline'}
+            isRTL={isRTL}
           />
         )}
       </View>
 
       {/* Music Therapy Section */}
       <View className="bg-surface p-4 rounded-xl space-y-4">
-        <Text style={{ color: colors.text }} className="text-lg font-pbold">
-          Music Therapy
+        <Text 
+          style={{ 
+            color: colors.text,
+            textAlign: isRTL ? 'right' : 'left' 
+          }} 
+          className="text-lg font-pbold"
+        >
+          {t.customization.musicTherapyTitle}
         </Text>
 
         <FeatureOption
-          title="Enable Music Therapy"
-          description="Use calming music to help manage anxiety"
+          title={t.customization.enableMusic}
+          description={t.customization.musicDescription}
           isEnabled={playMusic}
           onToggle={() => {
             setPlayMusic(!playMusic);
@@ -92,21 +94,23 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
             }
           }}
           iconName={playMusic ? 'musical-notes' : 'musical-notes-outline'}
+          isRTL={isRTL}
         />
 
-      {playMusic && (
-        <View className="space-y-4">
-          <MusicSelectionSection
-            selectedMusic={selectedMusic}
-            setSelectedMusic={category => {
-              setSelectedMusic(category);
-              setSelectedTrack(null);
-            }}
-            selectedTrack={selectedTrack}
-            setSelectedTrack={setSelectedTrack}
-          />
-        </View>
-      )}
+        {playMusic && (
+          <View className="space-y-4">
+            <MusicSelectionSection
+              selectedMusic={selectedMusic}
+              setSelectedMusic={category => {
+                setSelectedMusic(category);
+                setSelectedTrack(null);
+              }}
+              selectedTrack={selectedTrack}
+              setSelectedTrack={setSelectedTrack}
+              isRTL={isRTL}
+            />
+          </View>
+        )}
       </View>
     </View>
   );

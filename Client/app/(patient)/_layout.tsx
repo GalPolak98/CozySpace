@@ -3,12 +3,35 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 export default function TabLayout() {
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
   const colors = theme[currentTheme];
+
+  interface Tab {
+    name: string;
+    title: string;
+    iconName: 'home' | 'code-slash'; // Only include valid icon names
+   }
+   
+   const tabs: Tab[] = [
+    {
+      name: 'home',
+      title: t.tabsPatient.home,
+      iconName: 'home',
+    },
+    {
+      name: 'profile', 
+      title: t.tabsPatient.profile,
+      iconName: 'code-slash',
+    }
+   ];
+
+  const orderedTabs = isRTL ? [...tabs].reverse() : tabs;
 
   return (
     <Tabs
@@ -25,6 +48,7 @@ export default function TabLayout() {
           fontFamily: 'Poppins-SemiBold',
           fontSize: 17,
           color: colors.text,
+          textAlign: isRTL ? 'right' : 'left',
         },
         tabBarStyle: {
           backgroundColor: colors.bottomBar,
@@ -35,10 +59,7 @@ export default function TabLayout() {
           ...Platform.select({
             ios: {
               shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: -1,
-              },
+              shadowOffset: { width: 0, height: -1 },
               shadowOpacity: 0.1,
               shadowRadius: 1,
             },
@@ -52,48 +73,27 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontFamily: 'Poppins-Medium',
           fontSize: 12,
+          textAlign: isRTL ? 'right' : 'left',
         },
       }}
     >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon 
-              name={focused ? 'home' : 'home-outline'} 
+      {orderedTabs.map(tab => (
+        <Tabs.Screen
+          key={tab.name}
+          name={tab.name}
+          options={{
+            title: tab.title,
+            headerTitle: "",
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon 
+              name={focused ? tab.iconName : `${tab.iconName}-outline`}
               color={color}
-              size={24} // Explicitly set icon size
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon 
-              name={focused ? 'code-slash' : 'code-slash-outline'} 
-              color={color}
-              size={24} 
-            />
-          ),
-        }}
-      />
+                size={24}
+              />
+            ),
+          }}
+        />
+      ))}
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: Platform.OS === 'android' ? 8 : 0,
-  },
-});

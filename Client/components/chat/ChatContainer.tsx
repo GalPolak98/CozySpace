@@ -1,11 +1,9 @@
 import React from 'react';
 import { 
-  Platform, 
   StyleSheet,
   View, 
 } from 'react-native';
 import ThemedView from '@/components/ThemedView';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HistoryButton from './HistoryButton';
 
 interface ChatContainerProps {
@@ -19,13 +17,11 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
   onNewChat,
   showHistoryButton = true 
 }) => {
-  const insets = useSafeAreaInsets();
 
   return (
     <ThemedView 
       style={[
-        styles.container, 
-        { paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0 }
+        styles.container
       ]}
     >
         <View style={[
@@ -45,6 +41,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     position: 'relative',
+    marginBottom: 8,
   },
 });
 

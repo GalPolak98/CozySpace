@@ -11,6 +11,7 @@ import { getRandomInitialMessage } from '@/constants/messages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
+import { useLanguage } from '@/context/LanguageContext';
 
 const ChatScreen = () => {
   const { 
@@ -29,6 +30,21 @@ const ChatScreen = () => {
   const insets = useSafeAreaInsets();
   const chatService = createChatService();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const { currentLanguage } = useLanguage();
+
+  useEffect(() => {
+    if (currentSession) {
+      const newSession = {
+        ...currentSession,
+        messages: [
+          getRandomInitialMessage(currentLanguage as 'en' | 'he'),
+          ...currentSession.messages.slice(1)
+        ]
+      };
+      setCurrentSession(newSession);
+      saveSession(newSession);
+    }
+  }, [currentLanguage]);
 
   useEffect(() => {
     const keyboardWillShow = Platform.OS === 'ios' 
@@ -47,14 +63,16 @@ const ChatScreen = () => {
 
   useEffect(() => {
     if (!currentSession) {
+      const initialMessage = getRandomInitialMessage(currentLanguage as 'en' | 'he');
       const newSession = {
         id: Date.now().toString(),
-        messages: [getRandomInitialMessage()],
+        messages: [initialMessage],
         createdAt: new Date(),
         lastMessageAt: new Date(),
         hasUserMessages: false
       };
       setCurrentSession(newSession);
+      chatService.addInitialMessage(initialMessage);
     }
     
     return () => {
@@ -72,7 +90,7 @@ const ChatScreen = () => {
 
   const handleSend = async () => {
     if (!inputText.trim() || !currentSession) return;
-
+  
     const userMessage: Message = {
       id: Date.now().toString(),
       text: inputText.trim(),
@@ -95,7 +113,7 @@ const ChatScreen = () => {
     scrollToBottom();
 
     try {
-      const response = await chatService.getChatResponse(inputText);
+      const response = await chatService.getChatResponse(inputText, currentLanguage);
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -146,7 +164,7 @@ const ChatScreen = () => {
     
     const newSession = {
       id: Date.now().toString(),
-      messages: [getRandomInitialMessage()],
+      messages: [getRandomInitialMessage(currentLanguage as 'en' | 'he')],
       createdAt: new Date(),
       lastMessageAt: new Date(),
       hasUserMessages: false

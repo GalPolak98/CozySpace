@@ -7,8 +7,7 @@ import { ChatContextProvider, useChatContext } from '@/context/ChatContext';
 
 const HeaderWrapper = () => {
   const { isTyping } = useChatContext();
-  const { theme: currentTheme, toggleTheme } = useTheme();
-  return <ChatHeader isTyping={isTyping} toggleTheme={toggleTheme} />;
+  return <ChatHeader isTyping={isTyping}/>;
 };
 
 function ChatLayoutInner() {

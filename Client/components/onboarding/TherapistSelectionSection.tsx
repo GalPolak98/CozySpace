@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import { CustomDropdown } from '@/components/CustomDropdown';
 import { TherapistSelectionProps, OptionType } from '@/types/onboarding';
@@ -10,13 +11,13 @@ import ENV from '@/env';
 const DATA_SHARING_OPTIONS = [
   {
     id: 'anxietyTracking',
-    label: 'Anxiety Tracking Reports',
-    description: 'Share your anxiety levels, triggers, and monitoring data'
+    labelKey: 'anxietyTrackingLabel',
+    descriptionKey: 'anxietyTrackingDesc'
   },
   {
     id: 'personalDocumentation',
-    label: 'Personal Documentation',
-    description: 'Share your personal notes, progress, and therapy-related documents'
+    labelKey: 'personalDocLabel',
+    descriptionKey: 'personalDocDesc'
   }
 ] as const;
 
@@ -27,6 +28,7 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
   setDataShareOptions
 }) => {
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
   const colors = theme[currentTheme];
   const [therapists, setTherapists] = useState<OptionType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,28 +52,30 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
 
         const data = await response.json();
         if (!data.therapists) {
-          throw new Error('No therapists data in response');
+          throw new Error(t.therapistSelection.noTherapistsError);
         }
 
-        // Add "No therapist" option at the beginning
         const therapistsWithNone = [
-          { id: 'none', label: 'I don\'t want to work with a therapist now', sublabel: 'You can select a therapist later' },
+          { 
+            id: 'none', 
+            label: t.therapistSelection.noTherapistOption, 
+            sublabel: t.therapistSelection.noTherapistDesc 
+          },
           ...data.therapists
         ];
         
         setTherapists(therapistsWithNone);
       } catch (err) {
         console.error('Fetch error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load therapists');
+        setError(err instanceof Error ? err.message : t.therapistSelection.loadError);
       } finally {
         setLoading(false);
       }
     };
 
     fetchTherapists();
-  }, []);
+  }, [t]);
 
-  // Reset data sharing options when "No therapist" is selected
   useEffect(() => {
     if (selectedTherapist === 'none') {
       setDataShareOptions({
@@ -92,7 +96,7 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
   if (error) {
     return (
       <View className="p-4 bg-error/10 rounded-lg">
-        <Text style={{ color: colors.error }} className="text-center">
+        <Text style={{ color: colors.error, textAlign: isRTL ? 'right' : 'left' }} className="text-center">
           {error}
         </Text>
       </View>
@@ -102,17 +106,24 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
   return (
     <View className="space-y-6">
       <CustomDropdown
-        label="Select Your Therapist"
+        label={t.therapistSelection.dropdownLabel}
         options={therapists}
         value={selectedTherapist}
         onChange={(id) => setSelectedTherapist(id)}
-        placeholder="Choose a therapist to work with"
+        placeholder={t.therapistSelection.dropdownPlaceholder}
+        isRTL={isRTL}
       />
 
       {selectedTherapist && selectedTherapist !== 'none' && (
         <View className="bg-surface p-6 rounded-xl">
-          <Text style={{ color: colors.text }} className="text-lg font-pbold mb-4">
-            Data Sharing Settings
+          <Text 
+            style={{ 
+              color: colors.text,
+              textAlign: isRTL ? 'right' : 'left' 
+            }} 
+            className="text-lg font-pbold mb-4"
+          >
+            {t.therapistSelection.dataSharingTitle}
           </Text>
 
           <View className="space-y-5">
@@ -126,8 +137,9 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
                   }));
                 }}
                 className="flex-row items-start"
+                style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
               >
-                <View className="mr-4">
+                <View style={{ marginRight: isRTL ? 0 : 16, marginLeft: isRTL ? 16 : 0}}>
                   <CustomCheckbox
                     checked={dataShareOptions[option.id]}
                     onCheckedChange={(checked) => {
@@ -139,11 +151,24 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
                   />
                 </View>
                 <View className="flex-1">
-                  <Text style={{ color: colors.text }} className="font-pmedium text-base">
-                    {option.label}
+                  <Text 
+                    style={{ 
+                      color: colors.text,
+                      textAlign: isRTL ? 'right' : 'left' 
+                    }} 
+                    className="font-pmedium text-base"
+                  >
+                    {t.therapistSelection[option.labelKey]}
                   </Text>
-                  <Text style={{ color: colors.textSecondary }} className="text-sm mt-1">
-                    {option.description}
+                  <Text 
+                    style={{ 
+                      color: colors.textSecondary,
+                      textAlign: isRTL ? 'right' : 'left',
+                      marginBottom:12 
+                    }} 
+                    className="text-sm mt-1"
+                  >
+                    {t.therapistSelection[option.descriptionKey]}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -151,8 +176,14 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
           </View>
 
           <View className="mt-4 p-4 bg-primary/10 rounded-lg">
-            <Text style={{ color: colors.text }} className="text-sm font-pregular">
-              Your therapist will only see the data you choose to share. You can change these settings at any time.
+            <Text 
+              style={{ 
+                color: colors.text,
+                textAlign: isRTL ? 'right' : 'left' 
+              }} 
+              className="text-sm font-pregular"
+            >
+              {t.therapistSelection.privacyNotice}
             </Text>
           </View>
         </View>

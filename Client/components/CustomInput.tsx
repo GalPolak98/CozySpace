@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { Pressable, TextInput, View, Text, KeyboardTypeOptions } from "react-native";
+import { Pressable, TextInput, View, KeyboardTypeOptions, I18nManager } from "react-native";
 import { useTheme } from "./ThemeContext";
 import { theme } from "../styles/Theme";
+import ThemedText from "./ThemedText";
 
 interface CustomInputProps {
   value: string;
@@ -11,6 +12,7 @@ interface CustomInputProps {
   isPassword?: boolean;
   keyboardType?: KeyboardTypeOptions;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  isRTL?: boolean;
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({ 
@@ -19,7 +21,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
   placeholder, 
   isPassword = false,
   keyboardType = 'default',
-  autoCapitalize = 'none'
+  autoCapitalize = 'none',
+  isRTL = false
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const { theme: currentTheme } = useTheme();
@@ -27,15 +30,17 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
   return (
     <View className="w-full mb-4">
-      <Text style={{ color: colors.text }} className="font-pmedium mb-2 text-sm">
+      <ThemedText variant="default" className="w-full color font-pmedium mb-2 rtl text-sm" isRTL={isRTL}>
         {placeholder}
-      </Text>
+      </ThemedText>
       <View className="relative">
         <TextInput
           style={{
             backgroundColor: colors.surface,
             color: colors.text,
             borderColor: colors.border,
+            textAlign: isRTL ? 'right' : 'left',
+            writingDirection: isRTL ? 'rtl' : 'ltr'
           }}
           className="h-12 rounded-xl px-4 font-pregular border"
           placeholder={placeholder}
@@ -49,7 +54,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
         {isPassword && (
           <Pressable 
             onPress={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-3"
+            className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-3`}
           >
             <Ionicons
               name={showPassword ? 'eye-off' : 'eye'}

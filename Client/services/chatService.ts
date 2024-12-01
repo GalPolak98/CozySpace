@@ -1,8 +1,13 @@
 import axios from 'axios';
 import ENV from '@/env';
+import { Message } from '@/types/chat';
 
 interface ChatResponse {
   text: string;
+}
+
+interface TranslationResponse {
+  translatedText: string;
 }
 
 type ResponseCategory = 'anxiety' | 'panic' | 'general';
@@ -20,6 +25,8 @@ interface ResponseTypes {
 export class ChatService {
   private readonly API_URL = 'https://api.cohere.ai/v1/generate';
   private readonly API_KEY = ENV.EXPO_PUBLIC_COHERE_API_KEY;
+  private readonly TRANSLATE_API_URL = 'https://deep-translate1.p.rapidapi.com/language/translate/v2';
+  private readonly RAPID_API_KEY = ENV.EXPO_PUBLIC_RAPID_API_DEEP_TRANSLATE_KEY; 
   private readonly SERVER_URL = ENV.EXPO_PUBLIC_SERVER_URL; 
   private conversationHistory: string[] = [];
 
@@ -112,6 +119,10 @@ Context: The user is experiencing anxiety symptoms detected by smart jewelry. Fo
 Previous conversation:
 `;
 
+public addInitialMessage(message: Message) {
+  this.conversationHistory = [`Assistant: ${message}`];
+}
+
   private determineCategory(message: string): {
     category: ResponseCategory;
     subCategory?: AnxietySubCategory;
@@ -191,39 +202,81 @@ Previous conversation:
     }
   }
 
-
-  async getChatResponse(userMessage: string): Promise<ChatResponse> {
+  private async translateText(text: string, from: string, to: string): Promise<string> {
     try {
-      // Emergency check first
-      if (this.isEmergency(userMessage)) {
-        // Send emergency alert
-        await this.sendEmergencyAlert(userMessage);
-        
-        return {
+      const response = await axios.post(
+        this.TRANSLATE_API_URL,
+        {
+          q: text,
+          source: from,
+          target: to
+        },
+        {
+          headers: {
+            'content-type': 'application/json',
+            'X-RapidAPI-Key': this.RAPID_API_KEY,
+            'X-RapidAPI-Host': 'deep-translate1.p.rapidapi.com'
+          }
+        }
+      );
+      
+      console.log('Translation response:', response.data);
+      
+      // Updated to match the actual response structure
+      if (response.data?.data?.translations?.translatedText) {
+        return response.data.data.translations.translatedText;
+      }
+      return text;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return text;
+    }
+  }
+
+  async getChatResponse(userMessage: string, language: string = 'en'): Promise<ChatResponse> {
+    try {
+      let processedMessage = userMessage;
+      
+      // If Hebrew, translate user message to English for processing
+      if (language === 'he') {
+        processedMessage = await this.translateText(userMessage, 'he', 'en');
+      }
+  
+      // Check for emergency with English message
+      if (this.isEmergency(processedMessage)) {
+        await this. sendEmergencyAlert(processedMessage);
+        const emergencyResponse = {
           text: "I'm very concerned about what you're sharing. Help is available 24/7:\n" +
                "Crisis Hotline: 988\n" +
                "Crisis Text Line: Text HOME to 741741\n\n" +
                "Would you like to talk about what's troubling you?"
         };
+  
+        // Only translate emergency response if user is in Hebrew
+        if (language === 'he') {
+          emergencyResponse.text = await this.translateText(emergencyResponse.text, 'en', 'he');
+        }
+        
+        this.conversationHistory.push(`Assistant: ${emergencyResponse}`);
+        return emergencyResponse;
       }
-
-      // Add user message to history
-      this.conversationHistory.push(`User: ${userMessage}`);
+  
+      // Add English message to history for context
+      this.conversationHistory.push(`User: ${processedMessage}`);
       
-      // Keep conversation history manageable
       if (this.conversationHistory.length > 6) {
         this.conversationHistory = this.conversationHistory.slice(-6);
       }
-
-      // Create the complete prompt
+  
+      // Always use English prompt with Cohere
       const prompt = `${this.systemPrompt}${this.conversationHistory.join('\n')}\nAssistant:`;
-
+  
       const response = await axios.post(
         this.API_URL,
         {
           model: 'command',
           prompt: prompt,
-          max_tokens: 150, 
+          max_tokens: 150,
           temperature: 0.7,
           k: 0,
           stop_sequences: ["User:", "Assistant:"],
@@ -237,27 +290,37 @@ Previous conversation:
           }
         }
       );
-
-      let botResponse = response.data.generations[0].text.trim();
+  
+      let botResponse = response.data.generations[0].text.trim()
+      .replace(/Assistant:|User:/g, '')
+      .trim();
+  
+    if (!this.isCompleteSentence(botResponse)) {
+      const fallbackResponse = this.getFallbackResponse(processedMessage);
+      botResponse = fallbackResponse.text;
+    }
       
-      // Clean up the response
-      botResponse = botResponse
-        .replace(/Assistant:|User:/g, '')
-        .trim();
-
-      // Check if response is complete, if not use fallback
-      if (!this.isCompleteSentence(botResponse)) {
-        return this.getFallbackResponse(userMessage);
-      }
-      
-      // Add bot response to history
-      this.conversationHistory.push(`Assistant: ${botResponse}`);
-      
-      return { text: botResponse };
+    // If user is in Hebrew, translate the response to Hebrew before showing
+    if (language === 'he') {
+      const translatedResponse = await this.translateText(botResponse, 'en', 'he');
+      console.log('Final translated response:', translatedResponse); // Add this log
+      this.conversationHistory.push(`Assistant: ${translatedResponse}`);
+      return { text: translatedResponse };
+    }
+    
+    this.conversationHistory.push(`Assistant: ${botResponse}`);
+    return { text: botResponse };
       
     } catch (error) {
-      console.error('Cohere API Error:', error);
-      return this.getFallbackResponse(userMessage);
+      console.error('Chat API Error:', error);
+      let fallbackResponse = this.getFallbackResponse(userMessage);
+      
+      // If user is in Hebrew, translate the fallback response
+      if (language === 'he') {
+        fallbackResponse.text = await this.translateText(fallbackResponse.text, 'en', 'he');
+      }
+      
+      return fallbackResponse;
     }
   }
 }
