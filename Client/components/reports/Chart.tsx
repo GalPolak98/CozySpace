@@ -54,7 +54,7 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
         }}
         withInnerLines={true}
         withOuterLines={false}
-        withVerticalLines={false}
+        withVerticalLines={true}
         yAxisLabel=""
         yAxisSuffix=""
         fromZero

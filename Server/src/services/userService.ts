@@ -112,7 +112,7 @@ async getNotesForUser(userId: string) {
   if (!patient) {
     throw new Error('Patient not found');
   }
-  return patient.notes;  // Assuming 'notes' is an array field in PatientModel
+  return patient.notes;  
 }
 
 

@@ -62,7 +62,7 @@ const NotesSection: React.FC = () => {
       if (!response.ok) throw new Error('Failed to fetch notes');
   
       const fetchedNotes = (await response.json()).notes;
-
+      console.log("notesss",fetchedNotes)
       const sortedNotes = Array.isArray(fetchedNotes)
       ? fetchedNotes.sort((a, b) => parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp))
       : [fetchedNotes];

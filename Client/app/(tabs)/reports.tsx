@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo  } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Modal } from 'react-native';
 import { format, subDays } from 'date-fns';
 import ThemedView from '@/components/ThemedView';
@@ -7,7 +7,9 @@ import StatCard from '@/components/reports/StatCard';
 import Chart from '@/components/reports/Chart';
 import DateRangeSelector from '@/components/reports/DateRangeSelector';
 import DatePickerModal from '@/components/reports/DatePickerModal';
-import { useTheme } from '@/components/ThemeContext';
+import config from '../../env';
+import useAuth from '../../hooks/useAuth';
+import { parse } from 'date-fns';
 
 const mockDataService = {
   getReports: (startDate: Date, endDate: Date) => {
@@ -29,7 +31,6 @@ const mockDataService = {
 };
 
 const ReportsScreen = () => {
-  const { theme } = useTheme(); // Get the current theme (light or dark)
   const [dateRange, setDateRange] = useState({
     startDate: subDays(new Date(), 7),
     endDate: new Date()
@@ -37,9 +38,50 @@ const ReportsScreen = () => {
 
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [isSelectingStartDate, setIsSelectingStartDate] = useState(true);
+  const [notesCount, setNotesCount] = useState<number>(0);
+  const userId = useAuth()
 
   const reportData = useMemo(() => {
     return mockDataService.getReports(dateRange.startDate, dateRange.endDate);
+  }, [dateRange]);
+
+
+  const loadNotes = async () => {
+    if (!userId) return;
+  
+    try {
+      const response = await fetch(`${config.API_URL}/users/${userId}/latest`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+  
+      if (!response.ok) throw new Error('Failed to fetch notes');
+  
+      const fetchedNotes = (await response.json()).notes;
+  
+      console.log("Fetched Notes:", fetchedNotes);
+  
+      // Parse the notes' timestamps and filter them
+      const filteredNotes = fetchedNotes.filter((note: { timestamp: string }) => {
+        // Convert the timestamp string to a Date object using `date-fns`
+        const noteDate = parse(note.timestamp.split(', ')[0], 'dd.MM.yyyy', new Date());
+        return (
+          noteDate >= new Date(dateRange.startDate) &&
+          noteDate <= new Date(dateRange.endDate)
+        );
+      });
+  
+      setNotesCount(filteredNotes.length);
+    } catch (error) {
+      console.error('Failed to fetch notes', error);
+    }
+  };
+  
+  
+
+  // Trigger loading notes whenever the date range changes
+  useEffect(() => {
+    loadNotes();
   }, [dateRange]);
 
   const handleDayPress = (day: { dateString: string }) => {
@@ -93,7 +135,7 @@ const ReportsScreen = () => {
           <View className="flex-row justify-between mt-4">
             <StatCard
               title="Notes Created"
-              value={reportData.notesCreated}
+              value={notesCount.toString()}
               icon="file-text"
             />
             <StatCard
