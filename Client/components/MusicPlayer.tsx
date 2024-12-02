@@ -5,6 +5,14 @@ import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { musicData, MusicTrack } from '@/types/musicData';
+import { usePathname } from 'expo-router';
+
+interface MusicPlayerProps {
+  selectedCategory: string;
+  onTrackSelect?: (trackId: string) => void;
+  showSelectedTrack?: boolean;
+  selectedTrackId?: string | null;
+}
 
 interface MusicPlayerProps {
   selectedCategory: string;
@@ -25,10 +33,28 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
+  const pathname = usePathname();
 
-  // Filter music by category
   const categoryMusic = musicData.filter(track => track.category === selectedCategory);
 
+  const stopSound = async () => {
+    if (soundRef.current) {
+      try {
+        const status = await soundRef.current.getStatusAsync();
+        if (status.isLoaded) {
+          await soundRef.current.stopAsync();
+          await soundRef.current.unloadAsync();
+        }
+      } catch (error) {
+        console.error('Error checking sound status:', error);
+      } finally {
+        soundRef.current = null;
+        setIsPlaying(null);
+      }
+    }
+  };
+
+  // Initialize audio
   useEffect(() => {
     const initAudio = async () => {
       await Audio.setAudioModeAsync({
@@ -41,28 +67,20 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     initAudio();
 
     return () => {
-      const cleanup = async () => {
-        if (soundRef.current) {
-          await soundRef.current.stopAsync();
-          await soundRef.current.unloadAsync();
-          soundRef.current = null;
-          setIsPlaying(null);
-        }
-      };
-      cleanup();
+      stopSound();
     };
   }, []);
 
+  // Handle tab changes
   useEffect(() => {
-    const cleanup = async () => {
-      if (soundRef.current) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-        soundRef.current = null;
-        setIsPlaying(null);
-      }
-    };
-    cleanup();
+    if (!pathname.includes('profile')) {
+      stopSound();
+    }
+  }, [pathname]);
+
+  // Handle category changes
+  useEffect(() => {
+    stopSound();
   }, [selectedCategory]);
 
   const formatDuration = (seconds: number) => {
@@ -80,12 +98,10 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
         onTrackSelect?.(trackItem.id);
       }
 
-      if (soundRef.current) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-        soundRef.current = null;
-      }
+      // Stop current sound if playing
+      await stopSound();
 
+      // If we're clicking the same track that was playing, just stop it
       if (isPlaying === trackItem.id) {
         setIsPlaying(null);
         return;

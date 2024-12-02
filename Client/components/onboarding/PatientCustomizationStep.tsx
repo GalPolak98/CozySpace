@@ -103,7 +103,6 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
               selectedMusic={selectedMusic}
               setSelectedMusic={category => {
                 setSelectedMusic(category);
-                setSelectedTrack(null);
               }}
               selectedTrack={selectedTrack}
               setSelectedTrack={setSelectedTrack}

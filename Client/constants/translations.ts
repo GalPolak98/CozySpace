@@ -82,7 +82,15 @@ export const translations = {
             passwordsNoMatch: 'Passwords do not match',
             authFailed: 'Failed to complete authentication',
             error: "Error",
+            loadError: "Failed to load data"
           },
+
+          success: {
+            default: "Success",
+            updated: "Updated successfully",
+            saved: "Saved successfully",
+          },
+
           homePatient: {
             talkToAI: 'Talk to AI Assistant',
             guidedDocumenting: 'Guided Documenting',
@@ -240,7 +248,17 @@ export const translations = {
             confirmDelete: "Are you sure you want to delete this chat?",
             noMessages: "No messages",
             noChatHistory: "No chat history yet"
-          }
+          },
+
+          profile: {
+            saveSuccess: "Your profile has been updated successfully",
+            saveError: "Failed to update profile. Please try again.",
+            myProfile: "My Profile",
+            personalInfo: "Personal Information",
+            preferences: "Preferences",
+            save: "Save Changes",
+            fullName: 'Full name'
+          },
       },
     },
     he: {
@@ -325,7 +343,15 @@ export const translations = {
             passwordsNoMatch: 'הסיסמאות אינן תואמות',
             authFailed: 'ההתחברות נכשלה',
             error: "שגיאה",
+            loadError: "טעינת הנתונים נכשלה"
           },
+
+          success: {
+            default: "הצלחה",
+            updated: "עודכן בהצלחה",
+            saved: "נשמר בהצלחה",
+          },
+
           homePatient: {
             talkToAI: 'שוחח עם עוזר AI',
             guidedDocumenting: 'תיעוד מונחה',
@@ -481,7 +507,17 @@ export const translations = {
             confirmDelete: "האם אתה בטוח שברצונך למחוק צ'אט זה?",
             noMessages: "אין הודעות",
             noChatHistory: "אין עדיין היסטוריית צ'אט"
-          }
+          },
+
+          profile: {
+            saveSuccess: "הפרופיל שלך עודכן בהצלחה",
+            saveError: "נכשל בעדכון הפרופיל. אנא נסה שוב.",
+            myProfile: "הפרופיל שלי",
+            personalInfo: "מידע אישי",
+            preferences: "העדפות",
+            save: "שמור שינויים",
+            fullName: 'שם מלא'
+          },
       },
     },
   };

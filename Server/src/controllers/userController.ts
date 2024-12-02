@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { userService } from '../services/userService';
+import { PatientModel } from '../models/Patient';
 
 export const registerUser: RequestHandler = async (req, res, next) => {
   try {
@@ -127,5 +128,22 @@ export const deleteNote: RequestHandler = async (req, res, next) => {
     res.status(200).json({ success: true, message: 'Note deleted successfully' });
   } catch (error) {
     return next(error);
+  }
+};
+
+export const updateUserPreferences: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { therapistInfo, toolsPreferences } = req.body;
+
+    const updatedPatient = await userService.updatePatientPreferences(userId, {
+      therapistInfo,
+      toolsPreferences
+    });
+
+    res.json({ success: true, patient: updatedPatient });
+  } catch (error) {
+    console.error('Controller error:', error);
+    next(error);
   }
 };

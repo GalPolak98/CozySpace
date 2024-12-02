@@ -1,6 +1,7 @@
 import { PatientModel, IPatient } from '../models/Patient';
 import { UserModel, IUser } from '../models/User';
 import { TherapistModel, ITherapist } from '../models/Therapist';
+import mongoose from 'mongoose';
 
 class UserService {
   async registerUser(userData: any) {
@@ -264,6 +265,89 @@ async deleteNoteForUser(userId: string, noteId: string) {
   }
 }
 
+async updatePatientPreferences(userId: string, updateData: {
+  therapistInfo?: {
+    selectedTherapistId: string | null;
+    dataSharing: {
+      anxietyTracking: boolean;
+      personalDocumentation: boolean;
+    };
+  };
+  toolsPreferences?: any;
+}) {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    console.log('Updating preferences for patient:', userId);
+    console.log('Update data:', updateData);
+
+    const patient = await PatientModel.findOne({ userId }).session(session);
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
+    const oldTherapistId = patient.therapistInfo.selectedTherapistId;
+    const newTherapistId = updateData.therapistInfo?.selectedTherapistId;
+
+    console.log('Old therapist:', oldTherapistId);
+    console.log('New therapist:', newTherapistId);
+
+    if (oldTherapistId !== newTherapistId) {
+      // Remove from old therapist
+      if (oldTherapistId && oldTherapistId !== 'none') {
+          await TherapistModel.findOneAndUpdate(
+          { userId: oldTherapistId },
+          { 
+            $pull: { 
+              patients: { 
+                userId: userId  // Using userId directly
+              } 
+            } 
+          },
+          { session, new: true }
+        );
+      }
+
+      // Add to new therapist
+      if (newTherapistId && newTherapistId !== 'none') {
+        const fullName = `${patient.personalInfo.firstName} ${patient.personalInfo.lastName}`;
+        
+        await TherapistModel.findOneAndUpdate(
+          { userId: newTherapistId },
+          { 
+            $addToSet: { 
+              patients: {
+                userId: userId,  // Using userId directly
+                fullName: fullName
+              } 
+            } 
+          },
+          { session, new: true }
+        );
+      }
+    }
+
+    // Update patient preferences
+    if (updateData.therapistInfo) {
+      patient.therapistInfo = updateData.therapistInfo;
+    }
+    if (updateData.toolsPreferences) {
+      patient.toolsPreferences = updateData.toolsPreferences;
+    }
+
+    await patient.save({ session });
+    await session.commitTransaction();
+    
+    return patient;
+  } catch (error) {
+    await session.abortTransaction();
+    console.error('Update patient preferences error:', error);
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
 
 }
 
