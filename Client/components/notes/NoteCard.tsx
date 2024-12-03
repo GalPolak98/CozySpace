@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
+import { useLanguage } from '@/context/LanguageContext';
 
 const NoteCard: React.FC<{
   note: { _id: string; content: string; timestamp: string } | null;
@@ -9,6 +10,8 @@ const NoteCard: React.FC<{
   setEditedNote: (content: string) => void;
   setIsModalVisible: (visible: boolean) => void;
 }> = ({ note, setSelectedNote, setEditedNote, setIsModalVisible }) => {
+  const { t, isRTL } = useLanguage();
+  
   if (!note) return null;
 
   return (
@@ -23,18 +26,22 @@ const NoteCard: React.FC<{
         style={{
           borderRadius: 16,
           padding: 18,
-          shadowColor: '#000', // Shadow color
-          shadowOffset: { width: 0, height: 4 }, // Shadow position
-          shadowOpacity: 0.2, // Shadow transparency
-          shadowRadius: 6, // Shadow blur
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.2,
+          shadowRadius: 6,
           elevation: 5
         }}
       >
         <ThemedText
-          style={{ fontSize: 12, marginBottom: 8 }}
+          style={{ 
+            fontSize: 12, 
+            marginBottom: 8,
+            textAlign: isRTL ? 'right' : 'left'
+          }}
           variant="secondary" 
         >
-          Latest Note • {note.timestamp}
+          {t.note.latestNote} • {note.timestamp}
         </ThemedText>
         <ThemedText
           numberOfLines={3}
@@ -42,6 +49,8 @@ const NoteCard: React.FC<{
             fontSize: 18,
             lineHeight: 24,
             fontWeight: '600',
+            textAlign: isRTL ? 'right' : 'left',
+            writingDirection: isRTL ? 'rtl' : 'ltr'
           }}
         >
           {note.content}

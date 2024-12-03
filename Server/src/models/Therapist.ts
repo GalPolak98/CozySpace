@@ -6,6 +6,7 @@ interface ITherapist extends Document {
     firstName: string;
     lastName: string;
     email: string | null;
+    gender: string;
   };
   professionalInfo: {
     educationLevel: string;
@@ -14,6 +15,10 @@ interface ITherapist extends Document {
     specialization: string;
     licenseNumber: string;
   };
+  patients: Array<{
+    userId: string;
+    fullName: string;
+  }>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +29,7 @@ const TherapistSchema = new Schema<ITherapist>({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, default: null },
+    gender: { type: String, required: true, enum: ['male', 'female'] }
   },
   professionalInfo: {
     educationLevel: { type: String, required: true },
@@ -32,6 +38,10 @@ const TherapistSchema = new Schema<ITherapist>({
     specialization: { type: String, required: true },
     licenseNumber: { type: String, required: true },
   },
+  patients: [{
+    userId: { type: String, required: true },
+    fullName: { type: String, required: true }
+  }]
 }, {
   timestamps: true
 });

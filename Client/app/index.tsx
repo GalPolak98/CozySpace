@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {View, FlatList, Dimensions, Animated, ViewToken, Image, StyleSheet} from 'react-native';
+import { View, FlatList, Dimensions, Animated, ViewToken, Image, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
-import { auth } from '@/Services/firebaseConfig';
+import { useLanguage } from '@/context/LanguageContext';
+import { theme } from '@/styles/Theme';
+import { auth } from '@/services/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';
-import { AuthRoutingService } from '@/Services/authRoutingService';
+import { AuthRoutingService } from '@/services/authRoutingService';
+import { translations } from '@/constants/translations';
 import { useNotification } from '@/context/NotificationContext';
 import config from '../env';
 
@@ -18,34 +20,35 @@ const { width, height } = Dimensions.get('window');
 
 interface OnboardingItem {
   id: string;
-  title: string;
-  description: string;
+  titleKey: keyof typeof translations.en.translation.onboarding;
+  descriptionKey: keyof typeof translations.en.translation.onboarding;
   image: any;
 }
 
+// Updated onboardingData with proper types
 const onboardingData: OnboardingItem[] = [
   {
     id: '1',
-    title: 'Welcome to AnxiEase',
-    description: 'Your personal companion for managing anxiety and finding peace in daily life.',
+    titleKey: 'welcome',
+    descriptionKey: 'welcome',
     image: require('../assets/images/welcome.png'),
   },
   {
     id: '2',
-    title: 'Real-Time Support',
-    description: 'Get immediate assistance during anxiety moments with guided breathing exercises and calming techniques.',
+    titleKey: 'support',
+    descriptionKey: 'support',
     image: require('../assets/images/support.png'),
   },
   {
     id: '3',
-    title: 'Track Your Journey',
-    description: 'Monitor your progress and identify patterns to better understand and manage your anxiety triggers.',
+    titleKey: 'track',
+    descriptionKey: 'track',
     image: require('../assets/images/track.png'),
   },
   {
     id: '4',
-    title: 'Connect with Care',
-    description: 'Safely share your progress with your therapist and build a stronger support system.',
+    titleKey: 'connect',
+    descriptionKey: 'connect',
     image: require('../assets/images/connect.png'),
   },
 ];
@@ -56,6 +59,9 @@ export default function Index() {
   const scrollX = useRef(new Animated.Value(0)).current;
   const slidesRef = useRef<FlatList>(null);
   const { theme: currentTheme } = useTheme();
+  // const { currentLanguage } = useLanguage();
+    const { isRTL, t } = useLanguage();
+
   const colors = theme[currentTheme];
   const { notification, expoPushToken, error } = useNotification();
   const viewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -74,7 +80,6 @@ export default function Index() {
         const existingToken = await AsyncStorage.getItem('userToken');
         
         if (existingToken && auth.currentUser) {
-          console.log("Using existing token");
           if (isSubscribed) {
             await AuthRoutingService.handleAuthRouting();
           }
@@ -88,11 +93,9 @@ export default function Index() {
             if (user) {
               const newToken = await user.getIdToken();
               await AsyncStorage.setItem('userToken', newToken);
-              console.log("New token obtained");
               await AuthRoutingService.handleAuthRouting();
             } else {
               await AsyncStorage.removeItem('userToken');
-              console.log("No user found, showing onboarding");
               setIsCheckingAuth(false);
             }
           } catch (error) {
@@ -114,10 +117,7 @@ export default function Index() {
     };
   
     checkAuth();
-  
-    return () => {
-      isSubscribed = false;
-    };
+    return () => { isSubscribed = false; };
   }, []);
 
   // Push notification token effect
@@ -142,29 +142,36 @@ export default function Index() {
   }, [expoPushToken]);
 
   const scrollTo = (index: number) => {
-    if (slidesRef.current) {
-      slidesRef.current.scrollToIndex({ index });
-    }
+    slidesRef.current?.scrollToIndex({ index });
   };
 
   const Paginator = () => {
+    const { isRTL } = useLanguage();
+    const dots = [...onboardingData];
+    if (isRTL) dots.reverse();
+  
     return (
       <View style={styles.paginatorContainer}>
-        {onboardingData.map((_, index) => {
-          const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+        {dots.map((_, index) => {
+          const adjustedIndex = isRTL ? dots.length - 1 - index : index;
+          const inputRange = [
+            (adjustedIndex - 1) * width, 
+            adjustedIndex * width, 
+            (adjustedIndex + 1) * width
+          ];
           
           const dotWidth = scrollX.interpolate({
             inputRange,
             outputRange: [8, 24, 8],
             extrapolate: 'clamp',
           });
-
+  
           const opacity = scrollX.interpolate({
             inputRange,
             outputRange: [0.3, 1, 0.3],
             extrapolate: 'clamp',
           });
-
+  
           return (
             <Animated.View
               key={index}
@@ -180,33 +187,32 @@ export default function Index() {
     );
   };
 
-  const renderItem = ({ item }: { item: OnboardingItem }) => {
-    return (
-      <View style={[styles.slide, { width }]}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={item.image}
-            style={styles.image}
-            resizeMode="contain"
-          />
-        </View>
-        <View style={styles.textContainer}>
-          <ThemedText
-            variant="primary"
-            className="text-3xl font-pbold text-center mb-4"
-          >
-            {item.title}
-          </ThemedText>
-          <ThemedText
-            variant="secondary"
-            className="text-lg font-pregular text-center px-8 leading-7"
-          >
-            {item.description}
-          </ThemedText>
-        </View>
+  const renderItem = ({ item }: { item: OnboardingItem }) => (
+    <View style={[styles.slide, { width }]}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={item.image}
+          style={styles.image}
+          resizeMode="contain"
+        />
       </View>
-    );
-  };
+      <View style={styles.textContainer}>
+        <ThemedText
+          variant="primary"
+          className="text-3xl font-pbold text-center mb-4"
+        >
+          {t.onboarding[item.titleKey].title}
+        </ThemedText>
+        <ThemedText
+          variant="secondary"
+          className="text-lg font-pregular text-center px-8 leading-7"
+          isRTL={isRTL}
+        >
+          {t.onboarding[item.titleKey].description}
+        </ThemedText>
+      </View>
+    </View>
+  );
 
   if (isCheckingAuth) {
     return <Loader isLoading={true} />;
@@ -239,7 +245,7 @@ export default function Index() {
           
           <View style={styles.buttonContainer}>
             <CustomButton
-              title={currentIndex === onboardingData.length - 1 ? "Get Started" : "Next"}
+              title={currentIndex === onboardingData.length - 1 ? t.common.getStarted : t.common.next}
               handlePress={() => {
                 if (currentIndex < onboardingData.length - 1) {
                   scrollTo(currentIndex + 1);
@@ -254,7 +260,7 @@ export default function Index() {
             
             {currentIndex < onboardingData.length - 1 && (
               <CustomButton
-                title="Skip"
+                title={t.common.skip}
                 handlePress={() => router.push('/(auth)/sign-in')}
                 variant="secondary"
                 containerStyles="w-full"

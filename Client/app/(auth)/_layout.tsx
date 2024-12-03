@@ -3,7 +3,8 @@ import { Stack } from "expo-router";
 import React from "react";
 import ThemeToggle from '@/components/ThemeToggle';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
+import { HeaderRight } from "@/components/navigation/HeaderButtons";
 
 const AuthLayout = () => {
   const { theme: currentTheme } = useTheme();
@@ -12,7 +13,7 @@ const AuthLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerRight: () => <ThemeToggle />,
+        headerRight: () => HeaderRight(),
         headerStyle: {
           backgroundColor: colors.header,
         },

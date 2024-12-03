@@ -1,13 +1,13 @@
 import { RequestHandler } from 'express';
 import { userService } from '../services/userService';
+import { PatientModel } from '../models/Patient';
 
 export const registerUser: RequestHandler = async (req, res, next) => {
   try {
     const user = await userService.registerUser(req.body);
     res.status(201).json({ success: true, user });
-    // return next();
   } catch (error) {
-    return next(error);
+    next(error);
   }
 };
 
@@ -19,9 +19,20 @@ export const getUserProfile: RequestHandler = async (req, res, next) => {
       return;
     }
     res.json(profile);
-    // return next();
   } catch (error) {
-    return next(error);
+    next(error);
+  }
+};
+
+export const updatePatientTherapist: RequestHandler = async (req, res, next) => {
+  try {
+    const { patientId } = req.params;
+    const { therapistId } = req.body;
+    
+    const updatedPatient = await userService.updatePatientTherapist(patientId, therapistId);
+    res.json({ success: true, patient: updatedPatient });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -147,3 +158,19 @@ export const updateNotificationTappedStatus: RequestHandler = async (req, res, n
 };
 
 
+export const updateUserPreferences: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { therapistInfo, toolsPreferences } = req.body;
+
+    const updatedPatient = await userService.updatePatientPreferences(userId, {
+      therapistInfo,
+      toolsPreferences
+    });
+
+    res.json({ success: true, patient: updatedPatient });
+  } catch (error) {
+    console.error('Controller error:', error);
+    next(error);
+  }
+};

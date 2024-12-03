@@ -1,7 +1,9 @@
 import React, { ReactNode } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
+import { useLanguage } from '@/context/LanguageContext';
+import ThemedText from '@/components/ThemedText';
 
 interface OnboardingStepProps {
   title: string;
@@ -20,11 +22,16 @@ export const OnboardingStep: React.FC<OnboardingStepProps> = ({
 }) => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
+  const { isRTL } = useLanguage();
 
   return (
     <View className="flex-1">
-      {/* Progress Bar */}
-      <View className="flex-row w-full h-2 mb-6">
+      <View 
+        className="flex-row w-full h-2 mb-6"
+        style={{
+          flexDirection: isRTL ? 'row-reverse' : 'row'
+        }}
+      >
         {Array.from({ length: totalSteps }).map((_, index) => (
           <View
             key={index}
@@ -36,19 +43,25 @@ export const OnboardingStep: React.FC<OnboardingStepProps> = ({
         ))}
       </View>
 
-      {/* Header */}
       <View className="mb-6">
-        <Text style={{ color: colors.text }} className="text-2xl font-pbold mb-2">
+        <ThemedText 
+          variant="default" 
+          className="text-2xl font-pbold mb-2"
+          isRTL={isRTL}
+        >
           {title}
-        </Text>
+        </ThemedText>
         {subtitle && (
-          <Text style={{ color: colors.textSecondary }} className="text-base font-pregular">
+          <ThemedText 
+            variant="secondary" 
+            className="text-base font-pregular"
+            isRTL={isRTL}
+          >
             {subtitle}
-          </Text>
+          </ThemedText>
         )}
       </View>
 
-      {/* Content */}
       {children}
     </View>
   );

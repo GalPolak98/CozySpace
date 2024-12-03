@@ -6,16 +6,16 @@ export class TherapistService {
       console.log('Fetching active therapists from database');
       
       const therapists = await TherapistModel.find()
-        .select('userId personalInfo professionalInfo')
+        .select('userId personalInfo professionalInfo patients')
         .sort({ 'personalInfo.lastName': 1, 'personalInfo.firstName': 1 });
 
       console.log(`Found ${therapists.length} therapists`);
       
-      // Transform database records into the format expected by the frontend
       return therapists.map(therapist => ({
         id: therapist.userId,
         label: `Dr. ${therapist.personalInfo.firstName} ${therapist.personalInfo.lastName}`,
-        sublabel: `Specializes in ${therapist.professionalInfo.specialization} • ${therapist.professionalInfo.experienceLevel}`
+        sublabel: `Specializes in ${therapist.professionalInfo.specialization} • ${therapist.professionalInfo.experienceLevel}`,
+        patientCount: therapist.patients.length
       }));
     } catch (error) {
       console.error('Error fetching therapists:', error);
@@ -43,6 +43,7 @@ export class TherapistService {
         userId: userData.userId,
         personalInfo: userData.personalInfo,
         professionalInfo: userData.professionalInfo,
+        patients: []
       });
 
       await therapist.save();

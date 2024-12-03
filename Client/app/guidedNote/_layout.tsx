@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import NotesHeader from '@/components/notes/NotesHeader';
 import AnxietySlider from '@/components/notes/AnxietySlider';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 
 // Header wrapper to handle dynamic data and theme toggling
 const HeaderWrapper = () => {

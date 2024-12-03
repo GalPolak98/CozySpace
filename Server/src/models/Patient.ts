@@ -6,6 +6,7 @@ export interface IPatient extends IBaseModel {
       firstName: string;
       lastName: string;
       email: string;
+      gender: string;
     };
     therapistInfo: {
       selectedTherapistId: string | null;
@@ -21,7 +22,7 @@ export interface IPatient extends IBaseModel {
       };
       musicTherapy: {
         enabled: boolean;
-        selectedMusicType: string | null;
+        selectedTrackId: string | null;
       };
     };
     guidedNotes: [
@@ -67,7 +68,8 @@ export interface IPatient extends IBaseModel {
     personalInfo: {
       firstName: { type: String, required: true },
       lastName: { type: String, required: true },
-      email: { type: String, required: true }
+      email: { type: String, required: true },
+      gender: { type: String, required: true, enum: ['male', 'female'] }
     },
     therapistInfo: {
       selectedTherapistId: { type: String, default: null },
@@ -83,7 +85,7 @@ export interface IPatient extends IBaseModel {
       },
       musicTherapy: {
         enabled: { type: Boolean, default: false },
-        selectedMusicType: { type: String, default: null }
+        selectedTrackId: { type: String, default: null }
       }
     },
     guidedNotes: [

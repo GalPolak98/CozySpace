@@ -1,4 +1,18 @@
-export const INITIAL_MESSAGES = [
+// Define message types
+interface Message {
+  id: string;
+  text: string;
+  sender: 'bot';
+  timestamp: Date;
+}
+
+interface LocalizedMessages {
+  en: string[];
+  he: string[];
+}
+
+export const INITIAL_MESSAGES: LocalizedMessages = {
+  en: [
     "I'm here to support you through this moment. How can I help you today?",
     "Let's work through this together. Would you like to share what's on your mind?",
     "You're not alone in this. How can I assist you right now?",
@@ -14,14 +28,34 @@ export const INITIAL_MESSAGES = [
     "Remember to breathe - I'm here to help. What's causing you concern?",
     "Sometimes anxiety can feel overwhelming. Let's work through this together.",
     "Your well-being matters. How can I assist you in this moment?"
-  ];
+  ],
+  he: [
+    "אני כאן לתמוך בך ברגע זה. איך אוכל לעזור לך היום?",
+    "בוא נעבור את זה יחד. תרצה לשתף במה שעובר לך בראש?",
+    "אתה לא לבד בזה. איך אני יכול לסייע לך כרגע?",
+    "אני כאן להקשיב ולעזור. על מה היית רוצה להתמקד היום?",
+    "לפעמים הצעד הראשון הוא הכי קשה. אני כאן לתמוך בך.",
+    "בוא נתקדם צעד אחר צעד. מה מטריד אותך כרגע?",
+    "זה בסדר להרגיש חרדה. האם תרצה לדבר על מה שאתה חווה?",
+    "הרגשות שלך תקינים. איך נוכל לעבוד יחד כדי לעזור לך להרגיש טוב יותר?",
+    "אני כאן כדי לספק לך מרחב בטוח. מה עובר לך בראש?",
+    "בוא נמצא רוגע יחד. מה יעזור לך הכי הרבה כרגע?",
+    "לדאוג לבריאות הנפשית שלך זה חשוב. איך אני יכול לתמוך בך היום?",
+    "עשית צעד טוב בכך שפנית. על מה היית רוצה לעבוד?",
+    "זכור לנשום - אני כאן לעזור. מה מדאיג אותך?",
+    "לפעמים חרדה יכולה להרגיש מציפה. בוא נעבור את זה יחד.",
+    "הרווחה הנפשית שלך חשובה. איך אני יכול לסייע לך ברגע זה?"
+  ]
+};
+
+export const getRandomInitialMessage = (language: 'en' | 'he'): Message => {
+  const messages = INITIAL_MESSAGES[language];
+  const randomIndex = Math.floor(Math.random() * messages.length);
   
-  export const getRandomInitialMessage = () => {
-    const randomIndex = Math.floor(Math.random() * INITIAL_MESSAGES.length);
-    return {
-      id: '1',
-      text: INITIAL_MESSAGES[randomIndex],
-      sender: 'bot' as const,
-      timestamp: new Date()
-    };
+  return {
+    id: '1',
+    text: messages[randomIndex],
+    sender: 'bot',
+    timestamp: new Date()
   };
+};

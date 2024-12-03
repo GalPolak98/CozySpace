@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
 

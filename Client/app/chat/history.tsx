@@ -4,7 +4,8 @@ import {
   TouchableOpacity, 
   StyleSheet, 
   Alert,
-  Platform
+  Platform,
+  I18nManager 
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
@@ -14,12 +15,14 @@ import { useChatContext } from '@/context/ChatContext';
 import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { useLanguage } from '@/context/LanguageContext';
+import { theme } from '@/styles/Theme';
 
 const ChatHistory = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const { getAllSessions, setCurrentSession, deleteSession } = useChatContext();
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL, currentLanguage } = useLanguage();
   const colors = theme[currentTheme];
   const router = useRouter();
 
@@ -39,15 +42,15 @@ const ChatHistory = () => {
 
   const handleDeleteSession = async (sessionId: string) => {
     Alert.alert(
-      'Delete Chat',
-      'Are you sure you want to delete this chat?',
+      t.chat.deleteChat,
+      t.chat.confirmDelete,
       [
         {
-          text: 'Cancel',
+          text: t.common.cancel,
           style: 'cancel'
         },
         {
-          text: 'Delete',
+          text: t.common.delete,
           style: 'destructive',
           onPress: async () => {
             await deleteSession(sessionId);
@@ -59,26 +62,51 @@ const ChatHistory = () => {
   };
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return new Date(date).toLocaleDateString(
+      currentLanguage === 'he' ? 'he-IL' : 'en-US',
+      {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+    );
   };
 
   const renderSessionItem = useCallback(({ item }: { item: ChatSession }) => (
     <TouchableOpacity
-      style={[styles.sessionItem, { backgroundColor: colors.surface }]}
+      style={[
+        styles.sessionItem, 
+        { 
+          backgroundColor: colors.surface,
+          flexDirection: isRTL ? 'row-reverse' : 'row'
+        }
+      ]}
       onPress={() => handleSessionPress(item)}
     >
-      <View style={styles.sessionContent}>
-        <ThemedText style={styles.dateText}>
+      <View style={[
+        styles.sessionContent,
+        { marginRight: isRTL ? 0 : 16, marginLeft: isRTL ? 16 : 0 }
+      ]}>
+        <ThemedText 
+          style={[
+            styles.dateText,
+            { textAlign: isRTL ? 'right' : 'left' }
+          ]}
+          isRTL={isRTL}
+        >
           {formatDate(item.createdAt)}
         </ThemedText>
-        <ThemedText style={styles.messagePreview} numberOfLines={2}>
-          {item.messages[item.messages.length - 1]?.text || 'No messages'}
+        <ThemedText 
+          style={[
+            styles.messagePreview,
+            { textAlign: isRTL ? 'right' : 'left' }
+          ]}
+          numberOfLines={2}
+          isRTL={isRTL}
+        >
+          {item.messages[item.messages.length - 1]?.text || t.chat.noMessages}
         </ThemedText>
       </View>
       
@@ -94,7 +122,7 @@ const ChatHistory = () => {
         />
       </TouchableOpacity>
     </TouchableOpacity>
-  ), [colors, handleSessionPress, handleDeleteSession]);
+  ), [colors, handleSessionPress, handleDeleteSession, isRTL, currentLanguage]);
 
   const keyExtractor = useCallback((item: ChatSession) => item.id, []);
 
@@ -102,8 +130,11 @@ const ChatHistory = () => {
     <ThemedView style={styles.container}>
       {sessions.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <ThemedText style={styles.emptyText}>
-            No chat history yet
+          <ThemedText 
+            style={styles.emptyText}
+            isRTL={isRTL}
+          >
+            {t.chat.noChatHistory}
           </ThemedText>
         </View>
       ) : (
@@ -113,7 +144,7 @@ const ChatHistory = () => {
           renderItem={renderSessionItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.listContent}
-          extraData={currentTheme}
+          extraData={[currentTheme, isRTL]}
         />
       )}
     </ThemedView>
@@ -128,7 +159,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   sessionItem: {
-    flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     borderRadius: 12,
@@ -141,7 +171,6 @@ const styles = StyleSheet.create({
   },
   sessionContent: {
     flex: 1,
-    marginRight: 16,
   },
   dateText: {
     fontSize: 14,

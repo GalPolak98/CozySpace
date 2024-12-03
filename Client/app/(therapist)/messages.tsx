@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 
 export default function MessagesScreen() {
   const { theme: currentTheme } = useTheme();

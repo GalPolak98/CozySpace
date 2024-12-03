@@ -5,11 +5,12 @@ import { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import React from "react";
 import { ThemeProvider, useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
-import ThemeToggle from '@/components/ThemeToggle';
+import { theme } from '@/styles/Theme';
 import Loader from '@/components/Loader';
 import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications"
+import { LanguageProvider } from "@/context/LanguageContext";
+import { HeaderRight } from "@/components/navigation/HeaderButtons";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -41,17 +42,18 @@ const InitialLayout = () => {
       >
         <Stack.Screen 
           name="(auth)" 
-          options={{}} 
+          options={{
+            gestureEnabled: false,
+          }} 
         />
         <Stack.Screen 
-          name="(tabs)" 
+          name="(patient)" 
           options={{ 
             headerTitle: "",
             headerLeft: () => null,
             gestureEnabled: false,
           }} 
         />
-
 
         <Stack.Screen 
           name="(therapist)" 
@@ -69,6 +71,8 @@ const InitialLayout = () => {
               fontFamily: 'Poppins-SemiBold',
               color: colors.text,
             },
+            headerShown: true,
+            headerRight: HeaderRight,
           }}
         />
         <Stack.Screen 
@@ -110,8 +114,10 @@ export default function RootLayout() {
   }
 
   return (
+    <LanguageProvider>
     <ThemeProvider>
       <InitialLayout />
     </ThemeProvider>
+    </LanguageProvider>
   );
 }

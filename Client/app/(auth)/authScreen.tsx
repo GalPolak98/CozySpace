@@ -1,51 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
-  Text, 
-  TouchableOpacity, 
   KeyboardAvoidingView, 
   Platform,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../Services/firebaseConfig';
+import { auth } from '@/services/firebaseConfig';
 import { router, Link } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '@/components/Loader';
 import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
+import ThemedText from '@/components/ThemedText';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
-import { AuthRoutingService } from '@/Services/authRoutingService';
-import { authManager } from '@/Services/authManager';
+import { theme } from '@/styles/Theme';
+import { AuthRoutingService } from '@/services/authRoutingService';
+import { authManager } from '@/services/authManager';
+import { useLanguage } from '@/context/LanguageContext';
 
-// Firebase error messages mapping
-const getErrorMessage = (code: string) => {
+const getErrorMessage = (code: string, t: any) => {
   const errorMessages: { [key: string]: string } = {
-    'auth/invalid-email': 'Please enter a valid email address',
-    'auth/user-disabled': 'This account has been disabled',
-    'auth/user-not-found': 'No account found with this email',
-    'auth/wrong-password': 'Incorrect email or password',
-    'auth/email-already-in-use': 'An account already exists with this email',
-    'auth/weak-password': 'Password should be at least 6 characters',
-    'auth/network-request-failed': 'Network error. Please check your connection',
-    'auth/too-many-requests': 'Too many attempts. Please try again later',
-    'auth/operation-not-allowed': 'This operation is not allowed',
-    'auth/invalid-credential': 'Invalid login credentials',
-    'auth/invalid-password': 'Password must be at least 6 characters',
-    'auth/missing-password': 'Please enter a password',
-    'auth/missing-email': 'Please enter an email address',
-    'auth/popup-closed-by-user': 'Authentication popup was closed',
-    'auth/cancelled-popup-request': 'Authentication process was cancelled',
-    'auth/internal-error': 'An error occurred during authentication',
-    'auth/requires-recent-login': 'Please log in again to continue',
-    'auth/provider-already-linked': 'Account already linked with another provider',
-    'auth/invalid-verification-code': 'Invalid verification code',
-    'auth/invalid-verification-id': 'Invalid verification ID',
-    'auth/credential-already-in-use': 'This credential is already associated with another account',
+    'auth/invalid-email': t.errors.invalidEmail,
+    'auth/user-disabled': t.errors.userDisabled,
+    'auth/user-not-found': t.errors.userNotFound,
+    'auth/wrong-password': t.errors.wrongPassword,
+    'auth/email-already-in-use': t.errors.emailInUse,
+    'auth/weak-password': t.errors.weakPassword,
+    'auth/network-request-failed': t.errors.networkError,
+    'auth/too-many-requests': t.errors.tooManyRequests,
+    'auth/operation-not-allowed': t.errors.operationNotAllowed,
+    'auth/invalid-credential': t.errors.invalidCredentials,
+    'auth/invalid-password': t.errors.invalidPassword,
+    'auth/missing-password': t.errors.missingPassword,
+    'auth/missing-email': t.errors.missingEmail,
   };
   
-  return errorMessages[code] || 'An unexpected error occurred';
+  return errorMessages[code] || t.errors.unexpected;
 };
 
 interface AuthScreenProps {
@@ -55,114 +47,100 @@ interface AuthScreenProps {
 const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const isMounted = useRef(true);
   const navigationInProgress = useRef(false);
-  const newUserCreated = useRef(false);
+  const { t, isRTL } = useLanguage();
 
-  // Set up auth listener once on mount
   useEffect(() => {
     let unsubscribe: () => void;
 
     const setupAuthListener = () => {
-      if (!authManager.shouldSetupListener()) {
-        console.log('Auth listener already exists, skipping setup');
-        return;
-      }
+      if (!authManager.shouldSetupListener()) return;
 
-      console.log('Setting up auth listener');
       authManager.incrementListenerCount();
       
       unsubscribe = onAuthStateChanged(auth, async (user) => {
-        console.log('Auth state changed, isHandlingAuth:', authManager.isProcessing());
-        
-        if (!isMounted.current || navigationInProgress.current) {
-          console.log('Skipping auth handling - not mounted or navigation in progress');
-          return;
-        }
+        if (!isMounted.current || navigationInProgress.current) return;
     
         if (user) {
           try {
-            navigationInProgress.current = true;
-            console.log('Starting auth process for user:', user.uid);
-    
+            navigationInProgress.current = true;    
             const token = await user.getIdToken();
             await AsyncStorage.setItem('userToken', token);
     
-            if (!isMounted.current) {
-              console.log('Component unmounted during auth process');
-              return;
-            }
+            if (!isMounted.current) return;
     
             const creationTime = new Date(user.metadata.creationTime!).getTime();
             const lastSignInTime = new Date(user.metadata.lastSignInTime!).getTime();
             const isNewUser = Math.abs(creationTime - lastSignInTime) < 1000;
-    
-            console.log('Processing user, isNewUser:', isNewUser);
             
             if (mode === 'signup' || isNewUser) {
-              console.log('New signup or new user, routing to initial settings');
               router.replace('/(auth)/initialUserSettings');
             } else {
-              console.log('Existing user, checking routing');
               await AuthRoutingService.handleAuthRouting();
             }
           } catch (err) {
-            console.error('Auth state change error:', err);
             if (isMounted.current) {
-              Alert.alert('Error', 'Failed to complete authentication');
+              Alert.alert(t.common.error, t.errors.authFailed);
             }
           } finally {
             if (isMounted.current) {
               navigationInProgress.current = false;
             }
           }
-        } else {
-          console.log('No user in auth state change');
         }
       });
 
-      // Store the unsubscribe function in the AuthManager
       authManager.setAuthUnsubscribe(unsubscribe);
     };
     
     setupAuthListener();
     
     return () => {
-      console.log('Cleaning up auth listener');
       isMounted.current = false;
       if (unsubscribe) {
         unsubscribe();
         authManager.decrementListenerCount();
       }
     };
-  }, [mode]);
+  }, [mode, t]);
 
   const handleAuth = async () => {
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setError(t.errors.fillAllFields);
       return;
+    }
+
+    if (mode === 'signup') {
+      if (password !== confirmPassword) {
+        setError(t.errors.passwordsNoMatch);
+        return;
+      }
+      if (password.length < 6) {
+        setError(t.errors.weakPassword);
+        return;
+      }
     }
 
     setIsLoading(true);
     setError(null);
     navigationInProgress.current = false;
-    authManager.reset(); // Reset the auth manager state
+    authManager.reset();
 
     try {
-      console.log('Attempting authentication for mode:', mode);
       if (mode === 'signin') {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
       }
     } catch (err: any) {
-      console.error('Auth error:', err);
-      setError(getErrorMessage(err.code));
-      authManager.setProcessing(false); // Reset processing state on error
+      setError(getErrorMessage(err.code, t));
+      authManager.setProcessing(false);
     } finally {
       if (isMounted.current) {
         setIsLoading(false);
@@ -179,19 +157,23 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
       <Loader isLoading={isLoading} />
       
       <View className="flex-1 justify-between p-6">
-        {/* Header Section */}
-        <View className="mt-12 items-center">
-          <Text style={{ color: colors.text }} className="text-4xl font-pextrabold mb-2">
-            {mode === 'signin' ? 'Welcome Back!' : 'Create Account'}
-          </Text>
-          <Text style={{ color: colors.textSecondary }} className="font-pregular text-xl">
-            {mode === 'signin' 
-              ? 'Sign in to continue' 
-              : 'Begin your journey with us'}
-          </Text>
+        <View className="mt-8 items-center">
+          <ThemedText 
+            variant="primary" 
+            className="text-4xl font-pextrabold mb-2"
+            isRTL={isRTL}
+          >
+            {mode === 'signin' ? t.auth.welcomeBack : t.auth.createAccount}
+          </ThemedText>
+          <ThemedText 
+            variant="secondary" 
+            className="font-pregular text-xl mb-4"
+            isRTL={isRTL}
+          >
+            {mode === 'signin' ? t.auth.signInContinue : t.auth.beginJourney}
+          </ThemedText>
         </View>
 
-        {/* Form Section */}
         <View className="w-full">
           <CustomInput
             value={email}
@@ -199,8 +181,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
               setEmail(text);
               setError(null);
             }}
-            placeholder="Email Address"
+            placeholder={t.auth.emailPlaceholder}
             keyboardType="email-address"
+            isRTL={isRTL}
           />
           <CustomInput
             value={password}
@@ -208,19 +191,36 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
               setPassword(text);
               setError(null);
             }}
-            placeholder="Password"
+            placeholder={t.auth.passwordPlaceholder}
             isPassword
+            isRTL={isRTL}
           />
           
+          {mode === 'signup' && (
+            <CustomInput
+              value={confirmPassword}
+              onChangeText={(text: string) => {
+                setConfirmPassword(text);
+                setError(null);
+              }}
+              placeholder={t.auth.confirmPasswordPlaceholder}
+              isPassword
+              isRTL={isRTL}
+            />
+          )}
+          
           {error && (
-            <Text style={{ color: colors.error }} className="mb-4 text-center font-pmedium">
+            <ThemedText 
+              variant="error" 
+              className="mb-4 text-center font-pmedium"
+            >
               {error}
-            </Text>
+            </ThemedText>
           )}
 
           <View className="space-y-4">
             <CustomButton
-              title={mode === 'signin' ? 'Sign In' : 'Create Account'}
+              title={mode === 'signin' ? t.auth.signIn : t.auth.createAccount}
               handlePress={handleAuth}
               isLoading={isLoading}
               variant="primary"
@@ -232,22 +232,25 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
               href={mode === 'signin' ? '/sign-up' : '/sign-in'} 
               asChild
             >
-              <TouchableOpacity>
-                <Text style={{ color: colors.textSecondary }} className="text-center font-pmedium p-5">
-                  {mode === 'signin' 
-                    ? "Don't have an account? Sign Up" 
-                    : 'Already have an account? Sign In'}
-                </Text>
+              <TouchableOpacity className="py-2">
+                <ThemedText 
+                  variant="primary" 
+                  className="text-center font-pmedium text-lg"
+                >
+                  {mode === 'signin' ? t.auth.noAccount : t.auth.haveAccount}
+                </ThemedText>
               </TouchableOpacity>
             </Link>
           </View>
         </View>
 
-        {/* Bottom Section */}
         <View className="mb-6">
-          <Text style={{ color: colors.textSecondary }} className="text-center font-plight text-sm">
-            By continuing, you agree to our Terms of Service and Privacy Policy
-          </Text>
+          <ThemedText 
+            variant="secondary" 
+            className="text-center font-plight text-sm"
+          >
+            {t.auth.termsNotice}
+          </ThemedText>
         </View>
       </View>
     </KeyboardAvoidingView>

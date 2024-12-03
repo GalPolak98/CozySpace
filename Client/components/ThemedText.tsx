@@ -1,11 +1,12 @@
 import React from 'react';
 import { Text, TextProps } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/Styles/Theme';
+import { theme } from '@/styles/Theme';
 
 interface ThemedTextProps extends TextProps {
   variant?: 'default' | 'secondary' | 'primary' | 'error';
   className?: string;
+  isRTL?: boolean;
 }
 
 const ThemedText: React.FC<ThemedTextProps> = ({ 
@@ -13,6 +14,7 @@ const ThemedText: React.FC<ThemedTextProps> = ({
   variant = 'default',
   className = '',
   style,
+  isRTL,
   ...props 
 }) => {
   const { theme: currentTheme } = useTheme();
@@ -34,7 +36,16 @@ const ThemedText: React.FC<ThemedTextProps> = ({
   return (
     <Text
       className={className}
-      style={[{ color: getColor() }, style]}
+      style={[
+        { 
+          color: getColor(),
+          ...(isRTL !== undefined && {
+            textAlign: isRTL ? 'right' : 'left',
+            writingDirection: isRTL ? 'rtl' : 'ltr',
+          }),     
+        }, 
+        style
+      ]}
       {...props}
     >
       {children}
