@@ -373,7 +373,8 @@ export const translations = {
           },
           tabsPatient: {
             home: 'בית',
-            profile: 'פרופיל'
+            profile: 'פרופיל',
+            reports: 'דוחות',
           },
           note: {
             placeholder: 'כתוב את המחשבות שלך כאן...',

@@ -61,6 +61,7 @@ const LanguageToggle = () => {
                 <TouchableOpacity
                   key={lang.code}
                   onPress={() => handleLanguageSelect(lang.code)}
+                  
                   style={{
                     backgroundColor: lang.code === currentLanguage 
                       ? `${colors.primary}20` // 20 is the hex opacity (12.5%)

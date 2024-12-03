@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications";
-import { AuthService } from '../../Services/authService';  // Import your AuthService
+import { AuthService } from '../../services/authService';  // Import your AuthService
 import config from '../../env'; // Assuming you have a config file for the API URL
 
 // Save notification initially with tapped as false
