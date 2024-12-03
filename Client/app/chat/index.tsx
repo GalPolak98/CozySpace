@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet, Platform, KeyboardAvoidingView,  Keyboard,} from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { createChatService } from '@/services/chatService';
@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
 import { useLanguage } from '@/context/LanguageContext';
+import useAuth from '@/hooks/useAuth';
 
 const ChatScreen = () => {
   const { 
@@ -28,7 +29,8 @@ const ChatScreen = () => {
   const [inputText, setInputText] = React.useState('');
   const listRef = useRef<FlashList<Message>>(null);
   const insets = useSafeAreaInsets();
-  const chatService = createChatService();
+  const userId = useAuth();
+  const chatService = useMemo(() => createChatService(userId as string), [userId]);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const { currentLanguage } = useLanguage();
 

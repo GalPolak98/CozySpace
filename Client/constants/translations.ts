@@ -5,7 +5,7 @@ export const translations = {
         languageName: 'English',
         languageNameInNative: 'English',
         common: {
-          welcome: 'Welcome to Anxiety Management',
+          welcome: 'Welcome',
           settings: 'Settings',
           language: 'Language',
           next: 'Next',
@@ -264,6 +264,13 @@ export const translations = {
             fullName: 'Full name',
             gender: 'Gender'
           },
+
+          location: {
+            permissionNeeded: 'Location Permission Required',
+            permissionMessage: 'This app needs access to location.',
+            retry: 'Try Again',
+            errorMessage: 'There was an error requesting location permissions. Please try again.',
+          }
       },
     },
     he: {
@@ -271,7 +278,7 @@ export const translations = {
         languageName: 'Hebrew',
         languageNameInNative: 'עברית',
         common: {
-          welcome: 'ברוכים הבאים לניהול חרדה',
+          welcome: 'ברוכים הבאים',
           settings: 'הגדרות',
           language: 'שפה',
           next: 'הבא',
@@ -528,6 +535,13 @@ export const translations = {
             fullName: 'שם מלא',
             gender: 'מין'
           },
+
+          location: {
+            permissionNeeded: 'נדרשת הרשאת מיקום',
+            permissionMessage: 'האפליקציה צריכה גישה למיקום.',
+            retry: 'נסה שוב',
+            errorMessage: 'אירעה שגיאה בבקשת הרשאות מיקום. אנא נסה שוב.',
+          }
       },
     },
   };

@@ -1,6 +1,8 @@
 import axios from 'axios';
 import ENV from '@/env';
 import { Message } from '@/types/chat';
+import { userService } from './userService';
+import * as Location from 'expo-location';
 
 interface ChatResponse {
   text: string;
@@ -29,7 +31,12 @@ export class ChatService {
   private readonly RAPID_API_KEY = ENV.EXPO_PUBLIC_RAPID_API_DEEP_TRANSLATE_KEY; 
   private readonly SERVER_URL = ENV.EXPO_PUBLIC_SERVER_URL; 
   private conversationHistory: string[] = [];
+  private readonly userId: string;
 
+  constructor(userId: string) {
+    this.userId = userId;
+  }
+  
   // Add the responses property as a private readonly field
   private readonly responseBank: ResponseTypes = {
     anxiety: {
@@ -177,6 +184,33 @@ public addInitialMessage(message: Message) {
   }
 
   private async sendEmergencyAlert(message: string) {
+    const profile = await userService.getUserProfile(this.userId);
+    const fullName = profile ? 
+      `${profile.personalInfo.firstName} ${profile.personalInfo.lastName}` : 
+      'Unknown User';
+    
+        // Get location
+    let locationString = 'Location not available';
+    try {
+      const { status } = await Location.getForegroundPermissionsAsync();
+      if (status === 'granted') {
+        const location = await Location.getCurrentPositionAsync({});
+        locationString = `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`;
+        
+        // Optional: Get address details
+        const [address] = await Location.reverseGeocodeAsync({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude
+        });
+        
+        if (address) {
+          locationString = `${address.street || ''} ${address.city || ''} ${address.region || ''} ${address.country || ''}`.trim();
+        }
+      }
+    } catch (locationError) {
+      console.error('Error getting location:', locationError);
+    }
+
     try {
       const response = await fetch(`${this.SERVER_URL}/api/emergency-alert`, {
         method: 'POST',
@@ -185,8 +219,8 @@ public addInitialMessage(message: Message) {
         },
         body: JSON.stringify({
           userMessage: message,
-          userId: 'user-id-if-available',
-          location: 'user-location-if-available'
+          userId: fullName + " - " + this.userId,
+          location: locationString
         }),
       });
 
@@ -245,20 +279,20 @@ public addInitialMessage(message: Message) {
       // Check for emergency with English message
       if (this.isEmergency(processedMessage)) {
         await this. sendEmergencyAlert(processedMessage);
-        const emergencyResponse = {
-          text: "I'm very concerned about what you're sharing. Help is available 24/7:\n" +
-               "Crisis Hotline: 988\n" +
-               "Crisis Text Line: Text HOME to 741741\n\n" +
-               "Would you like to talk about what's troubling you?"
-        };
+        // const emergencyResponse = {
+        //   text: "I'm very concerned about what you're sharing. Help is available 24/7:\n" +
+        //        "Crisis Hotline: 988\n" +
+        //        "Crisis Text Line: Text HOME to 741741\n\n" +
+        //        "Would you like to talk about what's troubling you?"
+        // };
   
-        // Only translate emergency response if user is in Hebrew
-        if (language === 'he') {
-          emergencyResponse.text = await this.translateText(emergencyResponse.text, 'en', 'he');
-        }
+        // // Only translate emergency response if user is in Hebrew
+        // if (language === 'he') {
+        //   emergencyResponse.text = await this.translateText(emergencyResponse.text, 'en', 'he');
+        // }
         
-        this.conversationHistory.push(`Assistant: ${emergencyResponse}`);
-        return emergencyResponse;
+        // this.conversationHistory.push(`Assistant: ${emergencyResponse}`);
+        // return emergencyResponse;
       }
   
       // Add English message to history for context
@@ -325,4 +359,5 @@ public addInitialMessage(message: Message) {
   }
 }
 
-export const createChatService = () => new ChatService();
+export const createChatService = (userId: string) => new ChatService(userId);
+
