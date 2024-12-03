@@ -12,6 +12,7 @@ import { TherapistSelectionSection } from '@/components/onboarding/TherapistSele
 import useAuth from '@/hooks/useAuth';
 import ENV from '@/env';
 import { musicData } from '@/types/musicData';
+import { userService } from '@/services/userService';
 
 const ProfileScreen = () => {
   const { theme: currentTheme } = useTheme();
@@ -34,7 +35,6 @@ const ProfileScreen = () => {
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
 
-  // Fetch profile data
   useEffect(() => {
     fetchProfile();
   }, [userId]);
@@ -42,11 +42,10 @@ const ProfileScreen = () => {
   const fetchProfile = async () => {
     try {
       if (!userId) return;
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}`);
-      const data = await response.json();
+      const profile = await userService.getUserProfile(userId);
 
-      if (data.profile) {
-        const { therapistInfo, toolsPreferences } = data.profile;
+      if (profile) {
+        const { therapistInfo, toolsPreferences } = profile;
         setSelectedTherapist(therapistInfo.selectedTherapistId);
         setDataShareOptions(therapistInfo.dataSharing);
         setUseSmartJewelry(toolsPreferences.smartJewelry.enabled);
@@ -61,7 +60,7 @@ const ProfileScreen = () => {
             setSelectedTrack(track.id);
           }
         }
-        setProfile(data.profile);
+        setProfile(profile);
       }
     } catch (error) {
       Alert.alert(t.errors.error, t.errors.loadError);
@@ -97,31 +96,22 @@ const ProfileScreen = () => {
 
     try {
       setSaving(true);
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/preferences`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          therapistInfo: {
-            selectedTherapistId: selectedTherapist,
-            dataSharing: dataShareOptions,
+      await userService.updateUserPreferences(userId!, {
+        therapistInfo: {
+          selectedTherapistId: selectedTherapist,
+          dataSharing: dataShareOptions,
+        },
+        toolsPreferences: {
+          smartJewelry: {
+            enabled: useSmartJewelry,
+            vibrationAlerts: enableVibrations,
           },
-          toolsPreferences: {
-            smartJewelry: {
-              enabled: useSmartJewelry,
-              vibrationAlerts: enableVibrations,
-            },
-            musicTherapy: {
-              enabled: playMusic,
-              selectedTrackId: selectedTrack,
-            },
+          musicTherapy: {
+            enabled: playMusic,
+            selectedTrackId: selectedTrack,
           },
-        }),
+        },
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update preferences');
-      }
 
       Alert.alert(t.success.updated, t.profile.saveSuccess);
     } catch (error) {
@@ -145,7 +135,7 @@ const ProfileScreen = () => {
       <ThemedView className="flex-1 p-4">
         <View className="space-y-6">
           {/* Personal Information Section */}
-          <ThemedView variant="surface" className="p-4 rounded-xl">
+          <ThemedView variant="surface" className="p-4 rounded-xl mb-4">
             <ThemedText 
               variant="default"
               className="text-lg font-pbold mb-4"
@@ -172,11 +162,20 @@ const ProfileScreen = () => {
                 {profile?.personalInfo.email}
               </ThemedText>
             </View>
+
+            <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+              <ThemedText variant="secondary" style={{marginRight:isRTL? 0 : 8, marginLeft:isRTL? 8 : 0}} isRTL={isRTL}>
+                {t.profile.gender}:
+              </ThemedText>
+              <ThemedText variant="default" isRTL={isRTL}>
+                {profile?.personalInfo.gender === 'male' ? t.personalInfo.male : t.personalInfo.female}
+              </ThemedText>
+            </View>
           </View>
           </ThemedView>
 
           {/* Therapist Selection Section */}
-          <ThemedView variant="surface" className="p-4 rounded-xl">
+          <ThemedView variant="surface" className="p-4 rounded-xl mb-4">
             <ThemedText 
               variant="default"
               className="text-lg font-pbold mb-4"
@@ -194,7 +193,7 @@ const ProfileScreen = () => {
           </ThemedView>
 
           {/* Preferences Section */}
-          <ThemedView variant="surface" className="p-4 rounded-xl">
+          <ThemedView variant="surface" className="p-4 rounded-xl mb-4">
             <ThemedText 
               variant="default"
               className="text-lg font-pbold mb-4"

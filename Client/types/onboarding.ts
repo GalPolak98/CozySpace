@@ -3,11 +3,13 @@ import { SPECIALIZATIONS } from "@/constants/onboarding";
 export type Specialization = typeof SPECIALIZATIONS[number];
 
 export interface PersonalInfoProps {
-    firstName: string;
-    lastName: string;
-    setFirstName: (value: string) => void;
-    setLastName: (value: string) => void;
-  }
+  firstName: string;
+  lastName: string;
+  gender: string | null;
+  setFirstName: (value: string) => void;
+  setLastName: (value: string) => void;
+  setGender: (value: string) => void;
+}
   
 export interface RoleSelectionProps {
 userType: 'patient' | 'therapist' | null;
@@ -66,6 +68,7 @@ export interface RegistrationData {
       firstName: string;
       lastName: string;
       email: string | null;
+      gender: string;
     };
     professionalInfo?: {
       educationLevel: string;

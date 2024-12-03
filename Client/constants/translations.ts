@@ -153,6 +153,9 @@ export const translations = {
           personalInfo: {
             firstName: 'First Name',
             lastName: 'Last Name',
+            male: 'Male',
+            female: 'Female',
+            selectGender: 'Select gender',
           },
           therapistSelection: {
             dropdownLabel: '',
@@ -223,6 +226,7 @@ export const translations = {
           registration: {
             selectRole: "Please select your role to continue",
             fillNames: "Please fill in both first and last name",
+            fillAllFields: "Please fill all fields",
             completeAllFields: "Please complete all professional information fields",
             selectTherapist: "Please select a therapist to continue",
             selectMusicCategory: "Please select a music category",
@@ -257,7 +261,8 @@ export const translations = {
             personalInfo: "Personal Information",
             preferences: "Preferences",
             save: "Save Changes",
-            fullName: 'Full name'
+            fullName: 'Full name',
+            gender: 'Gender'
           },
       },
     },
@@ -414,6 +419,9 @@ export const translations = {
           personalInfo: {
             firstName: 'שם פרטי',
             lastName: 'שם משפחה',
+            male: 'זכר',
+            female: 'נקבה',
+            selectGender: 'בחר/י מגדר',
           },
           therapistSelection: {
             dropdownLabel: '',
@@ -483,6 +491,7 @@ export const translations = {
           registration: {
             selectRole: "אנא בחר את תפקידך להמשך",
             fillNames: "אנא מלא שם פרטי ושם משפחה",
+            fillAllFields: "נא למלא את כל השדות",
             completeAllFields: "אנא מלא את כל שדות המידע המקצועי",
             selectTherapist: "אנא בחר מטפל להמשך",
             selectMusicCategory: "אנא בחר קטגוריית מוזיקה",
@@ -516,7 +525,8 @@ export const translations = {
             personalInfo: "מידע אישי",
             preferences: "העדפות",
             save: "שמור שינויים",
-            fullName: 'שם מלא'
+            fullName: 'שם מלא',
+            gender: 'מין'
           },
       },
     },

@@ -21,6 +21,7 @@ export const InitialRegistrationScreen: React.FC = () => {
   const [userType, setUserType] = useState<'patient' | 'therapist' | null>(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [gender, setGender] = useState<string | null>(null);
   const [selectedTherapist, setSelectedTherapist] = useState<string | null>(null);
   const [enableVibrations, setEnableVibrations] = useState(false);
   const [dataShareOptions, setDataShareOptions] = useState<DataShareOptions>({
@@ -67,8 +68,8 @@ export const InitialRegistrationScreen: React.FC = () => {
 
     switch (step) {
       case 1:
-        if (!firstName.trim() || !lastName.trim()) {
-          Alert.alert(t.errors.error, t.registration.fillNames);
+        if (!firstName.trim() || !lastName.trim() || !gender) {
+          Alert.alert(t.errors.error, t.registration.fillAllFields);
           return false;
         }
         return true;
@@ -118,6 +119,7 @@ export const InitialRegistrationScreen: React.FC = () => {
           firstName,
           lastName,
           email: auth.currentUser?.email || null,
+          gender: gender as string,
         },
         ...(userType === 'therapist' 
           ? {
@@ -149,7 +151,6 @@ export const InitialRegistrationScreen: React.FC = () => {
             }
         ),
       };
-
       await userService.registerUser(registrationData);
       router.replace(userType === 'therapist' ? '/(therapist)/home' : '/(patient)/home');
     } catch (error) {
@@ -189,8 +190,10 @@ export const InitialRegistrationScreen: React.FC = () => {
           <PersonalInfoSection
             firstName={firstName}
             lastName={lastName}
+            gender={gender}
             setFirstName={setFirstName}
             setLastName={setLastName}
+            setGender={setGender}
           />
         ),
       },
