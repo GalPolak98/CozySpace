@@ -106,7 +106,8 @@ export const translations = {
           },
           tabsPatient: {
             home: 'Home',
-            profile: 'Profile'
+            profile: 'Profile',
+            reports: 'Reports'
           },
           note: {
             placeholder: 'Write your thoughts here...',
