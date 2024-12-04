@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { translations } from '@/constants/translations';
+import * as Updates from 'expo-updates';
 
 type TranslationType = typeof translations.en.translation;
 
@@ -37,6 +38,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       await AsyncStorage.setItem(LANGUAGE_KEY, lang);
       setCurrentLanguage(lang);
+      await Updates.reloadAsync();
     } catch (error) {
       console.error('Error saving language:', error);
     }
