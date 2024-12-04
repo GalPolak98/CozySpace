@@ -25,18 +25,46 @@ interface ResponseTypes {
 }
 
 export class ChatService {
-  private readonly API_URL = 'https://api.cohere.ai/v1/generate';
-  private readonly API_KEY = ENV.EXPO_PUBLIC_COHERE_API_KEY;
-  private readonly TRANSLATE_API_URL = 'https://deep-translate1.p.rapidapi.com/language/translate/v2';
-  private readonly RAPID_API_KEY = ENV.EXPO_PUBLIC_RAPID_API_DEEP_TRANSLATE_KEY; 
+  // private readonly API_URL = 'https://api.cohere.ai/v1/generate';
+  // private readonly API_KEY = ENV.EXPO_PUBLIC_COHERE_API_KEY;
+  // private readonly TRANSLATE_API_URL = 'https://deep-translate1.p.rapidapi.com/language/translate/v2';
+  // private readonly RAPID_API_KEY = ENV.EXPO_PUBLIC_RAPID_API_DEEP_TRANSLATE_KEY; 
+  private readonly AZURE_ENDPOINT = 'https://galp-m4a7el4i-swedencentral.cognitiveservices.azure.com';
+  private readonly AZURE_API_KEY = ENV.EXPO_PUBLIC_AZURE_API_KEY; 
+  private readonly MODEL_DEPLOYMENT = 'gpt-4'; 
   private readonly SERVER_URL = ENV.EXPO_PUBLIC_SERVER_URL; 
   private conversationHistory: string[] = [];
   private readonly userId: string;
+  private userGender: string | null = null;
 
   constructor(userId: string) {
     this.userId = userId;
+    this.initializeUserGender();
   }
-  
+
+  private async initializeUserGender() {
+    try {
+      if (!this.userId) {
+        console.log('No userId available, skipping profile fetch');
+        return;
+      }
+      
+      const profile = await userService.getUserProfile(this.userId);
+      
+      if (profile?.personalInfo?.gender) {
+        this.userGender = profile.personalInfo.gender;
+      } else {
+        console.log('No gender found in profile');
+      }
+    } catch (error) {
+      // Only log real errors, not the 404 from null userId
+      if (this.userId) {
+        console.error('Failed to fetch user gender from profile:', error);
+      }
+      this.userGender = null;
+    }
+  }
+
   // Add the responses property as a private readonly field
   private readonly responseBank: ResponseTypes = {
     anxiety: {
@@ -123,8 +151,29 @@ If crisis keywords are detected, immediately provide emergency resources and enc
 
 Context: The user is experiencing anxiety symptoms detected by smart jewelry. Focus on immediate, sensor-aware support while being conversational and accessible. Pay attention to changes in their state and respond accordingly.
 
-Previous conversation:
 `;
+
+private getGenderAwareSystemPrompt(): string {
+  const genderSection = this.userGender ? `
+Additional Context:
+The user identifies as ${this.userGender}. Please ensure all responses use appropriate gender forms:
+- In Hebrew: Use ${this.userGender === 'male' ? 'masculine' : 'feminine'} verb forms (e.g., ${this.userGender === 'male' ? 'אתה מרגיש' : 'את מרגישה'})
+- In Arabic: Use ${this.userGender === 'male' ? 'masculine' : 'feminine'} pronouns and verb conjugations
+- In any language with grammatical gender: Use appropriate gender-specific forms
+
+Examples of proper gendered forms in Hebrew:
+For calming: ${this.userGender === 'male' ? 'בוא ננשום יחד' : 'בואי ננשום יחד'}
+For grounding: ${this.userGender === 'male' ? 'אתה יכול' : 'את יכולה'} להסתכל מסביב
+For validation: ${this.userGender === 'male' ? 'אני שומע אותך' : 'אני שומעת אותך'}` : '';
+
+  return `${this.systemPrompt}
+
+${genderSection}
+
+Always provide complete, well-formed sentences. End responses with a proper punctuation mark.
+
+Previous conversation:`;
+}
 
 public addInitialMessage(message: Message) {
   this.conversationHistory = [`Assistant: ${message}`];
@@ -219,7 +268,8 @@ public addInitialMessage(message: Message) {
         },
         body: JSON.stringify({
           userMessage: message,
-          userId: fullName + " - " + this.userId,
+          userId: this.userId,
+          userName: fullName,
           location: locationString
         }),
       });
@@ -236,127 +286,183 @@ public addInitialMessage(message: Message) {
     }
   }
 
-  private async translateText(text: string, from: string, to: string): Promise<string> {
-    try {
-      const response = await axios.post(
-        this.TRANSLATE_API_URL,
-        {
-          q: text,
-          source: from,
-          target: to
-        },
-        {
-          headers: {
-            'content-type': 'application/json',
-            'X-RapidAPI-Key': this.RAPID_API_KEY,
-            'X-RapidAPI-Host': 'deep-translate1.p.rapidapi.com'
-          }
-        }
-      );
-      
-      console.log('Translation response:', response.data);
-      
-      // Updated to match the actual response structure
-      if (response.data?.data?.translations?.translatedText) {
-        return response.data.data.translations.translatedText;
-      }
-      return text;
-    } catch (error) {
-      console.error('Translation error:', error);
-      return text;
-    }
-  }
-
   async getChatResponse(userMessage: string, language: string = 'en'): Promise<ChatResponse> {
     try {
-      let processedMessage = userMessage;
-      
-      // If Hebrew, translate user message to English for processing
-      if (language === 'he') {
-        processedMessage = await this.translateText(userMessage, 'he', 'en');
+      if (this.isEmergency(userMessage)) {
+        await this.sendEmergencyAlert(userMessage);
       }
-  
-      // Check for emergency with English message
-      if (this.isEmergency(processedMessage)) {
-        await this. sendEmergencyAlert(processedMessage);
-        // const emergencyResponse = {
-        //   text: "I'm very concerned about what you're sharing. Help is available 24/7:\n" +
-        //        "Crisis Hotline: 988\n" +
-        //        "Crisis Text Line: Text HOME to 741741\n\n" +
-        //        "Would you like to talk about what's troubling you?"
-        // };
-  
-        // // Only translate emergency response if user is in Hebrew
-        // if (language === 'he') {
-        //   emergencyResponse.text = await this.translateText(emergencyResponse.text, 'en', 'he');
-        // }
-        
-        // this.conversationHistory.push(`Assistant: ${emergencyResponse}`);
-        // return emergencyResponse;
-      }
-  
-      // Add English message to history for context
-      this.conversationHistory.push(`User: ${processedMessage}`);
+
+      this.conversationHistory.push(`User: ${userMessage}`);
       
       if (this.conversationHistory.length > 6) {
         this.conversationHistory = this.conversationHistory.slice(-6);
       }
-  
-      // Always use English prompt with Cohere
-      const prompt = `${this.systemPrompt}${this.conversationHistory.join('\n')}\nAssistant:`;
-  
+
       const response = await axios.post(
-        this.API_URL,
+        `${this.AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=2023-12-01-preview`,
         {
-          model: 'command',
-          prompt: prompt,
-          max_tokens: 150,
+          messages: [
+            {
+              role: "system",
+              content: this.getGenderAwareSystemPrompt()
+            },
+            ...this.conversationHistory.map(msg => ({
+              role: msg.startsWith("User:") ? "user" : "assistant",
+              content: msg.replace(/^(User:|Assistant:)\s*/, '')
+            }))
+          ],
           temperature: 0.7,
-          k: 0,
-          stop_sequences: ["User:", "Assistant:"],
-          return_likelihoods: 'NONE',
-          truncate: 'END'
+          max_tokens: 200,
+          top_p: 0.95,
+          presence_penalty: 0.1, 
+          frequency_penalty: 0.1,
+          stop: ["User:", "Assistant:"]
         },
         {
           headers: {
-            'Authorization': `Bearer ${this.API_KEY}`,
-            'Content-Type': 'application/json',
+            'api-key': this.AZURE_API_KEY,
+            'Content-Type': 'application/json'
           }
         }
       );
-  
-      let botResponse = response.data.generations[0].text.trim()
-      .replace(/Assistant:|User:/g, '')
-      .trim();
-  
-    if (!this.isCompleteSentence(botResponse)) {
-      const fallbackResponse = this.getFallbackResponse(processedMessage);
-      botResponse = fallbackResponse.text;
-    }
-      
-    // If user is in Hebrew, translate the response to Hebrew before showing
-    if (language === 'he') {
-      const translatedResponse = await this.translateText(botResponse, 'en', 'he');
-      console.log('Final translated response:', translatedResponse); // Add this log
-      this.conversationHistory.push(`Assistant: ${translatedResponse}`);
-      return { text: translatedResponse };
-    }
-    
-    this.conversationHistory.push(`Assistant: ${botResponse}`);
-    return { text: botResponse };
-      
+
+      let botResponse = response.data.choices[0].message.content.trim();
+
+      if (!this.isCompleteSentence(botResponse)) {
+        const fallbackResponse = this.getFallbackResponse(userMessage);
+        botResponse = fallbackResponse.text;
+      }
+
+      this.conversationHistory.push(`Assistant: ${botResponse}`);
+      return { text: botResponse };
+
     } catch (error) {
       console.error('Chat API Error:', error);
-      let fallbackResponse = this.getFallbackResponse(userMessage);
-      
-      // If user is in Hebrew, translate the fallback response
-      if (language === 'he') {
-        fallbackResponse.text = await this.translateText(fallbackResponse.text, 'en', 'he');
-      }
-      
-      return fallbackResponse;
+      return this.getFallbackResponse(userMessage);
     }
   }
+
+  // private async translateText(text: string, from: string, to: string): Promise<string> {
+  //   try {
+  //     const response = await axios.post(
+  //       this.TRANSLATE_API_URL,
+  //       {
+  //         q: text,
+  //         source: from,
+  //         target: to
+  //       },
+  //       {
+  //         headers: {
+  //           'content-type': 'application/json',
+  //           'X-RapidAPI-Key': this.RAPID_API_KEY,
+  //           'X-RapidAPI-Host': 'deep-translate1.p.rapidapi.com'
+  //         }
+  //       }
+  //     );
+      
+  //     console.log('Translation response:', response.data);
+      
+  //     // Updated to match the actual response structure
+  //     if (response.data?.data?.translations?.translatedText) {
+  //       return response.data.data.translations.translatedText;
+  //     }
+  //     return text;
+  //   } catch (error) {
+  //     console.error('Translation error:', error);
+  //     return text;
+  //   }
+  // }
+
+  // async getChatResponse(userMessage: string, language: string = 'en'): Promise<ChatResponse> {
+  //   try {
+  //     let processedMessage = userMessage;
+      
+  //     // If Hebrew, translate user message to English for processing
+  //     if (language === 'he') {
+  //       processedMessage = await this.translateText(userMessage, 'he', 'en');
+  //     }
+  
+  //     // Check for emergency with English message
+  //     if (this.isEmergency(processedMessage)) {
+  //       await this. sendEmergencyAlert(processedMessage);
+  //       // const emergencyResponse = {
+  //       //   text: "I'm very concerned about what you're sharing. Help is available 24/7:\n" +
+  //       //        "Crisis Hotline: 988\n" +
+  //       //        "Crisis Text Line: Text HOME to 741741\n\n" +
+  //       //        "Would you like to talk about what's troubling you?"
+  //       // };
+  
+  //       // // Only translate emergency response if user is in Hebrew
+  //       // if (language === 'he') {
+  //       //   emergencyResponse.text = await this.translateText(emergencyResponse.text, 'en', 'he');
+  //       // }
+        
+  //       // this.conversationHistory.push(`Assistant: ${emergencyResponse}`);
+  //       // return emergencyResponse;
+  //     }
+  
+  //     // Add English message to history for context
+  //     this.conversationHistory.push(`User: ${processedMessage}`);
+      
+  //     if (this.conversationHistory.length > 6) {
+  //       this.conversationHistory = this.conversationHistory.slice(-6);
+  //     }
+  
+  //     // Always use English prompt with Cohere
+  //     const prompt = `${this.systemPrompt}${this.conversationHistory.join('\n')}\nAssistant:`;
+  
+  //     const response = await axios.post(
+  //       this.API_URL,
+  //       {
+  //         model: 'command',
+  //         prompt: prompt,
+  //         max_tokens: 150,
+  //         temperature: 0.7,
+  //         k: 0,
+  //         stop_sequences: ["User:", "Assistant:"],
+  //         return_likelihoods: 'NONE',
+  //         truncate: 'END'
+  //       },
+  //       {
+  //         headers: {
+  //           'Authorization': `Bearer ${this.API_KEY}`,
+  //           'Content-Type': 'application/json',
+  //         }
+  //       }
+  //     );
+  
+  //     let botResponse = response.data.generations[0].text.trim()
+  //     .replace(/Assistant:|User:/g, '')
+  //     .trim();
+  
+  //   if (!this.isCompleteSentence(botResponse)) {
+  //     const fallbackResponse = this.getFallbackResponse(processedMessage);
+  //     botResponse = fallbackResponse.text;
+  //   }
+      
+  //   // If user is in Hebrew, translate the response to Hebrew before showing
+  //   if (language === 'he') {
+  //     const translatedResponse = await this.translateText(botResponse, 'en', 'he');
+  //     console.log('Final translated response:', translatedResponse); // Add this log
+  //     this.conversationHistory.push(`Assistant: ${translatedResponse}`);
+  //     return { text: translatedResponse };
+  //   }
+    
+  //   this.conversationHistory.push(`Assistant: ${botResponse}`);
+  //   return { text: botResponse };
+      
+  //   } catch (error) {
+  //     console.error('Chat API Error:', error);
+  //     let fallbackResponse = this.getFallbackResponse(userMessage);
+      
+  //     // If user is in Hebrew, translate the fallback response
+  //     if (language === 'he') {
+  //       fallbackResponse.text = await this.translateText(fallbackResponse.text, 'en', 'he');
+  //     }
+      
+  //     return fallbackResponse;
+  //   }
+  // }
 }
 
 export const createChatService = (userId: string) => new ChatService(userId);
