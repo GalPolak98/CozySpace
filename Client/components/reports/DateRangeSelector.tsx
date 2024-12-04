@@ -3,6 +3,7 @@ import React from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 import { format } from 'date-fns';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';  
 
 interface DateRangeSelectorProps {
   dateRange: { startDate: Date; endDate: Date };
@@ -11,6 +12,7 @@ interface DateRangeSelectorProps {
 
 const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({ dateRange, onPress }) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();  // Get translation function
 
   return (
     <TouchableOpacity
@@ -23,8 +25,8 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({ dateRange, onPres
     >
       <View className="flex-row items-center">
         <View className="mr-2">
-          <Text className={`text-xs ${theme === 'dark' ? 'text-zinc-400' : 'text-blue-600'}`}>
-            Date Range
+        <Text className={`text-xs ${theme === 'dark' ? 'text-zinc-400' : 'text-blue-600'}`}>
+            {t.reports.dateRange}
           </Text>
           <Text className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
             {format(dateRange.startDate, 'MM/dd/yyyy')} - {format(dateRange.endDate, 'MM/dd/yyyy')}
@@ -32,7 +34,8 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({ dateRange, onPres
         </View>
       </View>
       <View className="bg-blue-500 px-3 py-1.5 rounded-full">
-        <Text className="text-white text-xs">Change</Text>
+        <Text className="text-white text-xs"> {t.reports.change}
+        </Text>
       </View>
     </TouchableOpacity>
   );

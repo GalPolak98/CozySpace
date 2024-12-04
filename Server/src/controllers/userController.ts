@@ -100,6 +100,24 @@ export const getNotes: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const getGuidedNotes: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    // Call the userService to get the notes for the user
+    const notes = await userService.getGuidedNotesForUser(userId);
+
+    if (!notes) {
+      res.status(404).json({ error: 'No notes found for this user' });
+      return;
+    }
+
+    res.status(200).json({ success: true, notes });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const saveRecording: RequestHandler = async (req, res, next) => {
   try {
     const { userId } = req.params;

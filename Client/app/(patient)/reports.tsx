@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useMemo  } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, Modal } from 'react-native';
-import { format, subDays } from 'date-fns';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ScrollView, View, TouchableOpacity, Modal } from 'react-native';
+import { format, subDays, parse } from 'date-fns';
 import ThemedView from '@/components/ThemedView';
-import ThemedText from '@/components/ThemedText';
 import StatCard from '@/components/reports/StatCard';
 import Chart from '@/components/reports/Chart';
 import DateRangeSelector from '@/components/reports/DateRangeSelector';
 import DatePickerModal from '@/components/reports/DatePickerModal';
 import config from '../../env';
 import useAuth from '../../hooks/useAuth';
-import { parse } from 'date-fns';
+import { useLanguage } from '@/context/LanguageContext';  
+import { loadNotes, loadGuidedNotes } from '../../utils/notesUtils';  // Adjust the import path as needed
 
 const mockDataService = {
   getReports: (startDate: Date, endDate: Date) => {
@@ -31,6 +31,8 @@ const mockDataService = {
 };
 
 const ReportsScreen = () => {
+  const { t,isRTL } = useLanguage();  // Get translation function
+
   const [dateRange, setDateRange] = useState({
     startDate: subDays(new Date(), 7),
     endDate: new Date()
@@ -39,50 +41,74 @@ const ReportsScreen = () => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [isSelectingStartDate, setIsSelectingStartDate] = useState(true);
   const [notesCount, setNotesCount] = useState<number>(0);
-  const userId = useAuth()
+  const [averageAnxietyIntensity, setAverageAnxietyIntensity] = useState<number>(0); 
+  const userId = useAuth();
 
   const reportData = useMemo(() => {
     return mockDataService.getReports(dateRange.startDate, dateRange.endDate);
   }, [dateRange]);
 
-
-  const loadNotes = async () => {
-    if (!userId) return;
-  
-    try {
-      const response = await fetch(`${config.API_URL}/users/${userId}/latest`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-  
-      if (!response.ok) throw new Error('Failed to fetch notes');
-  
-      const fetchedNotes = (await response.json()).notes;
-  
-      console.log("Fetched Notes:", fetchedNotes);
-  
-      // Parse the notes' timestamps and filter them
-      const filteredNotes = fetchedNotes.filter((note: { timestamp: string }) => {
-        // Convert the timestamp string to a Date object using `date-fns`
-        const noteDate = parse(note.timestamp.split(', ')[0], 'dd.MM.yyyy', new Date());
-        return (
-          noteDate >= new Date(dateRange.startDate) &&
-          noteDate <= new Date(dateRange.endDate)
-        );
-      });
-  
-      setNotesCount(filteredNotes.length);
-    } catch (error) {
-      console.error('Failed to fetch notes', error);
-    }
-  };
-  
-  
-
-  // Trigger loading notes whenever the date range changes
   useEffect(() => {
-    loadNotes();
-  }, [dateRange]);
+    const fetchAndFilterNotes = async () => {
+      if (!userId) return;
+      
+      try {
+        const fetchedNotes = await loadNotes(userId, isRTL, t);
+        
+        const filteredNotes = fetchedNotes.filter((note) => {
+          const noteDate = parse(note.timestamp.split(', ')[0], 'dd.MM.yyyy', new Date());
+          return (
+            noteDate >= new Date(dateRange.startDate) &&
+            noteDate <= new Date(dateRange.endDate)
+          );
+        });
+      
+        setNotesCount(filteredNotes.length);
+      } catch (error) {
+        console.error('Failed to filter notes', error);
+      }
+    };
+  
+    fetchAndFilterNotes();
+  }, [dateRange, userId]);
+
+  useEffect(() => {
+    const fetchGuidedNotes = async () => {
+      if (!userId) return;
+      
+      try {
+        const fetchedGuidedNotes = await loadGuidedNotes(userId, isRTL, t);
+
+        // Filter notes based on dateRange
+        const filteredNotes = fetchedGuidedNotes.filter((guidedNote) => {
+          const noteDate = new Date(guidedNote.timestamp); // Use native JavaScript Date parsing
+          console.log('Parsed Date:', noteDate); // Check if the date parsing works
+          return (
+            noteDate >= new Date(dateRange.startDate) &&
+            noteDate <= new Date(dateRange.endDate)
+          );
+        });
+        
+
+
+        if (filteredNotes.length > 0) {
+          const totalAnxietyRating = filteredNotes.reduce(
+            (sum, note) => sum + note.anxietyRating,
+            0
+          );
+          const avgAnxietyIntensity = totalAnxietyRating / filteredNotes.length;
+          setAverageAnxietyIntensity(avgAnxietyIntensity);
+          console.log(avgAnxietyIntensity)
+
+        } else {
+          setAverageAnxietyIntensity(0);  // If no notes are in the range, set to 0
+        }
+      } catch (error) {
+        console.error('Failed to filter notes', error);
+      }
+    };
+    fetchGuidedNotes();
+  }, [dateRange, userId]);
 
   const handleDayPress = (day: { dateString: string }) => {
     const selectedDate = new Date(day.dateString);
@@ -121,12 +147,12 @@ const ReportsScreen = () => {
 
           <View className="flex-row justify-between mt-6">
             <StatCard
-              title="Average Anxiety Intensity"
-              value={reportData.averageAnxietyIntensity}
+              title={t.reports.averageAnxietyIntensity} 
+              value={averageAnxietyIntensity.toFixed(1)} 
               icon="activity"
             />
             <StatCard
-              title="Average Episode Duration"
+              title={t.reports.averageEpisodeDuration}
               value={reportData.averageEpisodeDuration}
               icon="clock"
             />
@@ -134,12 +160,12 @@ const ReportsScreen = () => {
 
           <View className="flex-row justify-between mt-4">
             <StatCard
-              title="Notes Created"
+              title={t.reports.notesCreated}
               value={notesCount.toString()}
               icon="file-text"
             />
             <StatCard
-              title="Anxiety Events"
+              title={t.reports.anxietyEvents}
               value={reportData.anxietyEvents}
               icon="alert-circle"
             />

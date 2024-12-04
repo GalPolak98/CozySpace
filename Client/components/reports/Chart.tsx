@@ -5,6 +5,7 @@ import { LineChart } from 'react-native-chart-kit';
 import { useTheme } from '../ThemeContext';
 import ThemedView from '../ThemedView';
 import ThemedText from '../ThemedText';
+import { useLanguage } from '@/context/LanguageContext';  
 
 interface ChartProps {
   weeklyData: any;
@@ -14,6 +15,7 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
   const { theme } = useTheme(); 
   const screenWidth = Dimensions.get('window').width;
   const isDark = theme === 'dark';
+  const { t , isRTL} = useLanguage();  // Get translation function
 
   const chartConfig = {
     backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
@@ -42,7 +44,14 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
 
   return (
     <ThemedView className="bg-white dark:bg-gray-900 p-3 rounded-lg mb-3 shadow-sm">
-      <ThemedText className="font-pbold text-base mb-0.5">Weekly Anxiety Levels</ThemedText>
+      <ThemedText
+        className="font-pbold text-base mb-0.5"
+        style={{
+          textAlign: isRTL ? 'right' : 'left', // Adjust text alignment
+        }}
+      >
+      {t.reports.weeklyAnxietyLevels}
+      </ThemedText>
       <LineChart
         data={weeklyData}
         width={screenWidth - 32}

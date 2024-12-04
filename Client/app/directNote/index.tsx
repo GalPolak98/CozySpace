@@ -12,6 +12,7 @@ import NotebookInput from '../../components/notes/NoteInput';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/styles/Theme';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { loadNotes } from '../../utils/notesUtils';
 
 const NotesSection: React.FC = () => {
   const [note, setNote] = useState<string>('');
@@ -58,31 +59,13 @@ const NotesSection: React.FC = () => {
     }
   };
 
-  const loadNotes = async () => {
-    if (!userId) return;
-    try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch notes');
-
-      const fetchedNotes = (await response.json()).notes;
-      console.log("notesss",fetchedNotes)
-      const sortedNotes = Array.isArray(fetchedNotes)
-        ? fetchedNotes.sort((a, b) => parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp))
-        : [fetchedNotes];
-
-      setNotes(sortedNotes);
-    } catch (error) {
-      console.error('Failed to fetch notes', error);
-      Alert.alert(t.common.error, t.note.fetchError);
-    }
-  };
-
   useEffect(() => {
-    loadNotes();
+    const fetchNotes = async () => {
+      const fetchedNotes = await loadNotes(userId, isRTL, t);
+      setNotes(fetchedNotes);
+    };
+    
+    fetchNotes();
   }, [userId]);
 
   const addNote = async () => {
@@ -106,7 +89,8 @@ const NotesSection: React.FC = () => {
       setNotes(prevNotes => [savedNote, ...prevNotes]);
       setNote('');
       await AsyncStorage.removeItem('draftNote');
-      loadNotes();
+      const updatedNotes = await loadNotes(userId, isRTL, t);
+      setNotes(updatedNotes);
       Alert.alert(t.common.success, t.note.saveSuccess);
     } catch (error) {
       console.error('Failed to save note', error);
@@ -124,7 +108,8 @@ const NotesSection: React.FC = () => {
 
       if (!response.ok) throw new Error('Failed to delete note');
 
-      loadNotes();
+      const updatedNotes = await loadNotes(userId, isRTL, t);
+      setNotes(updatedNotes);
       Alert.alert(t.common.success, t.note.deleteSuccess);
     } catch (error) {
       console.error('Error deleting note:', error);
@@ -149,7 +134,8 @@ const NotesSection: React.FC = () => {
         prevNotes.map(note => (note._id === updatedNote._id ? savedNote : note))
       );
       setEditedNote('');
-      loadNotes();
+      const updatedNotes = await loadNotes(userId, isRTL, t);
+      setNotes(updatedNotes);
       Alert.alert(t.common.success, t.note.updateSuccess);
     } catch (error) {
       console.error('Failed to update note', error);

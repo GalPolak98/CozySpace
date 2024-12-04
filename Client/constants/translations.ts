@@ -63,6 +63,16 @@ export const translations = {
             termsNotice: 'By continuing, you agree to our Terms of Service and Privacy Policy',
             authError: "Authentication error. Please try signing in again.",
           },
+          reports: {
+            averageAnxietyIntensity: 'Average Anxiety Intensity',
+            averageEpisodeDuration: 'Average Episode Duration',
+            notesCreated: 'Notes Created',
+            anxietyEvents: 'Anxiety Events',
+            dateRange: 'Date Range',
+            change: 'Edit',
+            weeklyAnxietyLevels: 'Weekly Anxiety Levels'
+
+          },
           errors: {
             invalidEmail: 'Please enter a valid email address',
             userDisabled: 'This account has been disabled',
@@ -375,6 +385,15 @@ export const translations = {
             home: 'בית',
             profile: 'פרופיל',
             reports: 'דוחות',
+          },
+          reports: {
+            averageAnxietyIntensity: 'עוצמת חרדה ממוצעת',
+            averageEpisodeDuration: 'משך פרק ממוצע',
+            notesCreated: 'כמות פתקים',
+            anxietyEvents: 'אירועי חרדה',
+            dateRange: 'טווח זמנים',
+            change: 'ערוך',
+            weeklyAnxietyLevels: 'רמות חרדה שבועיות'
           },
           note: {
             placeholder: 'כתוב את המחשבות שלך כאן...',
