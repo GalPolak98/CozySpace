@@ -1,28 +1,18 @@
 import axios from 'axios';
 import ENV from '@/env';
-import { Message } from '@/types/chat';
+import { Gender, Language} from '@/types/chat';
 import { userService } from './userService';
 import * as Location from 'expo-location';
+import { SYSTEM_PROMPT, INITIAL_MESSAGE_PROMPT, getGenderAwarePrompt } from '@/constants/prompts';
+import { INITIAL_MESSAGES } from '@/constants/messages';
+import { EMERGENCY_TERMS, RESPONSE_BANK } from '@/constants/responseBank';
 
 interface ChatResponse {
   text: string;
 }
 
-interface TranslationResponse {
-  translatedText: string;
-}
-
 type ResponseCategory = 'anxiety' | 'panic' | 'general';
 type AnxietySubCategory = 'symptoms' | 'thoughts';
-
-interface ResponseTypes {
-  anxiety: {
-    symptoms: string[];
-    thoughts: string[];
-  };
-  panic: string[];
-  general: string[];
-}
 
 export class ChatService {
   // private readonly API_URL = 'https://api.cohere.ai/v1/generate';
@@ -35,149 +25,63 @@ export class ChatService {
   private readonly SERVER_URL = ENV.EXPO_PUBLIC_SERVER_URL; 
   private conversationHistory: string[] = [];
   private readonly userId: string;
-  private userGender: string | null = null;
+  private readonly responseBank = RESPONSE_BANK;
+  private readonly emergencyTerms = EMERGENCY_TERMS;
 
-  constructor(userId: string) {
-    this.userId = userId;
-    this.initializeUserGender();
+  constructor(userId: string, private gender: string | null, private language: Language = 'en') {
+   this.userId = userId;
   }
 
-  private async initializeUserGender() {
-    try {
-      if (!this.userId) {
-        console.log('No userId available, skipping profile fetch');
-        return;
+async generateInitialMessage(language: string): Promise<string | null> {
+  if (!this.gender) return null;
+  
+  try {
+    // First try Azure OpenAI
+    const prompt = getGenderAwarePrompt(INITIAL_MESSAGE_PROMPT, language as Language, this.gender as Gender);
+ 
+    const response = await axios.post(
+      `${this.AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=2023-12-01-preview`,
+      {
+        messages: [
+          { role: "system", content: prompt },
+          { role: "user", content: "Generate initial greeting" }
+        ],
+        temperature: 0.7,
+        max_tokens: 250,
+        top_p: 0.95,
+        presence_penalty: 0.1,
+        frequency_penalty: 0.1
+      },
+      {
+        headers: {
+          'api-key': this.AZURE_API_KEY,
+          'Content-Type': 'application/json'
+        }
       }
-      
-      const profile = await userService.getUserProfile(this.userId);
-      
-      if (profile?.personalInfo?.gender) {
-        this.userGender = profile.personalInfo.gender;
-      } else {
-        console.log('No gender found in profile');
-      }
-    } catch (error) {
-      // Only log real errors, not the 404 from null userId
-      if (this.userId) {
-        console.error('Failed to fetch user gender from profile:', error);
-      }
-      this.userGender = null;
+    );
+    
+    let botResponse = response.data.choices[0].message.content.trim();
+ 
+    if (!this.isCompleteSentence(botResponse)) {
+      // Fallback to predefined messages
+      const messages = INITIAL_MESSAGES[language as 'en' | 'he'];
+      const randomIndex = Math.floor(Math.random() * messages.length);
+      botResponse = messages[randomIndex];
     }
+ 
+    this.conversationHistory.push(`Assistant: ${botResponse}`);
+    return botResponse;
+ 
+  } catch (error) {
+    // On error, use predefined messages
+    const messages = INITIAL_MESSAGES[language as 'en' | 'he'];
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    const fallbackMessage = messages[randomIndex];
+    
+    this.conversationHistory.push(`Assistant: ${fallbackMessage}`);
+    return fallbackMessage;
   }
-
-  // Add the responses property as a private readonly field
-  private readonly responseBank: ResponseTypes = {
-    anxiety: {
-      symptoms: [
-        "I notice some anxiety symptoms. Let's try a quick grounding exercise - can you name 5 things you see around you?",
-        "Let's focus on your breathing together - try following my count: in for 4, hold for 4, out for 4. How does that feel?",
-        "I'm here with you. Can you place one hand on your chest and feel your breath? Let's take a few slow breaths together."
-      ],
-      thoughts: [
-        "Let's pause and look at one thought at a time. What's the strongest worry on your mind right now?",
-        "Those anxious thoughts can feel overwhelming. Could you share what specific concern is most present right now?",
-        "I hear your mind is racing. Let's try to focus on just this moment - what needs your attention most right now?"
-      ]
-    },
-    panic: [
-      "I notice your anxiety is very high right now. Let's ground ourselves - can you feel your feet firmly on the floor?",
-      "We'll get through this moment together. Try focusing on my words - can you name 3 things you can touch right now?",
-      "This intense feeling will pass. Let's focus on taking slow, steady breaths together. I'm right here with you."
-    ],
-    general: [
-      "I'm here to help. Would you like to try a quick calming exercise together?",
-      "You're taking a good step by reaching out. What kind of support would be most helpful right now?",
-      "I'm listening and here to support you. How can I help make this moment easier?"
-    ]
-  };
-
-  private readonly systemPrompt = `You are Calm Companion, an AI support chatbot specifically designed to help people manage anxiety in real-time. You've detected signs of anxiety through connected smart jewelry sensors, and your primary goal is to provide immediate, practical support.
-
-Core Functions:
-1. Provide quick, actionable responses focused on the present moment
-2. Guide users through simple grounding and breathing exercises
-3. Help users identify and manage anxiety triggers
-4. Offer evidence-based coping strategies
-5. Recognize and acknowledge improvement in user's state
-
-Communication Style:
-- Keep responses brief (2-3 sentences) and easy to read on a mobile device
-- Use a warm, friendly tone while maintaining professionalism
-- Frame suggestions as gentle invitations rather than commands
-- Focus on "here and now" support rather than long-term therapy
-
-Emotional State Recognition:
-- Actively monitor changes in user's emotional state
-- Acknowledge when user reports feeling better
-- Adjust support level based on user's current state
-- Recognize when support is no longer needed
-
-Key Response Patterns:
-For Physical Symptoms:
-- Acknowledge the physical sensation
-- Offer an immediate grounding technique
-- Follow up with a simple question about their experience
-
-For Anxious Thoughts:
-- Validate their concern
-- Suggest a quick mindfulness technique
-- Help them focus on what's in their control
-
-For Improvement/Calming:
-- Acknowledge their progress positively
-- Reinforce what worked for them
-- Offer gentle closure while remaining available
-
-For Gratitude/Closure:
-- Accept thanks gracefully
-- Remind them you're available anytime
-- End the conversation naturally
-
-Examples:
-User: "My heart is racing"
-Assistant: "I notice your heart rate is elevated. Let's try taking 3 slow breaths together - just follow along with me. How does that feel?"
-
-User: "I can't stop worrying about everything"
-Assistant: "Those racing thoughts can feel overwhelming. Let's focus on just this moment - what's one small worry we can look at together?"
-
-User: "I'm feeling much better now"
-Assistant: "I'm glad you're feeling better! Those breathing exercises seemed to help. Remember, you can use these techniques anytime you need them."
-
-User: "Thank you for your help"
-Assistant: "You're welcome! You did great working through this moment. I'm here anytime you need support again."
-
-Emergency Protocol:
-If crisis keywords are detected, immediately provide emergency resources and encourage professional help.
-
-Context: The user is experiencing anxiety symptoms detected by smart jewelry. Focus on immediate, sensor-aware support while being conversational and accessible. Pay attention to changes in their state and respond accordingly.
-
-`;
-
-private getGenderAwareSystemPrompt(): string {
-  const genderSection = this.userGender ? `
-Additional Context:
-The user identifies as ${this.userGender}. Please ensure all responses use appropriate gender forms:
-- In Hebrew: Use ${this.userGender === 'male' ? 'masculine' : 'feminine'} verb forms (e.g., ${this.userGender === 'male' ? 'אתה מרגיש' : 'את מרגישה'})
-- In Arabic: Use ${this.userGender === 'male' ? 'masculine' : 'feminine'} pronouns and verb conjugations
-- In any language with grammatical gender: Use appropriate gender-specific forms
-
-Examples of proper gendered forms in Hebrew:
-For calming: ${this.userGender === 'male' ? 'בוא ננשום יחד' : 'בואי ננשום יחד'}
-For grounding: ${this.userGender === 'male' ? 'אתה יכול' : 'את יכולה'} להסתכל מסביב
-For validation: ${this.userGender === 'male' ? 'אני שומע אותך' : 'אני שומעת אותך'}` : '';
-
-  return `${this.systemPrompt}
-
-${genderSection}
-
-Always provide complete, well-formed sentences. End responses with a proper punctuation mark.
-
-Previous conversation:`;
-}
-
-public addInitialMessage(message: Message) {
-  this.conversationHistory = [`Assistant: ${message}`];
-}
+ }
 
   private determineCategory(message: string): {
     category: ResponseCategory;
@@ -205,25 +109,22 @@ public addInitialMessage(message: Message) {
     
     let responseArray: string[];
     if (category === 'anxiety' && subCategory) {
-      responseArray = this.responseBank.anxiety[subCategory];
+      responseArray = this.responseBank[this.language].anxiety[subCategory];
     } else if (category === 'panic') {
-      responseArray = this.responseBank.panic;
+      responseArray = this.responseBank[this.language].panic;
     } else {
-      responseArray = this.responseBank.general;
+      responseArray = this.responseBank[this.language].general;
     }
-
-    const randomIndex = Math.floor(Math.random() * responseArray.length);
+   
     return {
-      text: responseArray[randomIndex]
+      text: responseArray[Math.floor(Math.random() * responseArray.length)]
     };
-  }
+   }
 
   private isEmergency(message: string): boolean {
-    const emergencyTerms = [
-      'suicide', 'kill myself', 'want to die', 'end it all',
-      'hurt myself', 'self harm', 'give up'
-    ];
-    return emergencyTerms.some(term => message.toLowerCase().includes(term));
+    return this.emergencyTerms[this.language].some(term => 
+      message.toLowerCase().includes(term.toLowerCase())
+    );
   }
 
   private isCompleteSentence(text: string): boolean {
@@ -304,7 +205,7 @@ public addInitialMessage(message: Message) {
           messages: [
             {
               role: "system",
-              content: this.getGenderAwareSystemPrompt()
+              content: getGenderAwarePrompt(SYSTEM_PROMPT, language as Language, this.gender as Gender, this.conversationHistory)
             },
             ...this.conversationHistory.map(msg => ({
               role: msg.startsWith("User:") ? "user" : "assistant",
@@ -312,7 +213,7 @@ public addInitialMessage(message: Message) {
             }))
           ],
           temperature: 0.7,
-          max_tokens: 200,
+          max_tokens: 250,
           top_p: 0.95,
           presence_penalty: 0.1, 
           frequency_penalty: 0.1,
@@ -465,5 +366,5 @@ public addInitialMessage(message: Message) {
   // }
 }
 
-export const createChatService = (userId: string) => new ChatService(userId);
-
+export const createChatService = (userId: string, gender: string | null, language: Language = 'en') => 
+  new ChatService(userId, gender, language);
