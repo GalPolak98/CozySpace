@@ -30,6 +30,7 @@ interface ApiError extends Error {
 interface EmergencyAlertRequest {
   userMessage: string;
   userId?: string;
+  userName?: string;
   location?: string;
 }
 
@@ -61,7 +62,7 @@ const emergencyAlertHandler: AsyncRequestHandler<{}, any, EmergencyAlertRequest>
   try {
     console.log('Received emergency alert request:', req.body);
     
-    const { userMessage, userId, location } = req.body;
+    const { userMessage, userId, userName, location } = req.body;
     
     if (!userMessage) {
       res.status(400).json({ 
@@ -74,6 +75,7 @@ const emergencyAlertHandler: AsyncRequestHandler<{}, any, EmergencyAlertRequest>
       userMessage,
       timestamp: new Date(),
       userId: userId || 'anonymous',
+      userName: userName || 'anonymous',
       location: location || 'unknown'
     };
 

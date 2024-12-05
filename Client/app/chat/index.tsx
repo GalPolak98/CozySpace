@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { View, StyleSheet, Platform, KeyboardAvoidingView,  Keyboard,} from 'react-native';
+import { View, StyleSheet, Platform, KeyboardAvoidingView,  Keyboard, ActivityIndicator,} from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { createChatService } from '@/services/chatService';
 import ChatContainer from '@/components/chat/ChatContainer';
 import ChatList from '@/components/chat/ChatList';
 import ChatInput from '@/components/chat/ChatInput';
-import { Message } from '@/types/chat';
+import { ChatSession, Language, Message } from '@/types/chat';
 import { useChatContext } from '@/context/ChatContext';
 import { getRandomInitialMessage } from '@/constants/messages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,8 @@ import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
 import { useLanguage } from '@/context/LanguageContext';
 import useAuth from '@/hooks/useAuth';
+import { useUserGender } from '@/hooks/useUserGender';
+import { useLocalSearchParams } from 'expo-router';
 
 const ChatScreen = () => {
   const { 
@@ -30,10 +32,14 @@ const ChatScreen = () => {
   const listRef = useRef<FlashList<Message>>(null);
   const insets = useSafeAreaInsets();
   const userId = useAuth();
-  const chatService = useMemo(() => createChatService(userId as string), [userId]);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const { gender } = useLocalSearchParams<{ gender: string }>();
   const { currentLanguage } = useLanguage();
-
+  const chatService = useMemo(
+    () => createChatService(userId as string, gender, currentLanguage as Language), 
+    [userId, gender, currentLanguage]
+   );
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  
   useEffect(() => {
     if (currentSession) {
       const newSession = {
@@ -64,25 +70,34 @@ const ChatScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (!currentSession) {
-      const initialMessage = getRandomInitialMessage(currentLanguage as 'en' | 'he');
-      const newSession = {
-        id: Date.now().toString(),
-        messages: [initialMessage],
-        createdAt: new Date(),
-        lastMessageAt: new Date(),
-        hasUserMessages: false
-      };
-      setCurrentSession(newSession);
-      chatService.addInitialMessage(initialMessage);
-    }
-    
-    return () => {
-      if (currentSession && !currentSession.hasUserMessages) {
-        clearCurrentSession();
+    const initializeSession = async () => {
+      if (!currentSession) {
+        setIsTyping(true);
+        try {
+          const initialMessage = await chatService.generateInitialMessage(currentLanguage);
+          if (initialMessage) {
+            const newSession: ChatSession = {
+              id: Date.now().toString(),
+              messages: [{
+                id: '1',
+                text: initialMessage,
+                sender: 'bot',
+                timestamp: new Date()
+              }],
+              createdAt: new Date(),
+              lastMessageAt: new Date(),
+              hasUserMessages: false
+            };
+            setCurrentSession(newSession);
+          }
+        } finally {
+          setIsTyping(false);
+        }
       }
     };
-  }, []);
+    
+    initializeSession();
+  }, [gender]);
 
   const scrollToBottom = () => {
     if (listRef.current && currentSession?.messages && currentSession.messages.length > 0) {
@@ -215,7 +230,11 @@ const ChatScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
   }
-});
+ });
 
 export default ChatScreen;
