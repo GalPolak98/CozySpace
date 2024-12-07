@@ -130,6 +130,18 @@ const errorHandler = (
 app.use('/api', routes);
 app.use(errorHandler);
 
+// Error handling middleware
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Error:', err);
+  res.status(500).send('Something went wrong!');
+});
+
+// 404 handler
+app.use((req: express.Request, res: express.Response) => {
+  res.status(404).send('Route not found');
+});
+
+
 // Connect to the database
 connectToDatabase()
   .then(() => {
