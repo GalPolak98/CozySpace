@@ -19,9 +19,10 @@ export class ChatService {
   // private readonly API_KEY = ENV.EXPO_PUBLIC_COHERE_API_KEY;
   // private readonly TRANSLATE_API_URL = 'https://deep-translate1.p.rapidapi.com/language/translate/v2';
   // private readonly RAPID_API_KEY = ENV.EXPO_PUBLIC_RAPID_API_DEEP_TRANSLATE_KEY; 
-  private readonly AZURE_ENDPOINT = 'https://galp-m4a7el4i-swedencentral.cognitiveservices.azure.com';
-  private readonly AZURE_API_KEY = ENV.EXPO_PUBLIC_AZURE_API_KEY; 
-  private readonly MODEL_DEPLOYMENT = 'gpt-4'; 
+  private readonly AZURE_ENDPOINT = ENV.AZURE_ENDPOINT;
+  private readonly AZURE_API_KEY = ENV.AZURE_API_KEY; 
+  private readonly MODEL_DEPLOYMENT = ENV.AZURE_MODEL_DEPLOYMENT; 
+  private readonly API_VERSION_DEPLOYMENT = ENV.AZURE_API_VERSION_DEPLOYMENT; 
   private readonly SERVER_URL = ENV.EXPO_PUBLIC_SERVER_URL; 
   private conversationHistory: string[] = [];
   private readonly userId: string;
@@ -40,7 +41,7 @@ async generateInitialMessage(language: string): Promise<string | null> {
     const prompt = getGenderAwarePrompt(INITIAL_MESSAGE_PROMPT, language as Language, this.gender as Gender);
  
     const response = await axios.post(
-      `${this.AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=2023-12-01-preview`,
+      `${this.AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
       {
         messages: [
           { role: "system", content: prompt },
@@ -200,7 +201,7 @@ async generateInitialMessage(language: string): Promise<string | null> {
       }
 
       const response = await axios.post(
-        `${this.AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=2023-12-01-preview`,
+        `${this.AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
         {
           messages: [
             {
