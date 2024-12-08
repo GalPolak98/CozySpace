@@ -1,5 +1,4 @@
 import axios from 'axios';
-import ENV from '@/env';
 import { Gender, Language} from '@/types/chat';
 import { userService } from './userService';
 import * as Location from 'expo-location';
@@ -19,11 +18,11 @@ export class ChatService {
   // private readonly API_KEY = ENV.EXPO_PUBLIC_COHERE_API_KEY;
   // private readonly TRANSLATE_API_URL = 'https://deep-translate1.p.rapidapi.com/language/translate/v2';
   // private readonly RAPID_API_KEY = ENV.EXPO_PUBLIC_RAPID_API_DEEP_TRANSLATE_KEY; 
-  private readonly AZURE_ENDPOINT = ENV.AZURE_ENDPOINT;
-  private readonly AZURE_API_KEY = ENV.AZURE_API_KEY; 
-  private readonly MODEL_DEPLOYMENT = ENV.AZURE_MODEL_DEPLOYMENT; 
-  private readonly API_VERSION_DEPLOYMENT = ENV.AZURE_API_VERSION_DEPLOYMENT; 
-  private readonly SERVER_URL = ENV.EXPO_PUBLIC_SERVER_URL; 
+  private readonly EXPO_PUBLIC_AZURE_ENDPOINT = process.env.EXPO_PUBLIC_AZURE_ENDPOINT;
+  private readonly EXPO_PUBLIC_AZURE_API_KEY = process.env.EXPO_PUBLIC_AZURE_API_KEY; 
+  private readonly MODEL_DEPLOYMENT = process.env.EXPO_PUBLIC_AZURE_MODEL_DEPLOYMENT; 
+  private readonly API_VERSION_DEPLOYMENT = process.env.EXPO_PUBLIC_AZURE_API_VERSION_DEPLOYMENT; 
+  private readonly SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL; 
   private conversationHistory: string[] = [];
   private readonly userId: string;
   private readonly responseBank = RESPONSE_BANK;
@@ -41,7 +40,7 @@ async generateInitialMessage(language: string): Promise<string | null> {
     const prompt = getGenderAwarePrompt(INITIAL_MESSAGE_PROMPT, language as Language, this.gender as Gender);
  
     const response = await axios.post(
-      `${this.AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
+      `${this.EXPO_PUBLIC_AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
       {
         messages: [
           { role: "system", content: prompt },
@@ -55,7 +54,7 @@ async generateInitialMessage(language: string): Promise<string | null> {
       },
       {
         headers: {
-          'api-key': this.AZURE_API_KEY,
+          'api-key': this.EXPO_PUBLIC_AZURE_API_KEY,
           'Content-Type': 'application/json'
         }
       }
@@ -201,7 +200,7 @@ async generateInitialMessage(language: string): Promise<string | null> {
       }
 
       const response = await axios.post(
-        `${this.AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
+        `${this.EXPO_PUBLIC_AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
         {
           messages: [
             {
@@ -222,7 +221,7 @@ async generateInitialMessage(language: string): Promise<string | null> {
         },
         {
           headers: {
-            'api-key': this.AZURE_API_KEY,
+            'api-key': this.EXPO_PUBLIC_AZURE_API_KEY,
             'Content-Type': 'application/json'
           }
         }

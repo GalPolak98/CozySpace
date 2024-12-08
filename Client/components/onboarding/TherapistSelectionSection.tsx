@@ -6,7 +6,6 @@ import { theme } from '@/styles/Theme';
 import { CustomDropdown } from '@/components/CustomDropdown';
 import { TherapistSelectionProps, OptionType } from '@/types/onboarding';
 import { CustomCheckbox } from '@/components/CustomCheckbox';
-import ENV from '@/env';
 
 const DATA_SHARING_OPTIONS = [
   {
@@ -37,7 +36,7 @@ export const TherapistSelectionSection: React.FC<TherapistSelectionProps> = ({
   useEffect(() => {
     const fetchTherapists = async () => {
       try {
-        const url = `${ENV.EXPO_PUBLIC_SERVER_URL}/api/therapists`;
+        const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/api/therapists`;
         const response = await fetch(url, {
           method: 'GET',
           headers: {

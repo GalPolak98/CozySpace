@@ -6,7 +6,6 @@ import TextInputField from '../../components/notes/TextInputField';
 import SubmitButton from '../../components/notes/SubmitButton';
 import useAuth from '../../hooks/useAuth';
 import { useTheme } from '@/components/ThemeContext';
-import ENV from '../../env';
 import { useLanguage } from '@/context/LanguageContext';
 
 const DirectedNoteScreen: React.FC = () => {
@@ -41,7 +40,7 @@ const DirectedNoteScreen: React.FC = () => {
     };
 
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/saveGuidedNotes`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/saveGuidedNotes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

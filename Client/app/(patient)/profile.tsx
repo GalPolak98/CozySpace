@@ -10,7 +10,6 @@ import { FeatureOption } from '@/components/onboarding/FeatureOption';
 import { MusicSelectionSection } from '@/components/onboarding/MusicSelectionSection';
 import { TherapistSelectionSection } from '@/components/onboarding/TherapistSelectionSection';
 import useAuth from '@/hooks/useAuth';
-import ENV from '@/env';
 import { musicData } from '@/types/musicData';
 import { userService } from '@/services/userService';
 

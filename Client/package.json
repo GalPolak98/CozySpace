@@ -35,6 +35,7 @@
     "expo-font": "~13.0.1",
     "expo-haptics": "~14.0.0",
     "expo-linking": "~7.0.2",
+    "expo-location": "~18.0.3",
     "expo-notifications": "~0.29.8",
     "expo-router": "~4.0.5",
     "expo-splash-screen": "~0.29.10",
@@ -42,7 +43,7 @@
     "expo-system-ui": "~4.0.3",
     "expo-updates": "^0.26.9",
     "expo-web-browser": "~14.0.1",
-    "firebase": "^10.14.1",
+    "firebase": "^11.0.2",
     "i18next": "^24.0.2",
     "nativewind": "^4.0.1",
     "react": "18.3.1",
@@ -61,8 +62,7 @@
     "react-native-screens": "~4.0.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
-    "tailwind-rn": "^4.2.0",
-    "expo-location": "~18.0.3"
+    "tailwind-rn": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

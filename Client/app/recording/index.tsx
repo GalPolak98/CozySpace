@@ -6,7 +6,6 @@ import useAudioRecordingPermission from '../../hooks/useRecordingPermission';
 import useAuth from '../../hooks/useAuth';
 import RecordingButton from '../../components/RecordButton';
 import { useLanguage } from '@/context/LanguageContext';
-import ENV from '../../env';
 
 const RecordingsSection: React.FC = () => {
   const [recording, setRecording] = useState<boolean>(false);
@@ -73,7 +72,7 @@ const RecordingsSection: React.FC = () => {
             timestamp: getCurrentDateTime(),
           };
 
-          const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/saveRecording`, {
+          const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/saveRecording`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

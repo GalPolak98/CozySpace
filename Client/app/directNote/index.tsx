@@ -7,7 +7,6 @@ import NoteModal from '../../components/notes/NoteModal';
 import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import ThemedText from '@/components/ThemedText';
-import ENV from '../../env';
 import NotebookInput from '../../components/notes/NoteInput';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/styles/Theme';
@@ -61,7 +60,7 @@ const NotesSection: React.FC = () => {
   const loadNotes = async () => {
     if (!userId) return;
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -94,7 +93,7 @@ const NotesSection: React.FC = () => {
       timestamp: getCurrentDateTime(),
     };
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/addNotes`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/addNotes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newNote),
@@ -118,7 +117,7 @@ const NotesSection: React.FC = () => {
     if (!userId || !noteId) return;
 
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
         method: 'DELETE',
       });
 
@@ -136,7 +135,7 @@ const NotesSection: React.FC = () => {
     if (!updatedNote._id) return;
 
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedNote),

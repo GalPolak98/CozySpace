@@ -112,41 +112,45 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
 
   const handleAuth = async () => {
     if (!email || !password) {
-      setError(t.errors.fillAllFields);
-      return;
+        setError(t.errors.fillAllFields);
+        return;
     }
 
     if (mode === 'signup') {
-      if (password !== confirmPassword) {
-        setError(t.errors.passwordsNoMatch);
-        return;
-      }
-      if (password.length < 6) {
-        setError(t.errors.weakPassword);
-        return;
-      }
+        if (password !== confirmPassword) {
+            setError(t.errors.passwordsNoMatch);
+            return;
+        }
+        if (password.length < 6) {
+            setError(t.errors.weakPassword);
+            return;
+        }
     }
 
     setIsLoading(true);
     setError(null);
     navigationInProgress.current = false;
-    authManager.reset();
+    
+    // Set auth in progress before starting
+    authManager.setAuthInProgress(true);
 
     try {
-      if (mode === 'signin') {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
+        if (mode === 'signin') {
+            await signInWithEmailAndPassword(auth, email, password);
+        } else {
+            await createUserWithEmailAndPassword(auth, email, password);
+        }
     } catch (err: any) {
-      setError(getErrorMessage(err.code, t));
-      authManager.setProcessing(false);
+        console.log(err);
+        setError(getErrorMessage(err.code, t));
+        authManager.setProcessing(false);
     } finally {
-      if (isMounted.current) {
-        setIsLoading(false);
-      }
+        if (isMounted.current) {
+            setIsLoading(false);
+            authManager.setAuthInProgress(false);
+        }
     }
-  };
+};
 
   return (
     <KeyboardAvoidingView 
