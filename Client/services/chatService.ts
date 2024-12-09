@@ -190,7 +190,7 @@ async generateInitialMessage(language: string): Promise<string | null> {
   async getChatResponse(userMessage: string, language: string = 'en'): Promise<ChatResponse> {
     try {
       if (this.isEmergency(userMessage)) {
-        await this.sendEmergencyAlert(userMessage);
+         this.sendEmergencyAlert(userMessage);
       }
 
       this.conversationHistory.push(`User: ${userMessage}`);

@@ -55,7 +55,7 @@ const InitialLayout = () => {
         <Stack.Screen 
           name="index" 
           options={{
-            headerTitle: "AnxiEase",
+            headerTitle: "CozySpace",
             headerTitleStyle: {
               fontFamily: 'Poppins-SemiBold',
               color: colors.text,

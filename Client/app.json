@@ -1,11 +1,13 @@
 {
   "expo": {
-    "name": "AnxiEase",
+    "name": "CozySpace",
     "slug": "AnxiEase",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "anxiEase",
+    "scheme": [
+      "cozyspace"
+    ],
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -19,7 +21,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.galpo.CozySpace"
     },
     "web": {
       "bundler": "metro",
@@ -41,6 +48,21 @@
     "experiments": {
       "typedRoutes": true
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a85fc8f4-3269-42ba-93a7-6f509bdabf9f"
+      }
+    },
+    "owner": "galpo",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a85fc8f4-3269-42ba-93a7-6f509bdabf9f"
+    }
   }
 }

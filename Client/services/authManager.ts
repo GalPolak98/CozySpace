@@ -1,73 +1,100 @@
 class AuthManager {
-  private static instance: AuthManager;
-  private isHandlingAuth: boolean = false;
-  private authListenerCount: number = 0;
-  private authUnsubscribe: (() => void) | null = null;
-  private isAuthInProgress: boolean = false;
-
-  private constructor() {}
-
-  static getInstance(): AuthManager {
+    private static instance: AuthManager;
+    private isHandlingAuth: boolean = false;
+    private authListenerCount: number = 0;
+    private authUnsubscribe: (() => void) | null = null;
+    private isAuthInProgress: boolean = false;
+    private navigationLock: boolean = false;
+    private activeNavigationPromise: Promise<void> | null = null;
+  
+    private constructor() {}
+  
+    static getInstance(): AuthManager {
       if (!AuthManager.instance) {
-          AuthManager.instance = new AuthManager();
+        AuthManager.instance = new AuthManager();
       }
       return AuthManager.instance;
-  }
-
-  isProcessing(): boolean {
+    }
+  
+    isProcessing(): boolean {
       return this.isHandlingAuth || this.isAuthInProgress;
-  }
-
-  setProcessing(value: boolean) {
+    }
+  
+    setProcessing(value: boolean) {
       console.log('Setting processing state to:', value);
       this.isHandlingAuth = value;
-  }
-
-  setAuthInProgress(value: boolean) {
+    }
+  
+    setAuthInProgress(value: boolean) {
       console.log('Setting auth in progress to:', value);
       this.isAuthInProgress = value;
-  }
-
-  setAuthUnsubscribe(unsubscribe: () => void) {
+    }
+  
+    async acquireNavigationLock(): Promise<boolean> {
+      if (this.navigationLock) {
+        if (this.activeNavigationPromise) {
+          await this.activeNavigationPromise;
+        }
+        return false;
+      }
+      this.navigationLock = true;
+      return true;
+    }
+  
+    releaseNavigationLock() {
+      this.navigationLock = false;
+      this.activeNavigationPromise = null;
+    }
+  
+    setActiveNavigation(promise: Promise<void>) {
+      this.activeNavigationPromise = promise;
+      promise.finally(() => {
+        if (this.activeNavigationPromise === promise) {
+          this.activeNavigationPromise = null;
+        }
+      });
+    }
+  
+    setAuthUnsubscribe(unsubscribe: () => void) {
       if (this.authUnsubscribe) {
-          // Clean up existing listener before setting new one
-          this.authUnsubscribe();
+        this.authUnsubscribe();
       }
       this.authUnsubscribe = unsubscribe;
-  }
-
-  incrementListenerCount() {
+    }
+  
+    incrementListenerCount() {
       this.authListenerCount++;
       console.log(`Auth listener count: ${this.authListenerCount}`);
-  }
-
-  decrementListenerCount() {
+    }
+  
+    decrementListenerCount() {
       if (this.authListenerCount > 0) {
-          this.authListenerCount--;
-          console.log(`Auth listener count: ${this.authListenerCount}`);
+        this.authListenerCount--;
+        console.log(`Auth listener count: ${this.authListenerCount}`);
       }
-  }
-
-  shouldSetupListener(): boolean {
-      // Only set up listener if no active listeners and not in progress
+    }
+  
+    shouldSetupListener(): boolean {
       return this.authListenerCount === 0 && !this.isAuthInProgress;
-  }
-
-  cleanup() {
+    }
+  
+    cleanup() {
       console.log('Cleaning up auth manager');
       if (this.authUnsubscribe) {
-          this.authUnsubscribe();
-          this.authUnsubscribe = null;
+        this.authUnsubscribe();
+        this.authUnsubscribe = null;
       }
       this.reset();
-  }
-
-  reset() {
+    }
+  
+    reset() {
       console.log('Resetting auth manager state');
       this.isHandlingAuth = false;
       this.isAuthInProgress = false;
       this.authListenerCount = 0;
+      this.navigationLock = false;
+      this.activeNavigationPromise = null;
+    }
   }
-}
-
-export const authManager = AuthManager.getInstance();
+  
+  export const authManager = AuthManager.getInstance();

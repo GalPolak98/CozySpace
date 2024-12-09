@@ -22,7 +22,7 @@ const AuthLayout = () => {
           fontFamily: 'Poppins-SemiBold',
         },
         headerBackVisible:false,
-        headerTitle:"AnxiEase"
+        headerTitle:"CozySpace"
       }}
     >
       <Stack.Screen

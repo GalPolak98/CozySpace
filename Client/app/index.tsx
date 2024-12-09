@@ -29,25 +29,25 @@ const onboardingData: OnboardingItem[] = [
     id: '1',
     titleKey: 'welcome',
     descriptionKey: 'welcome',
-    image: require('../assets/images/welcome.png'),
+    image: require('@/assets/images/welcome.png'),
   },
   {
     id: '2',
     titleKey: 'support',
     descriptionKey: 'support',
-    image: require('../assets/images/support.png'),
+    image: require('@/assets/images/support.png'),
   },
   {
     id: '3',
     titleKey: 'track',
     descriptionKey: 'track',
-    image: require('../assets/images/track.png'),
+    image: require('@/assets/images/track.png'),
   },
   {
     id: '4',
     titleKey: 'connect',
     descriptionKey: 'connect',
-    image: require('../assets/images/connect.png'),
+    image: require('@/assets/images/connect.png'),
   },
 ];
 
@@ -128,7 +128,7 @@ export default function Index() {
     const { isRTL } = useLanguage();
     const dots = [...onboardingData];
     if (isRTL) dots.reverse();
-  
+
     return (
       <View style={styles.paginatorContainer}>
         {dots.map((_, index) => {
@@ -217,6 +217,7 @@ export default function Index() {
           ref={slidesRef}
           scrollEventThrottle={32}
           className="flex-1"
+          inverted={isRTL}
         />
         
         <View style={styles.bottomContainer}>

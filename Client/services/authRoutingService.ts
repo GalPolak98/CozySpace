@@ -3,65 +3,76 @@ import { router } from 'expo-router';
 import { auth } from '@/services/firebaseConfig';
 import { userService } from '@/services/userService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authManager } from './authManager';
 
 export class AuthRoutingService {
   static async handleAuthRouting() {
-    try {
-      // First check if user is authenticated
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        console.log('No authenticated user');
-        await AsyncStorage.removeItem('userToken');
-        router.replace('/(auth)/sign-in');
-        return;
-      }
+    const lockAcquired = await authManager.acquireNavigationLock();
+    if (!lockAcquired) {
+      console.log('Navigation already in progress, skipping');
+      return;
+    }
 
-      console.log('Fetching user data for:', currentUser.uid);
-      
-      try {
-        // Get user data from database
-        const userData = await userService.getUserById(currentUser.uid);
-        console.log('User data from DB:', userData);
-        
-        // If user exists and has userType, route accordingly
-        if (userData?.userType) {
-          switch (userData.userType) {
-            case 'patient':
-              console.log('Routing patient to home');
-              router.replace('/(patient)/home');
-              break;
-            case 'therapist':
-              console.log('Routing therapist to home');
-              router.replace('/(therapist)/home');
-              break;
-            default:
-              console.log('Invalid user type, routing to initial settings');
-              router.replace('/(auth)/initialUserSettings');
+    try {
+      const navigationPromise = (async () => {
+        try {
+          const currentUser = auth.currentUser;
+          if (!currentUser) {
+            console.log('No authenticated user');
+            await AsyncStorage.removeItem('userToken');
+            router.replace('/(auth)/sign-in');
+            return;
           }
-        } else {
-          // User doesn't exist in DB or has no userType
-          console.log('User not found in database or missing user type');
-          router.replace('/(auth)/initialUserSettings');
+
+          console.log('Fetching user data for:', currentUser.uid);
+          
+          try {
+            const userData = await userService.getUserById(currentUser.uid);
+            console.log('User data from DB:', userData);
+            
+            if (userData?.userType) {
+              switch (userData.userType) {
+                case 'patient':
+                  console.log('Routing patient to home');
+                  router.replace('/(patient)/home');
+                  break;
+                case 'therapist':
+                  console.log('Routing therapist to home');
+                  router.replace('/(therapist)/home');
+                  break;
+                default:
+                  console.log('Invalid user type, routing to initial settings');
+                  router.replace('/(auth)/initialUserSettings');
+              }
+            } else {
+              console.log('User not found in database or missing user type');
+              router.replace('/(auth)/initialUserSettings');
+            }
+          } catch (error) {
+            if (error instanceof Error && 
+                (error.message.includes('User does not exist') || 
+                 error.message.includes('not found'))) {
+              console.log('User exists in Firebase but not in DB, routing to initial settings');
+              router.replace('/(auth)/initialUserSettings');
+              return;
+            }
+            throw error;
+          }
+        } finally {
+          authManager.releaseNavigationLock();
         }
-      } catch (error) {
-        // If error contains "User does not exist", route to initial settings
-        if (error instanceof Error && 
-            (error.message.includes('User does not exist') || 
-             error.message.includes('not found'))) {
-          console.log('User exists in Firebase but not in DB, routing to initial settings');
-          router.replace('/(auth)/initialUserSettings');
-          return;
-        }
-        // For other errors, throw them to be handled by outer catch
-        throw error;
-      }
+      })();
+
+      // Set the active navigation promise
+      authManager.setActiveNavigation(navigationPromise);
+      await navigationPromise;
 
     } catch (error) {
       console.error('Error in auth routing:', error);
-      // For general errors, sign out and redirect to sign in
       await auth.signOut();
       await AsyncStorage.removeItem('userToken');
       router.replace('/(auth)/sign-in');
+      authManager.releaseNavigationLock();
     }
   }
 

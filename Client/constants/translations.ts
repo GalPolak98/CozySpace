@@ -1,4 +1,19 @@
-// src/constants/translations.ts
+type GenderSpecificText = {
+  male: string;
+  female: string;
+  default: string;
+};
+
+type WelcomeText = string | GenderSpecificText;
+
+export interface TranslationType {
+  common: {
+    welcome: WelcomeText;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
 export const translations = {
     en: {
       translation: {
@@ -33,20 +48,20 @@ export const translations = {
         },
         onboarding: {
           welcome: {
-            title: 'Welcome to AnxiEase',
-            description: 'Your personal companion for managing anxiety and finding peace in daily life.',
+            title: 'Welcome to CozySpace',
+            description: 'Your personal companion for finding peace and comfort in daily life.',
           },
           support: {
             title: 'Real-Time Support',
-            description: 'Get immediate assistance during anxiety moments with guided breathing exercises and calming techniques.',
+            description: 'Access guided breathing exercises and calming techniques whenever you need a moment of peace.',
           },
           track: {
             title: 'Track Your Journey',
-            description: 'Monitor your progress and identify patterns to better understand and manage your anxiety triggers.',
+            description: 'Monitor your well-being and discover patterns to build better self-care routines.',
           },
           connect: {
             title: 'Connect with Care',
-            description: 'Safely share your progress with your therapist and build a stronger support system.',
+            description: 'Safely share your progress with your wellness professional and build a stronger support system.',
           },
         },
         auth: {
@@ -278,7 +293,11 @@ export const translations = {
         languageName: 'Hebrew',
         languageNameInNative: 'עברית',
         common: {
-          welcome: 'ברוכים הבאים',
+          welcome: {
+            male: 'ברוך הבא',
+            female: 'ברוכה הבאה',
+            default: 'ברוכים הבאים'
+          },
           settings: 'הגדרות',
           language: 'שפה',
           next: 'הבא',
@@ -306,20 +325,20 @@ export const translations = {
         },
         onboarding: {
           welcome: {
-            title: 'ברוכים הבאים ל AnxiEase',
-            description: 'המלווה האישי שלך לניהול חרדה ומציאת שלווה בחיי היומיום.',
+            title: 'ברוכים הבאים ל CozySpace',
+            description: 'המלווה האישי שלך למציאת שלווה ונוחות בחיי היומיום.',
           },
           support: {
             title: 'תמיכה בזמן אמת',
-            description: 'קבל סיוע מיידי ברגעי חרדה עם תרגילי נשימה מודרכים וטכניקות הרגעה.',
+            description: 'גש לתרגילי נשימה מודרכים וטכניקות הרגעה בכל פעם שאתה זקוק לרגע של שלווה.',
           },
           track: {
             title: 'עקוב אחר המסע שלך',
-            description: 'עקוב אחר ההתקדמות שלך וזהה דפוסים להבנה וניהול טוב יותר של גורמי החרדה שלך.',
+            description: 'עקוב אחר הרווחה שלך וגלה דפוסים לבניית שגרת טיפוח עצמי טובה יותר.',
           },
           connect: {
             title: 'התחבר לטיפול',
-            description: 'שתף את ההתקדמות שלך עם המטפל שלך בבטחה ובנה מערכת תמיכה חזקה יותר.',
+            description: 'שתף את ההתקדמות שלך בבטחה עם איש המקצוע שלך וחזק את מערכת התמיכה שלך.',
           },
         },
         auth: {

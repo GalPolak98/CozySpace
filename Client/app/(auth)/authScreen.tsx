@@ -5,6 +5,8 @@ import {
   Platform,
   Alert,
   TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/services/firebaseConfig';
@@ -152,7 +154,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
     }
 };
 
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
+    <TouchableWithoutFeedback onPress={dismissKeyboard}>
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ backgroundColor: colors.background }}
@@ -258,6 +265,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ mode }) => {
         </View>
       </View>
     </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 
