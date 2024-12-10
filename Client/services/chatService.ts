@@ -5,6 +5,8 @@ import * as Location from 'expo-location';
 import { SYSTEM_PROMPT, INITIAL_MESSAGE_PROMPT, getGenderAwarePrompt } from '@/constants/prompts';
 import { INITIAL_MESSAGES } from '@/constants/messages';
 import { EMERGENCY_TERMS, RESPONSE_BANK } from '@/constants/responseBank';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserData } from '@/hooks/useUserData';
 
 interface ChatResponse {
   text: string;
@@ -28,8 +30,13 @@ export class ChatService {
   private readonly responseBank = RESPONSE_BANK;
   private readonly emergencyTerms = EMERGENCY_TERMS;
 
-  constructor(userId: string, private gender: string | null, private language: Language = 'en') {
-   this.userId = userId;
+  constructor(
+    userId: string, 
+    private gender: string | null, 
+    private language: Language = 'en',
+    private fullName: string
+  ) {
+    this.userId = userId;
   }
 
 async generateInitialMessage(language: string): Promise<string | null> {
@@ -55,8 +62,11 @@ async generateInitialMessage(language: string): Promise<string | null> {
       {
         headers: {
           'api-key': this.EXPO_PUBLIC_AZURE_API_KEY,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+          'Accept-Charset': 'UTF-8'
+        },
+        responseType: 'json',
+        responseEncoding: 'utf8'
       }
     );
     
@@ -133,67 +143,78 @@ async generateInitialMessage(language: string): Promise<string | null> {
     return ['.', '!', '?'].includes(lastChar);
   }
 
-  private async sendEmergencyAlert(message: string) {
-    const profile = await userService.getUserProfile(this.userId);
-    const fullName = profile ? 
-      `${profile.personalInfo.firstName} ${profile.personalInfo.lastName}` : 
-      'Unknown User';
-    
-        // Get location
-    let locationString = 'Location not available';
-    try {
-      const { status } = await Location.getForegroundPermissionsAsync();
-      if (status === 'granted') {
-        const location = await Location.getCurrentPositionAsync({});
-        locationString = `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`;
-        
-        // Optional: Get address details
-        const [address] = await Location.reverseGeocodeAsync({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude
-        });
-        
-        if (address) {
-          locationString = `${address.street || ''} ${address.city || ''} ${address.region || ''} ${address.country || ''}`.trim();
+  private sendEmergencyAlert(message: string) {
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        try {
+          // Get location in its own try block
+          let locationString = 'Location not available';
+          try {
+            const { status } = await Location.getForegroundPermissionsAsync();
+            if (status === 'granted') {
+              const location = await Location.getCurrentPositionAsync({});
+              locationString = `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`;
+              
+              try {
+                const [address] = await Location.reverseGeocodeAsync({
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude
+                });
+                
+                if (address) {
+                  locationString = `${address.street || ''} ${address.city || ''} ${address.region || ''} ${address.country || ''}`.trim();
+                }
+              } catch (geocodeError) {
+                console.error('Error getting address:', geocodeError);
+              }
+            }
+          } catch (locationError) {
+            console.error('Error getting location:', locationError);
+          }
+  
+          // Send alert
+          try { 
+            const response = await fetch(`${this.SERVER_URL}/api/emergency-alert`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                userMessage: message,
+                userId: this.userId,
+                userName: this.fullName,
+                location: locationString
+              }),
+            });
+  
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+  
+            const data = await response.json();
+            console.log('Emergency alert sent successfully:', data);
+          } catch (fetchError) {
+            console.error('Failed to send emergency alert:', fetchError);
+          }
+        } catch (error) {
+          console.error('Error in emergency alert process:', error);
+        } finally {
+          resolve();
         }
-      }
-    } catch (locationError) {
-      console.error('Error getting location:', locationError);
-    }
-
-    try {
-      const response = await fetch(`${this.SERVER_URL}/api/emergency-alert`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userMessage: message,
-          userId: this.userId,
-          userName: fullName,
-          location: locationString
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Emergency alert sent successfully:', data);
-    } catch (error) {
-      console.error('Failed to send emergency alert:', error);
-      // Still continue with the crisis response even if the alert fails
-    }
+      }, 0);
+    });
   }
 
   async getChatResponse(userMessage: string, language: string = 'en'): Promise<ChatResponse> {
     try {
       if (this.isEmergency(userMessage)) {
          this.sendEmergencyAlert(userMessage);
+         this.conversationHistory.push(`Admin: The user expressed concerning thoughts. Please help them deal with the situation compassionately.`);
+        }
+      else
+      {
+        this.conversationHistory.push(`User: ${userMessage}`);
       }
-
-      this.conversationHistory.push(`User: ${userMessage}`);
       
       if (this.conversationHistory.length > 6) {
         this.conversationHistory = this.conversationHistory.slice(-6);
@@ -222,8 +243,11 @@ async generateInitialMessage(language: string): Promise<string | null> {
         {
           headers: {
             'api-key': this.EXPO_PUBLIC_AZURE_API_KEY,
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+            'Accept-Charset': 'UTF-8'
+          },
+          responseType: 'json',
+          responseEncoding: 'utf8'
         }
       );
 
@@ -239,6 +263,14 @@ async generateInitialMessage(language: string): Promise<string | null> {
 
     } catch (error) {
       console.error('Chat API Error:', error);
+
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Error response:', {
+          status: error.response.status,
+          data: error.response.data
+        });
+      }
+
       return this.getFallbackResponse(userMessage);
     }
   }
@@ -366,5 +398,5 @@ async generateInitialMessage(language: string): Promise<string | null> {
   // }
 }
 
-export const createChatService = (userId: string, gender: string | null, language: Language = 'en') => 
-  new ChatService(userId, gender, language);
+export const createChatService = (userId: string, gender: string | null, language: Language = 'en', fullname: string) => 
+  new ChatService(userId, gender, language, fullname);

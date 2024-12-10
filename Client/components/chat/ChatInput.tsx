@@ -16,6 +16,8 @@ import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import * as Haptics from 'expo-haptics';
+import useAuth from '@/hooks/useAuth';
+import { useUserData } from '@/hooks/useUserData';
 
 interface ChatInputProps {
   value: string;
@@ -33,11 +35,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
   style
 }) => {
   const { theme: currentTheme } = useTheme();
-  const { isRTL, t } = useLanguage();
+  const { isRTL, t, getGenderedText } = useLanguage();
   const colors = theme[currentTheme];
   const inputRef = useRef<TextInput>(null);
   const [iconTransform, setIconTransform] = useState({ transform: [{ scaleX: 1 }, { scaleY: 1 }] });
-
+  const userId = useAuth();
+  const { 
+    gender,  
+  } = useUserData(userId);
+  
   useEffect(() => {
     setIconTransform({ transform: [{ scaleX: isRTL ? -1 : 1 }, { scaleY: 1 }] });
   }, [isRTL]);
@@ -111,7 +117,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 ref={inputRef}
                 value={value}
                 onChangeText={onChangeText}
-                placeholder={t.common.typeMessage}
+                placeholder={getGenderedText(t.common.typeMessage, gender as string)}
                 placeholderTextColor={colors.placeholder}
                 style={[
                   styles.input,

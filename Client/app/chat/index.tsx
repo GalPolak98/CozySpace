@@ -13,8 +13,8 @@ import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
 import { useLanguage } from '@/context/LanguageContext';
 import useAuth from '@/hooks/useAuth';
-import { useUserGender } from '@/hooks/useUserGender';
 import { useLocalSearchParams } from 'expo-router';
+import { useUserData } from '@/hooks/useUserData';
 
 const ChatScreen = () => {
   const { 
@@ -32,10 +32,15 @@ const ChatScreen = () => {
   const listRef = useRef<FlashList<Message>>(null);
   const insets = useSafeAreaInsets();
   const userId = useAuth();
-  const { gender } = useLocalSearchParams<{ gender: string }>();
+  const {
+    gender,
+    fullName,
+    isLoading: userDataLoading,
+    error: userDataError
+  } = useUserData(userId);
   const { currentLanguage } = useLanguage();
   const chatService = useMemo(
-    () => createChatService(userId as string, gender, currentLanguage as Language), 
+    () => createChatService(userId as string, gender, currentLanguage as Language, fullName), 
     [userId, gender, currentLanguage]
    );
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);

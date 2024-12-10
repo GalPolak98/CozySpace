@@ -4,13 +4,7 @@ type GenderSpecificText = {
   default: string;
 };
 
-type WelcomeText = string | GenderSpecificText;
-
 export interface TranslationType {
-  common: {
-    welcome: WelcomeText;
-    [key: string]: any;
-  };
   [key: string]: any;
 }
 
@@ -107,13 +101,13 @@ export const translations = {
           },
 
           homePatient: {
-            talkToAI: 'Talk to AI Assistant',
+            talkToAI: 'Talk to your personal assistant',
             guidedDocumenting: 'Guided Documenting',
             documentNow: 'Document Now'
           },
           recording: {
-            startRecording: 'Start Recording',
-            stopRecording: 'Stop Recording',
+            startRecording: 'Start recording for documentation',
+            stopRecording: 'Stop recording for documentation',
             alreadyInProgress: 'A recording is already in progress.',
             startError: 'Failed to start recording.',
             saveError: 'Failed to save recording. Please try again.',
@@ -310,15 +304,19 @@ export const translations = {
           submit: 'שלח',
           error: 'שגיאה',
           success: 'הצלחה',
-          logoutConfirm: 'האם אתה בטוח שברצונך להתנתק?',
-          logoutError: 'ההתנתקות נכשלה. אנא נסה שוב.',
+          logoutConfirm: 'האם את/ה בטוח/ה שברצונך להתנתק?',
+          logoutError: 'ההתנתקות נכשלה. אנא נסה/י שוב.',
           enabled: 'מופעל',
           enable: 'הפעל',
           back: 'חזור',
           continue: 'המשך',
           complete: 'סיים',
           typing: 'מקליד',
-          typeMessage: "הקלד את ההודעה שלך...",
+          typeMessage: {
+            male: 'הקלד את ההודעה שלך...',
+            female: 'הקלידי את ההודעה שלך...',
+            default: 'הקלידו את ההודעה שלכם...'
+          },
           paste: "הדבק",
           copy: 'העתק',
           inputOptions: "אפשרויות קלט",
@@ -382,15 +380,34 @@ export const translations = {
             updated: "עודכן בהצלחה",
             saved: "נשמר בהצלחה",
           },
-
           homePatient: {
-            talkToAI: 'שוחח עם עוזר AI',
-            guidedDocumenting: 'תיעוד מונחה',
-            documentNow: 'תעד עכשיו'
+            talkToAI: {
+              male: 'שוחח עם העוזר האישי שלך',
+              female: 'שוחחי עם העוזר האישי שלך',
+              default: 'שוחחו עם העוזר האישי שלכם'
+            },
+            guidedDocumenting: {
+              male: 'תיעוד מונחה',
+              female: 'תיעוד מונחה',
+              default: 'תיעוד מונחה'
+            },
+            documentNow: {
+              male: 'תעד עכשיו',
+              female: 'תעדי עכשיו',
+              default: 'תעדו עכשיו'
+            }
           },
           recording: {
-            startRecording: 'התחל הקלטה',
-            stopRecording: 'עצור הקלטה',
+            startRecording: {
+              male: 'התחל הקלטה לתיעוד',
+              female: 'התחילי הקלטה לתיעוד',
+              default: 'התחילו הקלטה לתיעוד'
+            },
+            stopRecording: {
+              male: 'עצור הקלטה לתיעוד',
+              female: 'עצרי הקלטה לתיעוד',
+              default: 'עצרו הקלטה לתיעוד'
+            },
             alreadyInProgress: 'הקלטה כבר מתבצעת.',
             startError: 'נכשל בהתחלת ההקלטה.',
             saveError: 'נכשל בשמירת ההקלטה. אנא נסה שוב.',
@@ -401,17 +418,29 @@ export const translations = {
             profile: 'פרופיל'
           },
           note: {
-            placeholder: 'כתוב את המחשבות שלך כאן...',
-            editNote: 'ערוך פתק',
+            placeholder: {
+              male: 'כתוב את המחשבות שלך כאן...',
+              female: 'כתבי את המחשבות שלך כאן...',
+              default: 'כתבו את המחשבות שלכם כאן...'
+            },
+            editNote: {
+              male: 'ערוך פתק',
+              female: 'ערכי פתק',
+              default: 'ערכו פתק'
+            },
+            addNote: {
+              male: 'הוסף פתק',
+              female: 'הוסיפי פתק',
+              default: 'הוסיפו פתק'
+            },
             documenting: 'תיעוד',
             latestNote: 'הפתק האחרון',
-            addNote: 'הוסף פתק',
             fetchError: 'נכשל בטעינת הפתקים. אנא נסה שוב.',
             saveSuccess: 'הפתק נשמר בהצלחה!',
             saveError: 'נכשל בשמירת הפתק. אנא נסה שוב.',
             deleteSuccess: 'הפתק נמחק בהצלחה!',
             deleteError: 'נכשל במחיקת הפתק. אנא נסה שוב.',
-            updateSuccess: 'הפתק עודכנה בהצלחה!',
+            updateSuccess: 'הפתק עודכן בהצלחה!',
             updateError: 'נכשל בעדכון הפתק. אנא נסה שוב.',
           },
           directedNote: {
@@ -451,30 +480,30 @@ export const translations = {
           },
           therapistSelection: {
             dropdownLabel: '',
-            dropdownPlaceholder: 'בחר מטפל לעבוד איתו',
-            noTherapistOption: 'איני מעוניין לעבוד עם מטפל כרגע',
-            noTherapistDesc: 'תוכל לבחור מטפל מאוחר יותר',
+            dropdownPlaceholder: 'בחר/י מטפל לעבוד איתו',
+            noTherapistOption: 'איני מעוניין/ת לעבוד עם מטפל כרגע',
+            noTherapistDesc: 'תוכל/י לבחור מטפל מאוחר יותר',
             dataSharingTitle: 'הגדרות שיתוף מידע',
             noTherapistsError: 'אין נתוני מטפלים בתשובה',
             loadError: 'טעינת המטפלים נכשלה',
             anxietyTrackingLabel: 'דוחות מעקב חרדה',
-            anxietyTrackingDesc: 'שתף את רמות החרדה, הטריגרים ונתוני המעקב שלך',
+            anxietyTrackingDesc: 'שתף/י את רמות החרדה, הטריגרים ונתוני המעקב שלך',
             personalDocLabel: 'תיעוד אישי',
-            personalDocDesc: 'שתף את הפתקים האישיים, ההתקדמות והמסמכים הקשורים לטיפול שלך',
-            privacyNotice: 'המטפל שלך יראה רק את המידע שתבחר לשתף. תוכל לשנות הגדרות אלה בכל עת.',
+            personalDocDesc: 'שתף/י את הפתקים האישיים, ההתקדמות והמסמכים הקשורים לטיפול שלך',
+            privacyNotice: 'המטפל שלך יראה רק את המידע שתבחר לשתף. תוכל/י לשנות הגדרות אלה בכל עת.',
           },
           customization: {
             smartJewelryTitle: 'שילוב תכשיטים חכמים',
-            enableJewelry: 'הפעל תכשיט חכם',
-            jewelryDescription: 'התחבר לתכשיטים החכמים של AnxiEase',
+            enableJewelry: 'הפעל/י תכשיט חכם',
+            jewelryDescription: 'התחבר/י לתכשיטים החכמים של AnxiEase',
             vibrationAlerts: 'התראות רטט לחרדה',
-            vibrationDescription: 'הפעל רטט עדין בעת זיהוי חרדה ע"י החיישנים',
+            vibrationDescription: 'הפעל/י רטט עדין בעת זיהוי חרדה ע"י החיישנים',
             musicTherapyTitle: 'תרפיה במוזיקה',
-            enableMusic: 'הפעל תרפיה במוזיקה',
-            musicDescription: 'השתמש במוזיקה מרגיעה לניהול חרדה',
+            enableMusic: 'הפעל/י תרפיה במוזיקה',
+            musicDescription: 'השתמש/י במוזיקה מרגיעה לניהול חרדה',
           },
           music: {
-            selectType: 'בחר סוג מוזיקה',
+            selectType: 'בחר/י סוג מוזיקה',
             tracksCount: '{count} רצועות',
             categories: {
               natureSounds: 'צלילי טבע',
@@ -484,20 +513,20 @@ export const translations = {
           },
           therapistQualifications: {
             education: 'רקע השכלתי',
-            selectEducation: 'בחר את רמת ההשכלה שלך',
+            selectEducation: 'בחר/י את רמת ההשכלה שלך',
             experience: 'שנות ניסיון',
-            selectExperience: 'בחר את רמת הניסיון שלך',
+            selectExperience: 'בחר/י את רמת הניסיון שלך',
             workplace: 'מקום עבודה נוכחי',
             workplacePlaceholder: 'לדוגמה: קליניקה פרטית, שם בית חולים',
             specialization: 'התמחות ראשית',
-            selectSpecialization: 'בחר את ההתמחות שלך',
+            selectSpecialization: 'בחר/י את ההתמחות שלך',
             licenseNumber: 'מספר רישיון מקצועי',
-            licenseNumberPlaceholder: 'הכנס את מספר הרישיון שלך'
+            licenseNumberPlaceholder: 'הכנס/י את מספר הרישיון שלך'
           },
 
           completion: {
             therapistTitle: "ברוכים הבאים ל-AnxiEase Professional",
-            therapistMessage: "הפרופיל המקצועי שלך הוגדר בהצלחה. כעת תוכל להתחיל לעזור למטופלים לנהל את החרדה שלהם ביעילות.",
+            therapistMessage: "הפרופיל המקצועי שלך הוגדר בהצלחה. כעת תוכל/י להתחיל לעזור למטופלים לנהל את החרדה שלהם ביעילות.",
             patientTitle: "ברוכים הבאים ל-AnxiEase",
             patientMessage: "הפרופיל שלך הוגדר בהצלחה. אתה מוכן להתחיל לנהל את החרדה שלך עם תמיכה מקצועית.",
             availableFeatures: "תכונות זמינות"
@@ -515,31 +544,39 @@ export const translations = {
             professionalSupport: "תמיכה מקצועית"
           },
           registration: {
-            selectRole: "אנא בחר את תפקידך להמשך",
-            fillNames: "אנא מלא שם פרטי ושם משפחה",
+            selectRole: "אנא בחר/י את תפקידך להמשך",
+            fillNames: "אנא מלא/י שם פרטי ושם משפחה",
             fillAllFields: "נא למלא את כל השדות",
-            completeAllFields: "אנא מלא את כל שדות המידע המקצועי",
-            selectTherapist: "אנא בחר מטפל להמשך",
-            selectMusicCategory: "אנא בחר קטגוריית מוזיקה",
-            selectTrack: "אנא בחר שיר ספציפי",
-            registrationFailed: "ההרשמה נכשלה. אנא נסה שוב.",
-            selectRoleSubtitle: "בוא נתחיל בבחירת תפקידך",
+            completeAllFields: "אנא מלא/י את כל שדות המידע המקצועי",
+            selectTherapist: "אנא בחר/י מטפל להמשך",
+            selectMusicCategory: "אנא בחר/י קטגוריית מוזיקה",
+            selectTrack: "אנא בחר/י שיר ספציפי",
+            registrationFailed: "ההרשמה נכשלה. אנא נסה/י שוב.",
+            selectRoleSubtitle: "בוא/י נתחיל בבחירת תפקידך",
             personalInfo: "מידע אישי",
-            tellAboutYourself: "ספר לנו על עצמך",
-            connectTherapist: "התחבר למטפל",
-            chooseTherapist: "בחר את המטפל שלך והגדר העדפות שיתוף",
+            tellAboutYourself: "ספר/י לנו על עצמך",
+            connectTherapist: "התחבר/י למטפל",
+            chooseTherapist: "בחר/י את המטפל שלך והגדר/י העדפות שיתוף",
             professionalBackground: "רקע מקצועי",
-            qualifications: "ספר לנו על הכישורים שלך",
-            customizeExperience: "התאם אישית את החוויה שלך",
-            setupTools: "הגדר את כלי ניהול החרדה שלך",
+            qualifications: "ספר/י לנו על הכישורים שלך",
+            customizeExperience: "התאם/י אישית את החוויה שלך",
+            setupTools: "הגדר/י את כלי ניהול החרדה שלך",
             allSet: "הכל מוכן!",
             welcomeProfessional: "ברוכים הבאים לרשת המקצועית של AnxiEase",
-            startManaging: "בוא נתחיל לנהל את החרדה שלך יחד"
+            startManaging: "בוא/י נתחיל לנהל את החרדה שלך יחד"
           },
           chat: {
             titleHistory: "היסטוריית הצ'אט",
-            deleteChat: "מחק צ'אט",
-            confirmDelete: "האם אתה בטוח שברצונך למחוק צ'אט זה?",
+            deleteChat: {
+              male: "מחק צ'אט",
+              female: "מחקי צ'אט",
+              default: "מחקו צ'אט"
+            },
+            confirmDelete: {
+              male: "האם אתה בטוח שברצונך למחוק צ'אט זה?",
+              female: "האם את בטוחה שברצונך למחוק צ'אט זה?",
+              default: "האם אתם בטוחים שברצונכם למחוק צ'אט זה?"
+            },
             noMessages: "אין הודעות",
             noChatHistory: "אין עדיין היסטוריית צ'אט"
           },
@@ -550,7 +587,11 @@ export const translations = {
             myProfile: "הפרופיל שלי",
             personalInfo: "מידע אישי",
             preferences: "העדפות",
-            save: "שמור שינויים",
+            save: {
+              male: "שמור שינויים",
+              female: "שמרי שינויים",
+              default: "שמרו שינויים"
+            },
             fullName: 'שם מלא',
             gender: 'מין'
           },

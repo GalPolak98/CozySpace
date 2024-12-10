@@ -17,15 +17,21 @@ import ThemedView from '@/components/ThemedView';
 import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
+import useAuth from '@/hooks/useAuth';
+import { useUserData } from '@/hooks/useUserData';
 
 const ChatHistory = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const { getAllSessions, setCurrentSession, deleteSession } = useChatContext();
   const { theme: currentTheme } = useTheme();
-  const { t, isRTL, currentLanguage } = useLanguage();
+  const { t, isRTL, currentLanguage, getGenderedText} = useLanguage();
   const colors = theme[currentTheme];
   const router = useRouter();
-
+  const userId = useAuth();
+  const { 
+    gender,  
+  } = useUserData(userId);
+  
   const loadSessions = useCallback(async () => {
     const chatSessions = await getAllSessions();
     setSessions(chatSessions);
@@ -42,8 +48,8 @@ const ChatHistory = () => {
 
   const handleDeleteSession = async (sessionId: string) => {
     Alert.alert(
-      t.chat.deleteChat,
-      t.chat.confirmDelete,
+      getGenderedText(t.chat.deleteChat, gender as string),
+      getGenderedText(t.chat.confirmDelete, gender as string),
       [
         {
           text: t.common.cancel,

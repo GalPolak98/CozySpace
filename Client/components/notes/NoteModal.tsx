@@ -7,6 +7,8 @@ import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { theme } from '@/styles/Theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useUserData } from '@/hooks/useUserData';
+import useAuth from '@/hooks/useAuth';
 
 interface NoteModalProps {
   isModalVisible: boolean;
@@ -28,11 +30,15 @@ const NoteModal: React.FC<NoteModalProps> = ({
   selectedNote,
 }) => {
   const { theme: currentTheme } = useTheme();
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, getGenderedText} = useLanguage();
   const colors = currentTheme === 'dark' ? theme.dark : theme.light;
   const insets = useSafeAreaInsets();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-
+  const userId = useAuth();
+  const {
+    gender,
+  } = useUserData(userId);
+  
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
@@ -87,7 +93,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
               textAlign: isRTL ? 'right' : 'left'
             }}
           >
-            {t.note.editNote}
+            {getGenderedText(t.note.editNote, gender as string)}
           </ThemedText>
 
           <TextInput
@@ -106,7 +112,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
               textAlign: isRTL ? 'right' : 'left',
               writingDirection: isRTL ? 'rtl' : 'ltr',
             }}
-            placeholder={t.note.placeholder}
+            placeholder={getGenderedText(t.note.placeholder, gender as string)}
             placeholderTextColor={colors.textSecondary}
             multiline={true}
           />

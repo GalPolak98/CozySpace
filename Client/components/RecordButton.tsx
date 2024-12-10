@@ -4,6 +4,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import ThemedText from './ThemedText';
+import { useUserData } from '@/hooks/useUserData';
+import useAuth from '@/hooks/useAuth';
 
 type RecordButtonProps = {
   recording: boolean;
@@ -13,7 +15,11 @@ type RecordButtonProps = {
 
 const RecordingButton: React.FC<RecordButtonProps> = ({ recording, startRecording, stopRecording }) => {
   const { theme } = useTheme();
-  const { isRTL, t } = useLanguage();
+  const { isRTL, t, getGenderedText } = useLanguage();
+  const userId = useAuth();
+  const { 
+    gender, 
+  } = useUserData(userId);
 
   // Dynamically setting the text color based on the theme
   const textColor = theme === 'light' ? 'black' : 'white';
@@ -38,7 +44,7 @@ const RecordingButton: React.FC<RecordButtonProps> = ({ recording, startRecordin
         style={{ color: textColor }}
         isRTL={isRTL}
       >
-        {recording ? t.recording.stopRecording : t.recording.startRecording}
+        {recording ? getGenderedText(t.recording.stopRecording, gender as string) : getGenderedText(t.recording.startRecording, gender as string)}
       </ThemedText>
     </View>
   );

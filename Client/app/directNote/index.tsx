@@ -11,6 +11,7 @@ import NotebookInput from '../../components/notes/NoteInput';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/styles/Theme';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { useUserData } from '@/hooks/useUserData';
 
 const NotesSection: React.FC = () => {
   const [note, setNote] = useState<string>('');
@@ -19,7 +20,10 @@ const NotesSection: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const userId = useAuth();
-  const { t, isRTL } = useLanguage();
+  const { 
+    gender,  
+  } = useUserData(userId);
+  const { t, isRTL, getGenderedText } = useLanguage();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const insets = useSafeAreaInsets();
@@ -202,7 +206,7 @@ const NotesSection: React.FC = () => {
             ]}
           >
             <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
-              {t.note.addNote}
+              {getGenderedText(t.note.addNote, gender as string)}
             </ThemedText>
           </TouchableOpacity>
         </View>

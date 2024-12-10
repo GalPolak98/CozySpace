@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Image, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import ThemedView from '@/components/ThemedView';
@@ -10,11 +10,16 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/components/ThemeContext';
 import * as Location from 'expo-location';
 import useAuth from '@/hooks/useAuth';
-import { useUserFullName } from '@/hooks/useUserFullName';
-import { userService } from '@/services/userService';
+import { useUserData } from '@/hooks/useUserData';
 import Loader from '@/components/Loader';
 
 type RouteType = '/chat' | '/guidedNote' | '/directNote';
+
+interface MenuItem {
+  title: string;
+  icon: React.ReactNode;
+  route: RouteType;
+}
 
 const HomePatient = () => {
   const router = useRouter();
@@ -22,29 +27,23 @@ const HomePatient = () => {
   const { theme: currentTheme } = useTheme();
   const [locationPermission, setLocationPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [userGender, setUserGender] = useState<string | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const userId = useAuth();
-  const { fullName, loading: nameLoading } = useUserFullName(userId);
+  const { 
+    gender, 
+    fullName, 
+    isLoading: userDataLoading, 
+    error: userDataError 
+  } = useUserData(userId);
 
   useEffect(() => {
-    const initializeData = async () => {
-      try {
-        await requestLocationPermission();
-        if (userId) {
-          const gender = await userService.getUserGender(userId as string);
-          setUserGender(gender as string);
-        }
-      } catch (error) {
-        console.error('Error during initialization:', error);
-        Alert.alert(t.errors.error, t.errors.unexpected);
-      } finally {
-        setIsInitialLoading(false);
-      }
-    };
+    requestLocationPermission();
+  }, []);
 
-    initializeData();
-  }, [userId]);
+  useEffect(() => {
+    if (userDataError) {
+      Alert.alert(t.errors.error, t.errors.unexpected);
+    }
+  }, [userDataError, t.errors]);
 
   const requestLocationPermission = async () => {
     try {
@@ -57,7 +56,7 @@ const HomePatient = () => {
   };
 
   const handleNavigation = async (route: RouteType) => {
-    if (!userGender) {
+    if (!gender) {
       Alert.alert(t.errors.error, t.errors.unexpected);
       return;
     }
@@ -66,13 +65,22 @@ const HomePatient = () => {
     try {
       switch (route) {
         case '/chat':
-          router.push({ pathname: '/chat', params: { gender: userGender } });
+          router.push({ 
+            pathname: '/chat', 
+            params: { gender } 
+          });
           break;
         case '/guidedNote':
-          router.push({ pathname: '/guidedNote', params: { gender: userGender } });
+          router.push({ 
+            pathname: '/guidedNote', 
+            params: { gender } 
+          });
           break;
         case '/directNote':
-          router.push({ pathname: '/directNote', params: { gender: userGender } });
+          router.push({ 
+            pathname: '/directNote', 
+            params: { gender } 
+          });
           break;
       }
     } catch (error) {
@@ -82,37 +90,65 @@ const HomePatient = () => {
     }
   };
 
-  const menuItems = [
+  
+  const menuItems: MenuItem[] = [
     {
-      title: t.homePatient.talkToAI,
-      icon: <MaterialIcons name="chat" size={24} color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} />,
-      route: '/chat' as RouteType,
+      title: getGenderedText(t.homePatient.talkToAI, gender as string),
+      icon: (
+        <MaterialIcons 
+          name="chat" 
+          size={24} 
+          color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} 
+        />
+      ),
+      route: '/chat',
     },
     {
-      title: t.homePatient.guidedDocumenting,
-      icon: <MaterialIcons name="description" size={24} color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} />,
-      route: '/guidedNote' as RouteType,
+      title: getGenderedText(t.homePatient.guidedDocumenting, gender as string),
+      icon: (
+        <MaterialIcons 
+          name="description" 
+          size={24} 
+          color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} 
+        />
+      ),
+      route: '/guidedNote',
     },
     {
-      title: t.homePatient.documentNow,
-      icon: <MaterialIcons name="edit" size={24} color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} />,
-      route: '/directNote' as RouteType,
+      title: getGenderedText(t.homePatient.documentNow, gender as string),
+      icon: (
+        <MaterialIcons 
+          name="edit" 
+          size={24} 
+          color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} 
+        />
+      ),
+      route: '/directNote',
     },
   ];
 
-  if (isInitialLoading || nameLoading || !userGender) {
+  // Show loader while initializing
+  if (userDataLoading || !gender || !fullName) {
     return <Loader isLoading={true} />;
   }
 
   return (
     <ThemedView className="flex-1">
-      <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
+      <ScrollView 
+        className="flex-1" 
+        contentContainerClassName="px-4 py-6"
+      >
+        {/* Welcome Message */}
         <View className="items-center mb-8">
-          <ThemedText className="font-psemibold text-2xl text-center mt-4" isRTL={isRTL}>
-            {getGenderedText(t.common.welcome, userGender)}, {fullName}
+          <ThemedText 
+            className="font-psemibold text-2xl text-center mt-4" 
+            isRTL={isRTL}
+          >
+            {getGenderedText(t.common.welcome, gender)}, {fullName}
           </ThemedText>
         </View>
 
+        {/* Menu Items */}
         <View className="space-y-4 mt-4">
           {menuItems.map((item, index) => (
             <CustomButton
@@ -129,6 +165,7 @@ const HomePatient = () => {
           ))}
         </View>
 
+        {/* Recordings Section */}
         <View className="mt-8">
           <RecordingsSection />
         </View>

@@ -15,7 +15,7 @@ export default function TabLayout() {
   interface Tab {
     name: string;
     title: string;
-    iconName: 'home' | 'code-slash'; // Only include valid icon names
+    iconName: 'home' | 'code-slash'; 
    }
    
    const tabs: Tab[] = [

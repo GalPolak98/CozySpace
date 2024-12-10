@@ -10,21 +10,57 @@ import { FeatureOption } from '@/components/onboarding/FeatureOption';
 import { MusicSelectionSection } from '@/components/onboarding/MusicSelectionSection';
 import { TherapistSelectionSection } from '@/components/onboarding/TherapistSelectionSection';
 import useAuth from '@/hooks/useAuth';
+import { useUserData } from '@/hooks/useUserData';
 import { musicData } from '@/types/musicData';
 import { userService } from '@/services/userService';
 
+interface DataShareOptions {
+  anxietyTracking: boolean;
+  personalDocumentation: boolean;
+}
+
+interface Profile {
+  personalInfo: {
+    email: string;
+    gender: string;
+  };
+  therapistInfo: {
+    selectedTherapistId: string | null;
+    dataSharing: DataShareOptions;
+  };
+  toolsPreferences: {
+    smartJewelry: {
+      enabled: boolean;
+      vibrationAlerts: boolean;
+    };
+    musicTherapy: {
+      enabled: boolean;
+      selectedTrackId: string | null;
+    };
+  };
+}
+
 const ProfileScreen = () => {
   const { theme: currentTheme } = useTheme();
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, getGenderedText } = useLanguage();
   const colors = theme[currentTheme];
   const userId = useAuth();
+
+  const { 
+    gender, 
+    firstName, 
+    lastName, 
+    isLoading: userDataLoading, 
+    refresh: refreshUserData,
+    error: userDataError 
+  } = useUserData(userId);
 
   // State management
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [selectedTherapist, setSelectedTherapist] = useState<string | null>(null);
-  const [dataShareOptions, setDataShareOptions] = useState({
+  const [dataShareOptions, setDataShareOptions] = useState<DataShareOptions>({
     anxietyTracking: false,
     personalDocumentation: false
   });
@@ -35,16 +71,22 @@ const ProfileScreen = () => {
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
 
   useEffect(() => {
+    if (userDataError) {
+      Alert.alert(t.errors.error, t.errors.unexpected);
+    }
+  }, [userDataError]);
+
+  useEffect(() => {
     fetchProfile();
   }, [userId]);
 
   const fetchProfile = async () => {
     try {
       if (!userId) return;
-      const profile = await userService.getUserProfile(userId);
+      const profileData = await userService.getUserProfile(userId);
 
-      if (profile) {
-        const { therapistInfo, toolsPreferences } = profile;
+      if (profileData) {
+        const { therapistInfo, toolsPreferences } = profileData;
         setSelectedTherapist(therapistInfo.selectedTherapistId);
         setDataShareOptions(therapistInfo.dataSharing);
         setUseSmartJewelry(toolsPreferences.smartJewelry.enabled);
@@ -59,7 +101,7 @@ const ProfileScreen = () => {
             setSelectedTrack(track.id);
           }
         }
-        setProfile(profile);
+        setProfile(profileData);
       }
     } catch (error) {
       Alert.alert(t.errors.error, t.errors.loadError);
@@ -68,7 +110,7 @@ const ProfileScreen = () => {
     }
   };
 
-  // Handlers
+  // Feature toggle handlers
   const handleSmartJewelryToggle = () => {
     setUseSmartJewelry(!useSmartJewelry);
     if (useSmartJewelry) setEnableVibrations(false);
@@ -91,11 +133,11 @@ const ProfileScreen = () => {
   };
 
   const handleSave = async () => {
-    if (!validateSettings()) return;
+    if (!validateSettings() || !userId) return;
 
     try {
       setSaving(true);
-      await userService.updateUserPreferences(userId!, {
+      await userService.updateUserPreferences(userId, {
         therapistInfo: {
           selectedTherapistId: selectedTherapist,
           dataSharing: dataShareOptions,
@@ -112,6 +154,8 @@ const ProfileScreen = () => {
         },
       });
 
+      // Refresh user data and profile after successful save
+      await Promise.all([refreshUserData(), fetchProfile()]);
       Alert.alert(t.success.updated, t.profile.saveSuccess);
     } catch (error) {
       console.error('Update error:', error);
@@ -121,7 +165,7 @@ const ProfileScreen = () => {
     }
   };
 
-  if (loading) {
+  if (loading || userDataLoading || !profile) {
     return (
       <ThemedView className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
@@ -144,33 +188,45 @@ const ProfileScreen = () => {
             </ThemedText>
             
             <View className="space-y-2">
-            <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row'}}>
-              <ThemedText variant="secondary" style={{marginRight:isRTL? 0 : 8, marginLeft:isRTL? 8 : 0}} isRTL={isRTL}>
-                {t.profile.fullName}:
-              </ThemedText>
-              <ThemedText variant="default" isRTL={isRTL}>
-                {profile?.personalInfo.firstName} {profile?.personalInfo.lastName}
-              </ThemedText>
-            </View>
-            
-            <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
-              <ThemedText variant="secondary" style={{marginRight:isRTL? 0 : 8, marginLeft:isRTL? 8 : 0}} isRTL={isRTL}>
-                {t.auth.emailPlaceholder}:
-              </ThemedText>
-              <ThemedText variant="default" isRTL={isRTL}>
-                {profile?.personalInfo.email}
-              </ThemedText>
-            </View>
+              <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row'}}>
+                <ThemedText 
+                  variant="secondary" 
+                  style={{marginRight: isRTL ? 0 : 8, marginLeft: isRTL ? 8 : 0}} 
+                  isRTL={isRTL}
+                >
+                  {t.profile.fullName}:
+                </ThemedText>
+                <ThemedText variant="default" isRTL={isRTL}>
+                  {firstName} {lastName}
+                </ThemedText>
+              </View>
+              
+              <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+                <ThemedText 
+                  variant="secondary" 
+                  style={{marginRight: isRTL ? 0 : 8, marginLeft: isRTL ? 8 : 0}} 
+                  isRTL={isRTL}
+                >
+                  {t.auth.emailPlaceholder}:
+                </ThemedText>
+                <ThemedText variant="default" isRTL={isRTL}>
+                  {profile.personalInfo.email}
+                </ThemedText>
+              </View>
 
-            <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
-              <ThemedText variant="secondary" style={{marginRight:isRTL? 0 : 8, marginLeft:isRTL? 8 : 0}} isRTL={isRTL}>
-                {t.profile.gender}:
-              </ThemedText>
-              <ThemedText variant="default" isRTL={isRTL}>
-                {profile?.personalInfo.gender === 'male' ? t.personalInfo.male : t.personalInfo.female}
-              </ThemedText>
+              <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+                <ThemedText 
+                  variant="secondary" 
+                  style={{marginRight: isRTL ? 0 : 8, marginLeft: isRTL ? 8 : 0}} 
+                  isRTL={isRTL}
+                >
+                  {t.profile.gender}:
+                </ThemedText>
+                <ThemedText variant="default" isRTL={isRTL}>
+                  {profile.personalInfo.gender === 'male' ? t.personalInfo.male : t.personalInfo.female}
+                </ThemedText>
+              </View>
             </View>
-          </View>
           </ThemedView>
 
           {/* Therapist Selection Section */}
@@ -266,7 +322,7 @@ const ProfileScreen = () => {
           {/* Save Button */}
           <View className="mb-8">
             <CustomButton
-              title={t.profile.save}
+              title={getGenderedText(t.profile.save, gender as string)}
               handlePress={handleSave}
               isLoading={saving}
               variant="primary"
