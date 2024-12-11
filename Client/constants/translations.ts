@@ -153,11 +153,11 @@ export const translations = {
 
 
           roleSelection: {
-            title: 'How would you like to use AnxiEase?',
+            title: 'How would you like to use CozySpace?',
             patientTitle: "I'm Seeking Help",
-            patientDescription: 'Get personalized support, track your anxiety levels, and connect with professional therapists',
+            patientDescription: 'Get personalized support, track your health data and connect with your therapist',
             therapistTitle: "I'm a Therapist",
-            therapistDescription: 'Help patients manage anxiety, monitor their progress, and provide professional support',
+            therapistDescription: 'Help patients maintain a calm and stable routine, monitor their progress and provide professional support'
           },
           personalInfo: {
             firstName: 'First Name',
@@ -174,8 +174,8 @@ export const translations = {
             dataSharingTitle: 'Data Sharing Settings',
             noTherapistsError: 'No therapists data in response',
             loadError: 'Failed to load therapists',
-            anxietyTrackingLabel: 'Anxiety Tracking Reports',
-            anxietyTrackingDesc: 'Share your anxiety levels, triggers, and monitoring data',
+            anxietyTrackingLabel: 'Monitor your health data including graphs and statistics',
+            anxietyTrackingDesc: 'Share your periodic health reports',
             personalDocLabel: 'Personal Documentation',
             personalDocDesc: 'Share your personal notes, progress, and therapy-related documents',
             privacyNotice: 'Your therapist will only see the data you choose to share. You can change these settings at any time.',
@@ -183,12 +183,12 @@ export const translations = {
           customization: {
             smartJewelryTitle: 'Smart Jewelry Integration',
             enableJewelry: 'Enable Smart Jewelry',
-            jewelryDescription: 'Connect your AnxiEase smart jewelry',
+            jewelryDescription: 'Connect your CozySpace smart jewelry',
             vibrationAlerts: 'Anxiety Alert Vibrations',
             vibrationDescription: 'Activate gentle vibration when sensors detect anxiety',
             musicTherapyTitle: 'Music Therapy',
             enableMusic: 'Enable Music Therapy',
-            musicDescription: 'Use calming music to help manage anxiety',
+            musicDescription: 'Use calming music to manage stress and anxiety'
           },
           music: {
             selectType: 'Select Music Type',
@@ -213,11 +213,10 @@ export const translations = {
           },
 
           completion: {
-            therapistTitle: "Welcome to AnxiEase Professional",
+            therapistTitle: "Welcome to CozySpace Professional",
             therapistMessage: "Your professional profile has been set up successfully. You can now start helping patients manage their anxiety effectively.",
-            patientTitle: "Welcome to AnxiEase",
-            patientMessage: "Your profile has been set up successfully. You're ready to start managing your anxiety with professional support.",
-            availableFeatures: "Available Features"
+            patientTitle: "Welcome to CozySpace",
+            patientMessage: "Your profile has been set up successfully. You're ready to start managing your health optimally with professional support.",            availableFeatures: "Available Features"
           },
           therapistFeatures: {
             patientTracking: "Access to patient anxiety tracking",
@@ -226,10 +225,10 @@ export const translations = {
             patientTools: "Patient management tools"
           },
           patientFeatures: {
-            anxietyTracking: "Real-time anxiety tracking",
-            smartJewelry: "Smart jewelry integration",
-            musicTherapy: "Music therapy tools",
-            professionalSupport: "Professional support"
+            anxietyTracking: "Real-time physical data monitoring through smart jewelry integration",
+            smartJewelry: "Access to periodic health reports",
+            musicTherapy: "Tools for managing a calm and stable routine",
+            professionalSupport: "Professional support and healthcare provider sharing"
           },
 
           registration: {
@@ -249,10 +248,10 @@ export const translations = {
             professionalBackground: "Professional Background",
             qualifications: "Tell us about your qualifications",
             customizeExperience: "Customize Your Experience",
-            setupTools: "Set up your anxiety management tools",
+            setupTools: "Set up your stress and anxiety management tools",
             allSet: "You're All Set!",
-            welcomeProfessional: "Welcome to the AnxiEase professional network",
-            startManaging: "Let's start managing your anxiety together"
+            welcomeProfessional: "Welcome to the CozySpace professional network",
+            startManaging: "Let's start managing your health together"
           },
 
           chat: {
@@ -465,11 +464,12 @@ export const translations = {
 
 
           roleSelection: {
-            title: 'כיצד תרצה להשתמש ב-AnxiEase?',
+            title: 'כיצד תרצה להשתמש ב CozySpace?',
             patientTitle: 'אני מחפש עזרה',
-            patientDescription: 'קבל תמיכה מותאמת אישית, עקוב אחר רמות החרדה שלך, והתחבר למטפל המקצועי שלך',
+            
+            patientDescription: 'קבל/י תמיכה מותאמת אישית, עקוב/י אחר נתוני הבריאות שלך והתחבר/י למטפל המקצועי שלך',
             therapistTitle: 'אני מטפל',
-            therapistDescription: 'עזור למטופלים לנהל חרדה, עקוב אחר התקדמותם וספק להם תמיכה מקצועית',
+            therapistDescription: 'עזור/י למטופלים לנהל שגרה רגועה ויציבה, עקוב/י אחר התקדמותם וספק/י להם תמיכה מקצועית',
           },
           personalInfo: {
             firstName: 'שם פרטי',
@@ -486,8 +486,8 @@ export const translations = {
             dataSharingTitle: 'הגדרות שיתוף מידע',
             noTherapistsError: 'אין נתוני מטפלים בתשובה',
             loadError: 'טעינת המטפלים נכשלה',
-            anxietyTrackingLabel: 'דוחות מעקב חרדה',
-            anxietyTrackingDesc: 'שתף/י את רמות החרדה, הטריגרים ונתוני המעקב שלך',
+            anxietyTrackingLabel: 'מעקב אחר נתוני הבריאות שלך כולל גרפים וסטטיסטיקות',
+            anxietyTrackingDesc: 'שתף/י את דוחות הבריאות התקופתיים',
             personalDocLabel: 'תיעוד אישי',
             personalDocDesc: 'שתף/י את הפתקים האישיים, ההתקדמות והמסמכים הקשורים לטיפול שלך',
             privacyNotice: 'המטפל שלך יראה רק את המידע שתבחר לשתף. תוכל/י לשנות הגדרות אלה בכל עת.',
@@ -495,12 +495,12 @@ export const translations = {
           customization: {
             smartJewelryTitle: 'שילוב תכשיטים חכמים',
             enableJewelry: 'הפעל/י תכשיט חכם',
-            jewelryDescription: 'התחבר/י לתכשיטים החכמים של AnxiEase',
+            jewelryDescription: 'התחבר/י לתכשיטים החכמים של CozySpace',
             vibrationAlerts: 'התראות רטט לחרדה',
             vibrationDescription: 'הפעל/י רטט עדין בעת זיהוי חרדה ע"י החיישנים',
             musicTherapyTitle: 'תרפיה במוזיקה',
             enableMusic: 'הפעל/י תרפיה במוזיקה',
-            musicDescription: 'השתמש/י במוזיקה מרגיעה לניהול חרדה',
+            musicDescription: 'השתמש/י במוזיקה מרגיעה לניהול מצבי לחץ וחרדה ',
           },
           music: {
             selectType: 'בחר/י סוג מוזיקה',
@@ -525,10 +525,10 @@ export const translations = {
           },
 
           completion: {
-            therapistTitle: "ברוכים הבאים ל-AnxiEase Professional",
+            therapistTitle: "ברוכים הבאים ל-CozySpace Professional",
             therapistMessage: "הפרופיל המקצועי שלך הוגדר בהצלחה. כעת תוכל/י להתחיל לעזור למטופלים לנהל את החרדה שלהם ביעילות.",
-            patientTitle: "ברוכים הבאים ל-AnxiEase",
-            patientMessage: "הפרופיל שלך הוגדר בהצלחה. אתה מוכן להתחיל לנהל את החרדה שלך עם תמיכה מקצועית.",
+            patientTitle: "ברוכים הבאים ל-CozySpace",
+            patientMessage: "הפרופיל שלך הוגדר בהצלחה. אתה מוכן להתחיל לנהל את הבריאות שלך בצורה הטובה ביותר עם תמיכה מקצועית.",
             availableFeatures: "תכונות זמינות"
           },
           therapistFeatures: {
@@ -538,10 +538,10 @@ export const translations = {
             patientTools: "כלים לניהול מטופלים"
           },
           patientFeatures: {
-            anxietyTracking: "מעקב חרדה בזמן אמת",
-            smartJewelry: "שילוב תכשיטים חכמים",
-            musicTherapy: "כלי תרפיה במוזיקה",
-            professionalSupport: "תמיכה מקצועית"
+            anxietyTracking: "מעקב אחר נתונים פיזיים בזמן אמת באמצעות שילוב תכשיטים חכמים",
+            smartJewelry: "גישה לדוחות בריאות תקופתיים",
+            musicTherapy: "כלים לניהול שגרה רגועה ויציבה",
+            professionalSupport: "תמיכה מקצועית ושיתוף אנשי מקצוע"
           },
           registration: {
             selectRole: "אנא בחר/י את תפקידך להמשך",
@@ -560,10 +560,10 @@ export const translations = {
             professionalBackground: "רקע מקצועי",
             qualifications: "ספר/י לנו על הכישורים שלך",
             customizeExperience: "התאם/י אישית את החוויה שלך",
-            setupTools: "הגדר/י את כלי ניהול החרדה שלך",
+            setupTools: "הגדר/י את כלי ניהול מצבי הלחץ והחרדה שלך",
             allSet: "הכל מוכן!",
-            welcomeProfessional: "ברוכים הבאים לרשת המקצועית של AnxiEase",
-            startManaging: "בוא/י נתחיל לנהל את החרדה שלך יחד"
+            welcomeProfessional: "ברוכים הבאים לרשת המקצועית של CozySpace",
+            startManaging: "בוא/י נתחיל לנהל את הבריאות שלך יחד"
           },
           chat: {
             titleHistory: "היסטוריית הצ'אט",

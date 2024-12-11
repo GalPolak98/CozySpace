@@ -38,7 +38,7 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
   return (
     <View className="space-y-6">
       {/* Smart Jewelry Section */}
-      <View className="bg-surface p-4 rounded-xl space-y-4">
+      <View className="bg-surface p-4 space-y-4">
         <Text 
           style={{ 
             color: colors.text,
@@ -53,7 +53,13 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
           title={t.customization.enableJewelry}
           description={t.customization.jewelryDescription}
           isEnabled={useSmartJewelry}
-          onToggle={() => setUseSmartJewelry(!useSmartJewelry)}
+          onToggle={() => {
+            if (useSmartJewelry === true) 
+            {
+              setEnableVibrations(false)
+            }
+            setUseSmartJewelry(!useSmartJewelry)
+          }}
           iconName={useSmartJewelry ? 'bluetooth' : 'bluetooth-outline'}
           isRTL={isRTL}
         />
@@ -71,7 +77,7 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
       </View>
 
       {/* Music Therapy Section */}
-      <View className="bg-surface p-4 rounded-xl space-y-4">
+      <View className="bg-surface p-4 space-y-4">
         <Text 
           style={{ 
             color: colors.text,
@@ -98,7 +104,7 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
         />
 
         {playMusic && (
-          <View className="space-y-4">
+          <View className="space-y-4 mt-4">
             <MusicSelectionSection
               selectedMusic={selectedMusic}
               setSelectedMusic={category => {

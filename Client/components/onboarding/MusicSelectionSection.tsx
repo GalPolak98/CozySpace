@@ -38,7 +38,7 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
     return (
       <TouchableOpacity
         onPress={() => setSelectedMusic(item.id)}
-        className={`p-4 rounded-xl w-32 h-32 items-center justify-center`}
+        className={`p-4 rounded-xl w-32 h-32 items-center justify-center mb-2`}
         style={{
           borderWidth: selectedMusic === item.id ? 2 : 1,
           borderColor: selectedMusic === item.id ? colors.primary : colors.border,
@@ -81,7 +81,7 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
           color: colors.text,
           textAlign: isRTL ? 'right' : 'left'
         }} 
-        className="font-pmedium text-lg mb-2"
+        className="font-pmedium text-lg nt-4 mb-1"
       >
         {t.music.selectType}
       </Text>

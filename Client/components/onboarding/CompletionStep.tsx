@@ -42,7 +42,7 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
   return (
     <View className="flex-1 items-center px-4">
       <View className="items-center space-y-8 w-full max-w-md">
-        <View className="py-8">
+        <View className="py-2">
           <Ionicons 
             name="checkmark-circle" 
             size={100} 
@@ -61,8 +61,7 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
             
             <ThemedText 
               variant="secondary"
-              className="text-base font-pregular px-4 text-center"
-              isRTL={isRTL}
+              className="text-base font-pregular px-4 text-center mb-6"
             >
               {userType === 'therapist' ? t.completion.therapistMessage : t.completion.patientMessage}
             </ThemedText>

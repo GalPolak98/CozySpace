@@ -52,7 +52,7 @@ export class EmailService {
         to: this.emergencyContactEmail,
         from: {
           email: this.fromEmail,
-          name: 'AnxiEase Emergency Alert'
+          name: 'CozySpace Emergency Alert'
         },
         subject: 'URGENT: Crisis Alert - Immediate Attention Required',
         text: this.generateEmergencyEmailText(notification),
