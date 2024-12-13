@@ -1,16 +1,16 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import { theme } from '@/styles/Theme';
-import { Ionicons } from '@expo/vector-icons';
-import { MusicPlayer } from '../MusicPlayer';
-import { musicData } from '@/types/musicData';
+import React from "react";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import { theme } from "@/styles/Theme";
+import { Ionicons } from "@expo/vector-icons";
+import { MusicPlayer } from "../MusicPlayer";
+import { musicData } from "@/types/musicData";
 
 const MUSIC_CATEGORIES = [
-  { id: 'nature', nameKey: 'natureSounds', icon: 'leaf' as const },
-  { id: 'meditation', nameKey: 'meditation', icon: 'musical-notes' as const },
-  { id: 'classical', nameKey: 'classical', icon: 'musical-note' as const },
+  { id: "nature", nameKey: "natureSounds", icon: "leaf" as const },
+  { id: "meditation", nameKey: "meditation", icon: "musical-notes" as const },
+  { id: "classical", nameKey: "classical", icon: "musical-note" as const },
 ] as const;
 
 interface MusicSelectionProps {
@@ -26,14 +26,20 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
   setSelectedMusic,
   selectedTrack,
   setSelectedTrack,
-  isRTL = false
+  isRTL = false,
 }) => {
   const { theme: currentTheme } = useTheme();
   const { t } = useLanguage();
   const colors = theme[currentTheme];
 
-  const renderMusicItem = ({ item }: { item: typeof MUSIC_CATEGORIES[number] }) => {
-    const tracksInCategory = musicData.filter(track => track.category === item.id).length;
+  const renderMusicItem = ({
+    item,
+  }: {
+    item: (typeof MUSIC_CATEGORIES)[number];
+  }) => {
+    const tracksInCategory = musicData.filter(
+      (track) => track.category === item.id
+    ).length;
 
     return (
       <TouchableOpacity
@@ -41,10 +47,13 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
         className={`p-4 rounded-xl w-32 h-32 items-center justify-center mb-2`}
         style={{
           borderWidth: selectedMusic === item.id ? 2 : 1,
-          borderColor: selectedMusic === item.id ? colors.primary : colors.border,
+          borderColor:
+            selectedMusic === item.id ? colors.primary : colors.border,
           backgroundColor: colors.surface,
-          marginRight: isRTL ? 0 : 0,
-          marginLeft: isRTL ? 0 : 0,
+          marginRight: isRTL ? 0 : 8,
+          marginLeft: isRTL ? 8 : 0,
+          alignItems: "center",
+          width: "auto",
         }}
       >
         <Ionicons
@@ -53,22 +62,22 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
           color={selectedMusic === item.id ? colors.primary : colors.text}
         />
         <Text
-          style={{ 
+          style={{
             color: selectedMusic === item.id ? colors.primary : colors.text,
-            textAlign: 'center'
+            textAlign: "center",
           }}
           className="mt-2 font-pmedium"
         >
           {t.music.categories[item.nameKey]}
         </Text>
         <Text
-          style={{ 
+          style={{
             color: colors.textSecondary,
-            textAlign: 'center'
+            textAlign: "center",
           }}
           className="text-xs mt-1"
         >
-          {t.music.tracksCount.replace('{count}', tracksInCategory.toString())}
+          {t.music.tracksCount.replace("{count}", tracksInCategory.toString())}
         </Text>
       </TouchableOpacity>
     );
@@ -76,12 +85,12 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
 
   return (
     <View className="space-y-4">
-      <Text 
-        style={{ 
+      <Text
+        style={{
           color: colors.text,
-          textAlign: isRTL ? 'right' : 'left'
-        }} 
-        className="font-pmedium text-lg nt-4 mb-1"
+          textAlign: isRTL ? "right" : "left",
+        }}
+        className="text-base font-pmedium mb-3"
       >
         {t.music.selectType}
       </Text>
@@ -90,8 +99,9 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
         horizontal
         showsHorizontalScrollIndicator={false}
         renderItem={renderMusicItem}
-        keyExtractor={item => item.id}
-        style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
+        keyExtractor={(item) => item.id}
+        style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
+        scrollEnabled={true}
       />
       {selectedMusic && (
         <MusicPlayer
