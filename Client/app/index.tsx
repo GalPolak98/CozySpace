@@ -1,20 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, FlatList, Dimensions, Animated, ViewToken, Image, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
-import CustomButton from '@/components/CustomButton';
-import ThemedView from '@/components/ThemedView';
-import ThemedText from '@/components/ThemedText';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import { theme } from '@/styles/Theme';
-import { auth } from '@/services/firebaseConfig';
-import { onAuthStateChanged } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Loader from '@/components/Loader';
-import { AuthRoutingService } from '@/services/authRoutingService';
-import { translations } from '@/constants/translations';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  View,
+  FlatList,
+  Dimensions,
+  Animated,
+  ViewToken,
+  Image,
+  StyleSheet,
+} from "react-native";
+import { router } from "expo-router";
+import CustomButton from "@/components/CustomButton";
+import ThemedView from "@/components/ThemedView";
+import ThemedText from "@/components/ThemedText";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import { theme } from "@/styles/Theme";
+import { auth } from "@/services/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loader from "@/components/Loader";
+import { AuthRoutingService } from "@/services/authRoutingService";
+import { translations } from "@/constants/translations";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 interface OnboardingItem {
   id: string;
@@ -26,28 +34,28 @@ interface OnboardingItem {
 // Updated onboardingData with proper types
 const onboardingData: OnboardingItem[] = [
   {
-    id: '1',
-    titleKey: 'welcome',
-    descriptionKey: 'welcome',
-    image: require('@/assets/images/welcome.png'),
+    id: "1",
+    titleKey: "welcome",
+    descriptionKey: "welcome",
+    image: require("@/assets/images/welcome.png"),
   },
   {
-    id: '2',
-    titleKey: 'support',
-    descriptionKey: 'support',
-    image: require('@/assets/images/support.png'),
+    id: "2",
+    titleKey: "support",
+    descriptionKey: "support",
+    image: require("@/assets/images/support.png"),
   },
   {
-    id: '3',
-    titleKey: 'track',
-    descriptionKey: 'track',
-    image: require('@/assets/images/track.png'),
+    id: "3",
+    titleKey: "track",
+    descriptionKey: "track",
+    image: require("@/assets/images/track.png"),
   },
   {
-    id: '4',
-    titleKey: 'connect',
-    descriptionKey: 'connect',
-    image: require('@/assets/images/connect.png'),
+    id: "4",
+    titleKey: "connect",
+    descriptionKey: "connect",
+    image: require("@/assets/images/connect.png"),
   },
 ];
 
@@ -57,66 +65,67 @@ export default function Index() {
   const scrollX = useRef(new Animated.Value(0)).current;
   const slidesRef = useRef<FlatList>(null);
   const { theme: currentTheme } = useTheme();
-  // const { currentLanguage } = useLanguage();
-    const { isRTL, t } = useLanguage();
+  const { isRTL, t } = useLanguage();
 
   const colors = theme[currentTheme];
-  
-  // const isRTL = I18nManager.isRTL;
 
   useEffect(() => {
     let isSubscribed = true;
-  
+
     const checkAuth = async () => {
       try {
-        const existingToken = await AsyncStorage.getItem('userToken');
-        
+        const existingToken = await AsyncStorage.getItem("userToken");
+
         if (existingToken && auth.currentUser) {
           if (isSubscribed) {
             await AuthRoutingService.handleAuthRouting();
           }
           return;
         }
-  
+
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
           if (!isSubscribed) return;
-  
+
           try {
             if (user) {
               const newToken = await user.getIdToken();
-              await AsyncStorage.setItem('userToken', newToken);
+              await AsyncStorage.setItem("userToken", newToken);
               await AuthRoutingService.handleAuthRouting();
             } else {
-              await AsyncStorage.removeItem('userToken');
+              await AsyncStorage.removeItem("userToken");
               setIsCheckingAuth(false);
             }
           } catch (error) {
-            console.error('Auth state change error:', error);
-            await AsyncStorage.removeItem('userToken');
+            console.error("Auth state change error:", error);
+            await AsyncStorage.removeItem("userToken");
             if (isSubscribed) {
               setIsCheckingAuth(false);
             }
           }
         });
-  
+
         return () => unsubscribe();
       } catch (error) {
-        console.error('Initial auth check error:', error);
+        console.error("Initial auth check error:", error);
         if (isSubscribed) {
           setIsCheckingAuth(false);
         }
       }
     };
-  
+
     checkAuth();
-    return () => { isSubscribed = false; };
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
-  const viewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    if (viewableItems[0]) {
-      setCurrentIndex(Number(viewableItems[0].index));
+  const viewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems[0]) {
+        setCurrentIndex(Number(viewableItems[0].index));
+      }
     }
-  }).current;
+  ).current;
 
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
@@ -134,31 +143,34 @@ export default function Index() {
         {dots.map((_, index) => {
           const adjustedIndex = isRTL ? dots.length - 1 - index : index;
           const inputRange = [
-            (adjustedIndex - 1) * width, 
-            adjustedIndex * width, 
-            (adjustedIndex + 1) * width
+            (adjustedIndex - 1) * width,
+            adjustedIndex * width,
+            (adjustedIndex + 1) * width,
           ];
-          
+
           const dotWidth = scrollX.interpolate({
             inputRange,
             outputRange: [8, 24, 8],
-            extrapolate: 'clamp',
+            extrapolate: "clamp",
           });
-  
+
           const opacity = scrollX.interpolate({
             inputRange,
             outputRange: [0.3, 1, 0.3],
-            extrapolate: 'clamp',
+            extrapolate: "clamp",
           });
-  
+
           return (
             <Animated.View
               key={index}
-              style={[styles.dot, {
-                width: dotWidth,
-                opacity,
-                backgroundColor: colors.primary,
-              }]}
+              style={[
+                styles.dot,
+                {
+                  width: dotWidth,
+                  opacity,
+                  backgroundColor: colors.primary,
+                },
+              ]}
             />
           );
         })}
@@ -169,16 +181,12 @@ export default function Index() {
   const renderItem = ({ item }: { item: OnboardingItem }) => (
     <View style={[styles.slide, { width }]}>
       <View style={styles.imageContainer}>
-        <Image
-          source={item.image}
-          style={styles.image}
-          resizeMode="contain"
-        />
+        <Image source={item.image} style={styles.image} resizeMode="contain" />
       </View>
       <View style={styles.textContainer}>
         <ThemedText
           variant="primary"
-          className="text-3xl font-pbold text-center mb-4"
+          className="text-2xl font-pbold text-center mb-4"
         >
           {t.onboarding[item.titleKey].title}
         </ThemedText>
@@ -219,29 +227,33 @@ export default function Index() {
           className="flex-1"
           inverted={isRTL}
         />
-        
+
         <View style={styles.bottomContainer}>
           <Paginator />
-          
+
           <View style={styles.buttonContainer}>
             <CustomButton
-              title={currentIndex === onboardingData.length - 1 ? t.common.getStarted : t.common.next}
+              title={
+                currentIndex === onboardingData.length - 1
+                  ? t.common.getStarted
+                  : t.common.next
+              }
               handlePress={() => {
                 if (currentIndex < onboardingData.length - 1) {
                   scrollTo(currentIndex + 1);
                 } else {
-                  router.push('/(auth)/sign-in');
+                  router.push("/(auth)/sign-in");
                 }
               }}
               containerStyles="w-full mb-4"
               variant="primary"
               textStyles="text-lg"
             />
-            
+
             {currentIndex < onboardingData.length - 1 && (
               <CustomButton
                 title={t.common.skip}
-                handlePress={() => router.push('/(auth)/sign-in')}
+                handlePress={() => router.push("/(auth)/sign-in")}
                 variant="secondary"
                 containerStyles="w-full"
                 textStyles="text-base"
@@ -257,28 +269,28 @@ export default function Index() {
 const styles = StyleSheet.create({
   slide: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   imageContainer: {
     width: width * 0.8,
     height: height * 0.4,
     marginBottom: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   textContainer: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
   paginatorContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 32,
   },
   dot: {
@@ -291,5 +303,5 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingHorizontal: 24,
-  }
+  },
 });
