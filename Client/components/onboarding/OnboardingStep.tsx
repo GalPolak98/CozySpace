@@ -25,7 +25,7 @@ export const OnboardingStep: React.FC<OnboardingStepProps> = ({
   const { isRTL } = useLanguage();
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 p-1">
       <View 
         className="flex-row w-full h-2 mb-6"
         style={{
@@ -46,16 +46,14 @@ export const OnboardingStep: React.FC<OnboardingStepProps> = ({
       <View className="mb-6">
         <ThemedText 
           variant="default" 
-          className="text-2xl font-pbold mb-2"
-          isRTL={isRTL}
+          className="text-2xl font-pbold mb-2 text-center"
         >
           {title}
         </ThemedText>
         {subtitle && (
           <ThemedText 
             variant="secondary" 
-            className="text-base font-pregular"
-            isRTL={isRTL}
+            className="text-base font-pregular text-center"
           >
             {subtitle}
           </ThemedText>

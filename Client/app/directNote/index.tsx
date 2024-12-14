@@ -7,12 +7,10 @@ import NoteModal from '../../components/notes/NoteModal';
 import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import ThemedText from '@/components/ThemedText';
-import ENV from '../../env';
 import NotebookInput from '../../components/notes/NoteInput';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/styles/Theme';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { loadNotes } from '../../utils/notesUtils';
 
 const NotesSection: React.FC = () => {
   const [note, setNote] = useState<string>('');
@@ -21,7 +19,10 @@ const NotesSection: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const userId = useAuth();
-  const { t, isRTL } = useLanguage();
+  const { 
+    gender,  
+  } = useUserData(userId);
+  const { t, isRTL, getGenderedText } = useLanguage();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const insets = useSafeAreaInsets();
@@ -59,6 +60,29 @@ const NotesSection: React.FC = () => {
     }
   };
 
+  const loadNotes = async () => {
+    if (!userId) return;
+    try {
+      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch notes');
+
+      const fetchedNotes = (await response.json()).notes;
+
+      const sortedNotes = Array.isArray(fetchedNotes)
+        ? fetchedNotes.sort((a, b) => parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp))
+        : [fetchedNotes];
+
+      setNotes(sortedNotes);
+    } catch (error) {
+      console.error('Failed to fetch notes', error);
+      Alert.alert(t.common.error, t.note.fetchError);
+    }
+  };
+
   useEffect(() => {
     const fetchNotes = async () => {
       const fetchedNotes = await loadNotes(userId, isRTL, t);
@@ -77,7 +101,7 @@ const NotesSection: React.FC = () => {
       timestamp: getCurrentDateTime(),
     };
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/addNotes`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/addNotes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newNote),
@@ -102,7 +126,7 @@ const NotesSection: React.FC = () => {
     if (!userId || !noteId) return;
 
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
         method: 'DELETE',
       });
 
@@ -121,7 +145,7 @@ const NotesSection: React.FC = () => {
     if (!updatedNote._id) return;
 
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedNote),
@@ -189,7 +213,7 @@ const NotesSection: React.FC = () => {
             ]}
           >
             <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
-              {t.note.addNote}
+              {getGenderedText(t.note.addNote, gender as string)}
             </ThemedText>
           </TouchableOpacity>
         </View>

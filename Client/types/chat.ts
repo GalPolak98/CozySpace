@@ -12,3 +12,6 @@ export interface Message {
     lastMessageAt: Date;
     hasUserMessages: boolean;
   }
+
+export type Language = 'en' | 'he';
+export type Gender = 'male' | 'female';

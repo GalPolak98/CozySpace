@@ -1,8 +1,8 @@
 import { SplashScreen, Stack } from "expo-router";
 import "../global.css";
 import { useFonts } from "expo-font";
-import { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { useEffect } from "react";
+import { StatusBar, View } from "react-native";
 import React from "react";
 import { ThemeProvider, useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
@@ -11,6 +11,7 @@ import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications"
 import { LanguageProvider } from "@/context/LanguageContext";
 import { HeaderRight } from "@/components/navigation/HeaderButtons";
+import MainHeader from "@/components/navigation/MainHeader";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -27,8 +28,8 @@ const InitialLayout = () => {
   return (
     <NotificationProvider>
     <>
-      <StatusBar 
-        barStyle={currentTheme === 'light' ? "dark-content" : "light-content"}
+      <StatusBar
+        barStyle={currentTheme === "light" ? "dark-content" : "light-content"}
         backgroundColor={colors.background}
       />
       <Stack
@@ -37,50 +38,75 @@ const InitialLayout = () => {
             backgroundColor: colors.header,
           },
           headerTintColor: colors.text,
-          headerShown: false,
+          header: () => <MainHeader />,
         }}
       >
-        <Stack.Screen 
-          name="(auth)" 
+        <Stack.Screen
+          name="(auth)"
           options={{
             gestureEnabled: false,
-          }} 
-        />
-        <Stack.Screen 
-          name="(patient)" 
-          options={{ 
-            headerTitle: "",
-            headerLeft: () => null,
-            gestureEnabled: false,
-          }} 
-        />
-
-        <Stack.Screen 
-          name="(therapist)" 
-          options={{ 
-            headerTitle: "",
-            headerLeft: () => null,
-            gestureEnabled: false,
-          }} 
-        />
-        <Stack.Screen 
-          name="index" 
-          options={{
-            headerTitle: "AnxiEase",
-            headerTitleStyle: {
-              fontFamily: 'Poppins-SemiBold',
-              color: colors.text,
-            },
-            headerShown: true,
-            headerRight: HeaderRight,
+            headerShown: false,
           }}
         />
-        <Stack.Screen 
+        <Stack.Screen
+          name="(patient)"
+          options={{
+            headerTitle: "",
+            gestureEnabled: false,
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="(therapist)"
+          options={{
+            headerTitle: "",
+            gestureEnabled: false,
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="chat"
+          options={{
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="directNote"
+          options={{
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="guidedNote"
+          options={{
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
           name="+not-found"
           options={{
             headerTitle: "Not Found",
             headerTitleStyle: {
-              fontFamily: 'Poppins-SemiBold',
+              fontFamily: "Poppins-SemiBold",
+              color: colors.text,
+            },
+          }}
+        />
+
+        <Stack.Screen
+          name="index"
+          options={{
+            headerTitle: "CozySpace",
+            headerTitleStyle: {
+              fontFamily: "Poppins-SemiBold",
               color: colors.text,
             },
           }}
@@ -103,7 +129,7 @@ export default function RootLayout() {
     "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
-  
+
   useEffect(() => {
     if (error) throw error;
     if (fontsLoaded) SplashScreen.hideAsync();
@@ -115,9 +141,9 @@ export default function RootLayout() {
 
   return (
     <LanguageProvider>
-    <ThemeProvider>
-      <InitialLayout />
-    </ThemeProvider>
+      <ThemeProvider>
+        <InitialLayout />
+      </ThemeProvider>
     </LanguageProvider>
   );
 }

@@ -16,6 +16,7 @@ interface EmergencyNotification {
   userMessage: string;
   timestamp: Date;
   userId?: string;
+  userName?: string;
   location?: string;
 }
 
@@ -51,7 +52,7 @@ export class EmailService {
         to: this.emergencyContactEmail,
         from: {
           email: this.fromEmail,
-          name: 'AnxiEase Emergency Alert'
+          name: 'CozySpace Emergency Alert'
         },
         subject: 'URGENT: Crisis Alert - Immediate Attention Required',
         text: this.generateEmergencyEmailText(notification),
@@ -103,6 +104,7 @@ A user has expressed concerning thoughts that require immediate attention.
 User Message: ${notification.userMessage}
 Timestamp: ${notification.timestamp.toLocaleString()}
 ${notification.userId ? `User ID: ${notification.userId}` : ''}
+${notification.userName ? `User Name: ${notification.userName}` : ''}
 ${notification.location ? `Location: ${notification.location}` : ''}
 
 This is an automated alert from the anxiety management app.
@@ -123,6 +125,7 @@ Important Resources:
         <p><strong>User Message:</strong> ${notification.userMessage}</p>
         <p><strong>Timestamp:</strong> ${notification.timestamp.toLocaleString()}</p>
         ${notification.userId ? `<p><strong>User ID:</strong> ${notification.userId}</p>` : ''}
+        ${notification.userName ? `<p><strong>User Name:</strong> ${notification.userName}</p>` : ''}
         ${notification.location ? `<p><strong>Location:</strong> ${notification.location}</p>` : ''}
       </div>
 

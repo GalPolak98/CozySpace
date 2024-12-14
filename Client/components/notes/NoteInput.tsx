@@ -13,6 +13,8 @@ import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import ThemedView from '@/components/ThemedView';
 import { theme } from '@/styles/Theme';
+import { useUserData } from '@/hooks/useUserData';
+import useAuth from '@/hooks/useAuth';
 
 interface NotebookInputProps {
   note: string;
@@ -20,12 +22,16 @@ interface NotebookInputProps {
 }
 
 const NotebookInput: React.FC<NotebookInputProps> = ({ note, setNote }) => {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, getGenderedText} = useLanguage();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const [contentHeight, setContentHeight] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
+  const userId = useAuth();
+  const {
+    gender,
+  } = useUserData(userId);
   
   const LINE_HEIGHT = Platform.select({ ios: 30, android: 35 });
   const PADDING_TOP = 10;
@@ -111,7 +117,7 @@ const NotebookInput: React.FC<NotebookInputProps> = ({ note, setNote }) => {
             <TextInput
               ref={inputRef}
               style={inputStyle}
-              placeholder={t.note.placeholder}
+              placeholder={getGenderedText(t.note.placeholder, gender as string)}
               placeholderTextColor={colors.textSecondary}
               value={note}
               onChangeText={(text) => {

@@ -1,11 +1,13 @@
 {
   "expo": {
-    "name": "AnxiEase",
+    "name": "CozySpace",
     "slug": "AnxiEase",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "anxiEase",
+    "scheme": [
+      "cozyspace"
+    ],
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -14,15 +16,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "dev.expo.notificationsapp"
+      "bundleIdentifier": "com.finalproject.cozyspace"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "dev.expo.notificationsapp",
-      "googleServicesFile": "./google-services.json"
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.galpo.CozySpace"
     },
     "web": {
       "bundler": "metro",
@@ -31,7 +36,15 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location for emergency services.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location for emergency services.",
+          "isIosBackgroundLocationEnabled": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -42,9 +55,15 @@
         "origin": false
       },
       "eas": {
-        "projectId": "3dcc73fd-897e-4f1a-830a-645a5c236754"
+        "projectId": "a85fc8f4-3269-42ba-93a7-6f509bdabf9f"
       }
     },
-    "owner": "michalginat"
+    "owner": "galpo",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a85fc8f4-3269-42ba-93a7-6f509bdabf9f"
+    }
   }
 }

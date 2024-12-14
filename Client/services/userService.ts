@@ -1,8 +1,7 @@
 import { RegistrationData } from '@/types/onboarding';
-import ENV from '@/env';
 
 class UserService {
-  private async fetchWithTimeout(url: string, options: RequestInit, timeout = 5000) {
+  private async fetchWithTimeout(url: string, options: RequestInit, timeout = 30000) {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
@@ -29,7 +28,7 @@ class UserService {
   async getUserById(userId: string) {
     try {
       const response = await this.fetchWithTimeout(
-        `${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}`,
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}`,
         {
           method: 'GET',
           headers: {
@@ -53,7 +52,7 @@ class UserService {
   async registerUser(userData: RegistrationData) {
     try {
       const response = await this.fetchWithTimeout(
-        `${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/register`,
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/register`,
         {
           method: 'POST',
           headers: {
@@ -73,7 +72,7 @@ class UserService {
   async getUserGender(userId: string): Promise<string | null> {
     try {
       const response = await this.fetchWithTimeout(
-        `${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}`,
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}`,
         {
           method: 'GET',
           headers: {
@@ -93,7 +92,7 @@ class UserService {
   async getUserProfile(userId: string) {
     try {
       const response = await this.fetchWithTimeout(
-        `${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}`,
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}`,
         {
           method: 'GET',
           headers: {
@@ -130,7 +129,7 @@ class UserService {
   }) {
     try {
       const response = await this.fetchWithTimeout(
-        `${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/preferences`,
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/preferences`,
         {
           method: 'PUT',
           headers: {
