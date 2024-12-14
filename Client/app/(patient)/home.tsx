@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
-import ThemedView from '@/components/ThemedView';
-import ThemedText from '@/components/ThemedText';
-import CustomButton from '@/components/CustomButton';
-import RecordingsSection from '../recording';
-import { useLanguage } from '@/context/LanguageContext';
-import { useTheme } from '@/components/ThemeContext';
-import * as Location from 'expo-location';
-import useAuth from '@/hooks/useAuth';
-import { useUserData } from '@/hooks/useUserData';
-import Loader from '@/components/Loader';
+import React, { useEffect, useState } from "react";
+import { ScrollView, View, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
+import ThemedView from "@/components/ThemedView";
+import ThemedText from "@/components/ThemedText";
+import CustomButton from "@/components/CustomButton";
+import RecordingsSection from "../recording";
+import { useLanguage } from "@/context/LanguageContext";
+import { useTheme } from "@/components/ThemeContext";
+import * as Location from "expo-location";
+import useAuth from "@/hooks/useAuth";
+import { useUserData } from "@/hooks/useUserData";
+import Loader from "@/components/Loader";
 
-type RouteType = '/chat' | '/guidedNote' | '/directNote';
+type RouteType = "/chat" | "/guidedNote" | "/directNote";
 
 interface MenuItem {
   title: string;
@@ -28,11 +28,11 @@ const HomePatient = () => {
   const [locationPermission, setLocationPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const userId = useAuth();
-  const { 
-    gender, 
-    fullName, 
-    isLoading: userDataLoading, 
-    error: userDataError 
+  const {
+    gender,
+    fullName,
+    isLoading: userDataLoading,
+    error: userDataError,
   } = useUserData(userId);
 
   useEffect(() => {
@@ -48,9 +48,9 @@ const HomePatient = () => {
   const requestLocationPermission = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      setLocationPermission(status === 'granted');
+      setLocationPermission(status === "granted");
     } catch (error) {
-      console.error('Error requesting location permission:', error);
+      console.error("Error requesting location permission:", error);
       Alert.alert(t.errors.error, t.location.errorMessage);
     }
   };
@@ -64,22 +64,22 @@ const HomePatient = () => {
     setIsLoading(true);
     try {
       switch (route) {
-        case '/chat':
-          router.push({ 
-            pathname: '/chat', 
-            params: { gender } 
+        case "/chat":
+          router.push({
+            pathname: "/chat",
+            params: { gender },
           });
           break;
-        case '/guidedNote':
-          router.push({ 
-            pathname: '/guidedNote', 
-            params: { gender } 
+        case "/guidedNote":
+          router.push({
+            pathname: "/guidedNote",
+            params: { gender },
           });
           break;
-        case '/directNote':
-          router.push({ 
-            pathname: '/directNote', 
-            params: { gender } 
+        case "/directNote":
+          router.push({
+            pathname: "/directNote",
+            params: { gender },
           });
           break;
       }
@@ -90,58 +90,53 @@ const HomePatient = () => {
     }
   };
 
-  
   const menuItems: MenuItem[] = [
     {
       title: getGenderedText(t.homePatient.talkToAI, gender as string),
       icon: (
-        <MaterialIcons 
-          name="chat" 
-          size={24} 
-          color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} 
+        <MaterialIcons
+          name="chat"
+          size={24}
+          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
         />
       ),
-      route: '/chat',
+      route: "/chat",
     },
     {
       title: getGenderedText(t.homePatient.guidedDocumenting, gender as string),
       icon: (
-        <MaterialIcons 
-          name="description" 
-          size={24} 
-          color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} 
+        <MaterialIcons
+          name="description"
+          size={24}
+          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
         />
       ),
-      route: '/guidedNote',
+      route: "/guidedNote",
     },
     {
       title: getGenderedText(t.homePatient.documentNow, gender as string),
       icon: (
-        <MaterialIcons 
-          name="edit" 
-          size={24} 
-          color={currentTheme === 'light' ? '#000000' : '#FFFFFF'} 
+        <MaterialIcons
+          name="edit"
+          size={24}
+          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
         />
       ),
-      route: '/directNote',
+      route: "/directNote",
     },
   ];
 
-  // Show loader while initializing
   if (userDataLoading || !gender || !fullName) {
     return <Loader isLoading={true} />;
   }
 
   return (
     <ThemedView className="flex-1">
-      <ScrollView 
-        className="flex-1" 
-        contentContainerClassName="px-4 py-6"
-      >
+      <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
         {/* Welcome Message */}
         <View className="items-center mb-8">
-          <ThemedText 
-            className="font-psemibold text-2xl text-center mt-4" 
+          <ThemedText
+            className="font-psemibold text-2xl text-center mt-4"
             isRTL={isRTL}
           >
             {getGenderedText(t.common.welcome, gender)}, {fullName}
@@ -157,7 +152,7 @@ const HomePatient = () => {
               handlePress={() => handleNavigation(item.route)}
               containerStyles="px-6 mb-4"
               icon={item.icon}
-              iconPosition={isRTL ? 'right' : 'left'}
+              iconPosition={isRTL ? "right" : "left"}
               variant="primary"
               isLoading={isLoading}
               isRTL={isRTL}
