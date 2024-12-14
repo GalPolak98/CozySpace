@@ -1,8 +1,8 @@
-import React from 'react';
-import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/styles/Theme';
-import NotesHeader from '@/components/notes/NotesHeader';
-import { Stack } from 'expo-router';
+import React from "react";
+import { useTheme } from "@/components/ThemeContext";
+import { theme } from "@/styles/Theme";
+import { Stack } from "expo-router";
+import NotesHeader from "@/components/notes/NotesHeader";
 
 const HeaderWrapper = () => {
   const { theme: currentTheme, toggleTheme } = useTheme();
@@ -22,9 +22,9 @@ const NotesLayoutInner = () => {
             backgroundColor: colors.header,
           },
           headerTintColor: colors.text,
-          animation: 'slide_from_right',
+          animation: "slide_from_right",
           headerTitleStyle: {
-            fontFamily: 'Poppins-SemiBold',
+            fontFamily: "Poppins-SemiBold",
           },
         }}
       >

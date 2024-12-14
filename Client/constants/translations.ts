@@ -278,6 +278,32 @@ export const translations = {
             permissionMessage: 'This app needs access to location.',
             retry: 'Try Again',
             errorMessage: 'There was an error requesting location permissions. Please try again.',
+          },
+
+          breathing: {
+            menuTitle: "Breathing Exercises",
+            title: "4-4-4 Breathing",
+            start: "Start",
+            stop: "Stop",
+            inhale: "Inhale",
+            hold: "Hold",
+            holdIn: "Hold",
+            holdOut: "Hold",
+            exhale: "Exhale",
+            musicOn: "Play music",
+            musicOff: "Turn off music",
+            guideMessages: {
+              ready: "Ready to start your breathing exercise?",
+              inProgress: "Focus on your breath",
+              inhaleGuide: "Inhale deeply through your nose",
+              holdGuide: "Hold your breath gently",
+              exhaleGuide: "Exhale slowly through your mouth",
+              sessionComplete: "Great job! Take a moment to notice how you feel",
+              tip: "Find a comfortable position and keep your shoulders relaxed"
+            },
+            sessionCount: "Session {{count}}",
+            breathingTechnique: "4-4-4 Breathing Technique",
+            focusMessage: "Breathe with the circle's movement",
           }
       },
     },
@@ -601,6 +627,52 @@ export const translations = {
             permissionMessage: 'האפליקציה צריכה גישה למיקום.',
             retry: 'נסה שוב',
             errorMessage: 'אירעה שגיאה בבקשת הרשאות מיקום. אנא נסה שוב.',
+          },
+
+          breathing: {
+            title: "תרגיל נשימה",
+            start: {
+              male: "התחל",
+              female: "התחילי",
+              default: "התחילו"
+            },
+            stop: {
+              male: "עצור",
+              female: "עצרי",
+              default: "עצרו"
+            },
+            inhale: "שאיפה",
+            hold: "החזקה",
+            holdIn: "החזקה",
+            holdOut: "החזקה",
+            exhale: "נשיפה",
+            musicOn: {
+              male: "הפעל מוזיקה",
+              female: "הפעילי מוזיקה",
+              default: "הפעילו מוזיקה"
+            },
+            musicOff: {
+              male: "כבה מוזיקה",
+              female: "כבי מוזיקה",
+              default: "כבו מוזיקה"
+            },
+            menuTitle: "תרגיל נשימה",
+            guideMessages: {
+              ready: "מוכנים להתחיל את תרגיל הנשימה?",
+              inProgress: "התמקדו בנשימה",
+              inhaleGuide: "שאפו אוויר עמוק דרך האף",
+              holdGuide: "החזיקו את הנשימה בעדינות",
+              exhaleGuide: "נשפו לאט דרך הפה",
+              sessionComplete: "כל הכבוד! קחו רגע להרגיש את ההשפעה",
+              tip: "מצאו תנוחה נוחה ושמרו על הכתפיים רפויות"
+            },
+            sessionCount: "אימון {{count}}",
+            breathingTechnique: "טכניקת נשימה 4-4-4",
+            focusMessage: {
+              male: "נשום יחד עם תנועת העיגול",
+              female: "נשמי יחד עם תנועת העיגול",
+              default: "נשמו יחד עם תנועת העיגול"
+            },
           }
       },
     },

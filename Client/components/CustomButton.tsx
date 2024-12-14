@@ -1,18 +1,26 @@
+// CustomButton.tsx
 import React, { ReactNode } from "react";
-import { ActivityIndicator, Pressable, View } from "react-native";
-import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/styles/Theme';
-import ThemedText from '@/components/ThemedText';
+import {
+  ActivityIndicator,
+  Pressable,
+  View,
+  ViewStyle,
+  TextStyle,
+  StyleSheet,
+} from "react-native";
+import { useTheme } from "@/components/ThemeContext";
+import { theme } from "@/styles/Theme";
+import ThemedText from "@/components/ThemedText";
 
 interface CustomButtonProps {
   title: string;
   handlePress: () => void;
-  containerStyles?: string;
-  textStyles?: string;
+  containerStyles?: ViewStyle | string;
+  textStyles?: TextStyle | string;
   isLoading?: boolean;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: "primary" | "secondary" | "outline";
   icon?: ReactNode;
-  iconPosition?: 'left' | 'right';
+  iconPosition?: "left" | "right";
   isRTL?: boolean;
 }
 
@@ -22,51 +30,91 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   containerStyles = "",
   textStyles = "",
   isLoading = false,
-  variant = 'primary',
+  variant = "primary",
   icon,
-  iconPosition = 'left',
+  iconPosition = "left",
   isRTL = false,
 }) => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
   // Adjust icon position based on RTL
-  const effectiveIconPosition = isRTL ? 
-    (iconPosition === 'left' ? 'right' : 'left') : 
-    iconPosition;
+  const effectiveIconPosition = isRTL
+    ? iconPosition === "left"
+      ? "right"
+      : "left"
+    : iconPosition;
 
   const getButtonStyles = () => {
-    let baseStyles = "rounded-xl min-h-[48px] flex flex-row justify-center items-center ";
-    
+    let baseStyles = {
+      minHeight: 48,
+      flexDirection: "row" as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
+      borderRadius: 12,
+    };
+
+    let variantStyles = {};
     switch (variant) {
-      case 'secondary':
-        return baseStyles + `bg-${currentTheme === 'dark' ? 'black-200' : 'white-100'} ${containerStyles}`;
-      case 'outline':
-        return baseStyles + `bg-transparent border-2 border-secondary ${containerStyles}`;
+      case "secondary":
+        variantStyles = {
+          backgroundColor:
+            currentTheme === "dark" ? colors.surface : colors.background,
+        };
+        break;
+      case "outline":
+        variantStyles = {
+          backgroundColor: "transparent",
+          borderWidth: 2,
+          borderColor: colors.primary,
+        };
+        break;
       default: // primary
-        return baseStyles + `bg-secondary ${containerStyles}`;
+        variantStyles = {
+          backgroundColor: colors.primary,
+        };
+        break;
     }
+
+    return StyleSheet.flatten([
+      baseStyles,
+      variantStyles,
+      typeof containerStyles === "string" ? {} : containerStyles,
+    ]);
+  };
+
+  const getTextStyles = () => {
+    const baseTextStyles = {
+      fontFamily: "Poppins-SemiBold",
+      fontSize: 16,
+      color: getTextColor(),
+    };
+
+    return StyleSheet.flatten([
+      baseTextStyles,
+      typeof textStyles === "string" ? {} : textStyles,
+    ]);
   };
 
   const getTextColor = () => {
     switch (variant) {
-      case 'outline':
+      case "outline":
         return colors.primary;
-      case 'secondary':
+      case "secondary":
         return colors.text;
       default: // primary
-        return currentTheme === 'light' ? '#000000' : '#FFFFFF';
+        return currentTheme === "light" ? "#000000" : "#FFFFFF";
     }
   };
 
   const getLoaderColor = () => {
     switch (variant) {
-      case 'outline':
+      case "outline":
         return colors.primary;
-      case 'secondary':
-        return currentTheme === 'dark' ? colors.text : colors.primary;
+      case "secondary":
+        return currentTheme === "dark" ? colors.text : colors.primary;
       default:
-        return currentTheme === 'light' ? '#000000' : '#FFFFFF';
+        return currentTheme === "light" ? "#000000" : "#FFFFFF";
     }
   };
 
@@ -84,12 +132,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
     // Add text
     elements.push(
-      <ThemedText
-        key="text"
-        style={{ color: getTextColor() }}
-        className={`font-psemibold text-base ${textStyles}`}
-        isRTL={isRTL}
-      >
+      <ThemedText key="text" style={getTextStyles()} isRTL={isRTL}>
         {title}
       </ThemedText>
     );
@@ -116,23 +159,29 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       );
     }
 
-    return (
-      <View 
-        className="flex-row items-center justify-center"      >
-        {elements}
-      </View>
-    );
+    return <View style={styles.contentContainer}>{elements}</View>;
   };
 
   return (
     <Pressable
       onPress={handlePress}
-      className={`${getButtonStyles()} ${isLoading ? "opacity-50" : ""}`}
+      style={[getButtonStyles(), isLoading && styles.loadingState]}
       disabled={isLoading}
     >
       {renderContent()}
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadingState: {
+    opacity: 0.5,
+  },
+});
 
 export default CustomButton;
