@@ -1,5 +1,4 @@
 import { Alert } from 'react-native';
-import ENV from '../env';
 
 interface Note {
   _id: string;
@@ -39,7 +38,7 @@ export const loadNotes = async (
   if (!userId) return [];
   
   try {
-    const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -67,7 +66,7 @@ export const loadGuidedNotes = async (
     if (!userId) return [];
     
     try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/guidedNotes`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/guidedNotes`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });

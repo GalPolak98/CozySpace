@@ -6,7 +6,6 @@ import StatCard from '@/components/reports/StatCard';
 import Chart from '@/components/reports/Chart';
 import DateRangeSelector from '@/components/reports/DateRangeSelector';
 import DatePickerModal from '@/components/reports/DatePickerModal';
-import config from '../../env';
 import useAuth from '../../hooks/useAuth';
 import { useLanguage } from '@/context/LanguageContext';  
 import { loadNotes, loadGuidedNotes } from '../../utils/notesUtils';  // Adjust the import path as needed
@@ -53,17 +52,19 @@ const ReportsScreen = () => {
       if (!userId) return;
       
       try {
-        const fetchedNotes = await loadNotes(userId, isRTL, t);
-        
+        const fetchedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+
         const filteredNotes = fetchedNotes.filter((note) => {
-          const noteDate = parse(note.timestamp.split(', ')[0], 'dd.MM.yyyy', new Date());
+          const noteDate = new Date(note.timestamp); // Use native JavaScript Date parsing
+          console.log('Parsed Date:', noteDate); // Check if the date parsing works
           return (
             noteDate >= new Date(dateRange.startDate) &&
             noteDate <= new Date(dateRange.endDate)
           );
         });
-      
+
         setNotesCount(filteredNotes.length);
+        console.log(filteredNotes.length)
       } catch (error) {
         console.error('Failed to filter notes', error);
       }
@@ -77,7 +78,7 @@ const ReportsScreen = () => {
       if (!userId) return;
       
       try {
-        const fetchedGuidedNotes = await loadGuidedNotes(userId, isRTL, t);
+        const fetchedGuidedNotes = await loadGuidedNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
 
         // Filter notes based on dateRange
         const filteredNotes = fetchedGuidedNotes.filter((guidedNote) => {

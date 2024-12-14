@@ -11,6 +11,7 @@ import NotebookInput from '../../components/notes/NoteInput';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/styles/Theme';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { loadNotes } from '../../utils/notesUtils';
 
 const NotesSection: React.FC = () => {
   const [note, setNote] = useState<string>('');
@@ -19,10 +20,7 @@ const NotesSection: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const userId = useAuth();
-  const { 
-    gender,  
-  } = useUserData(userId);
-  const { t, isRTL, getGenderedText } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const insets = useSafeAreaInsets();
@@ -60,32 +58,10 @@ const NotesSection: React.FC = () => {
     }
   };
 
-  const loadNotes = async () => {
-    if (!userId) return;
-    try {
-      const response = await fetch(`${ENV.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch notes');
-
-      const fetchedNotes = (await response.json()).notes;
-
-      const sortedNotes = Array.isArray(fetchedNotes)
-        ? fetchedNotes.sort((a, b) => parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp))
-        : [fetchedNotes];
-
-      setNotes(sortedNotes);
-    } catch (error) {
-      console.error('Failed to fetch notes', error);
-      Alert.alert(t.common.error, t.note.fetchError);
-    }
-  };
-
   useEffect(() => {
     const fetchNotes = async () => {
-      const fetchedNotes = await loadNotes(userId, isRTL, t);
+      const fetchedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+
       setNotes(fetchedNotes);
     };
     
@@ -113,7 +89,8 @@ const NotesSection: React.FC = () => {
       setNotes(prevNotes => [savedNote, ...prevNotes]);
       setNote('');
       await AsyncStorage.removeItem('draftNote');
-      const updatedNotes = await loadNotes(userId, isRTL, t);
+      const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+
       setNotes(updatedNotes);
       Alert.alert(t.common.success, t.note.saveSuccess);
     } catch (error) {
@@ -132,7 +109,8 @@ const NotesSection: React.FC = () => {
 
       if (!response.ok) throw new Error('Failed to delete note');
 
-      const updatedNotes = await loadNotes(userId, isRTL, t);
+      const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+
       setNotes(updatedNotes);
       Alert.alert(t.common.success, t.note.deleteSuccess);
     } catch (error) {
@@ -158,7 +136,8 @@ const NotesSection: React.FC = () => {
         prevNotes.map(note => (note._id === updatedNote._id ? savedNote : note))
       );
       setEditedNote('');
-      const updatedNotes = await loadNotes(userId, isRTL, t);
+      const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+
       setNotes(updatedNotes);
       Alert.alert(t.common.success, t.note.updateSuccess);
     } catch (error) {
@@ -213,7 +192,7 @@ const NotesSection: React.FC = () => {
             ]}
           >
             <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
-              {getGenderedText(t.note.addNote, gender as string)}
+              {t.note.addNote}
             </ThemedText>
           </TouchableOpacity>
         </View>

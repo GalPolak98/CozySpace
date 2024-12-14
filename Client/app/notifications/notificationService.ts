@@ -1,6 +1,5 @@
 import * as Notifications from "expo-notifications";
 import { AuthService } from '../../services/authService';  // Import your AuthService
-import config from '../../env'; // Assuming you have a config file for the API URL
 
 // Save notification initially with tapped as false
 export async function saveNotificationToServer(notification: Notifications.Notification, tapped: boolean = false) {
@@ -25,7 +24,7 @@ export async function saveNotificationToServer(notification: Notifications.Notif
     };
 
     // Send the notification data to the backend API to save it in the database
-    const response = await fetch(`${config.API_URL}/users/${userId}/notifications`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/users/${userId}/notifications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +59,7 @@ export async function updateNotificationTapStatus(notificationId: string, tapped
     const encodedNotificationId = encodeURIComponent(notificationId); 
 
     const updateData = { tapped };
-    const url = `${config.API_URL}/users/${userId}/notifications/${encodedNotificationId}`;
+    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/users/${userId}/notifications/${encodedNotificationId}`;
     
 
     const response = await fetch(url, {
