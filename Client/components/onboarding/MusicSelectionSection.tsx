@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Platform,
+  ViewStyle,
+} from "react-native";
 import { useTheme } from "@/components/ThemeContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { theme } from "@/styles/Theme";
@@ -32,6 +39,14 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
   const { t } = useLanguage();
   const colors = theme[currentTheme];
 
+  const createShadowStyle = (color: string): ViewStyle => ({
+    shadowColor: color,
+    shadowOffset: { width: 1, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+  });
+
   const renderMusicItem = ({
     item,
   }: {
@@ -49,11 +64,12 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
           borderWidth: selectedMusic === item.id ? 2 : 1,
           borderColor:
             selectedMusic === item.id ? colors.primary : colors.border,
+          marginRight: isRTL ? 2 : 8,
+          marginLeft: isRTL ? 8 : 2,
           backgroundColor: colors.surface,
-          marginRight: isRTL ? 0 : 8,
-          marginLeft: isRTL ? 8 : 0,
           alignItems: "center",
           width: "auto",
+          ...createShadowStyle(colors.text),
         }}
       >
         <Ionicons
@@ -100,7 +116,9 @@ export const MusicSelectionSection: React.FC<MusicSelectionProps> = ({
         showsHorizontalScrollIndicator={false}
         renderItem={renderMusicItem}
         keyExtractor={(item) => item.id}
-        style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
+        style={{
+          flexDirection: isRTL ? "row-reverse" : "row",
+        }}
         scrollEnabled={true}
       />
       {selectedMusic && (
