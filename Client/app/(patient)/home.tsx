@@ -13,7 +13,7 @@ import useAuth from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import Loader from "@/components/Loader";
 
-type RouteType = "/chat" | "/guidedNote" | "/directNote";
+type RouteType = "/chat" | "/guidedNote" | "/directNote" | "/breathingExercise";
 
 interface MenuItem {
   title: string;
@@ -82,6 +82,12 @@ const HomePatient = () => {
             params: { gender },
           });
           break;
+        case "/breathingExercise":
+          router.push({
+            pathname: "/breathingExercise",
+            params: { gender },
+          });
+          break;
       }
     } catch (error) {
       Alert.alert(t.errors.error, t.errors.unexpected);
@@ -124,6 +130,17 @@ const HomePatient = () => {
       ),
       route: "/directNote",
     },
+    {
+      title: getGenderedText(t.breathing.menuTitle, gender as string),
+      icon: (
+        <MaterialIcons
+          name="air"
+          size={24}
+          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
+        />
+      ),
+      route: "/breathingExercise",
+    },
   ];
 
   if (userDataLoading || !gender || !fullName) {
@@ -150,12 +167,16 @@ const HomePatient = () => {
               key={index}
               title={item.title}
               handlePress={() => handleNavigation(item.route)}
-              containerStyles="px-6 mb-4"
               icon={item.icon}
               iconPosition={isRTL ? "right" : "left"}
               variant="primary"
               isLoading={isLoading}
               isRTL={isRTL}
+              containerStyles={{
+                paddingHorizontal: 35,
+                paddingVertical: 12,
+                marginBottom: 16,
+              }}
             />
           ))}
         </View>
