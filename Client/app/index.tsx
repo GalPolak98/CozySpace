@@ -74,12 +74,13 @@ export default function Index() {
 
     const checkAuth = async () => {
       try {
+        // Check AsyncStorage first to avoid unnecessary auth checks
         const existingToken = await AsyncStorage.getItem("userToken");
 
+        if (!isSubscribed) return;
+
         if (existingToken && auth.currentUser) {
-          if (isSubscribed) {
-            await AuthRoutingService.handleAuthRouting();
-          }
+          await AuthRoutingService.handleAuthRouting();
           return;
         }
 
@@ -97,14 +98,17 @@ export default function Index() {
             }
           } catch (error) {
             console.error("Auth state change error:", error);
-            await AsyncStorage.removeItem("userToken");
             if (isSubscribed) {
+              await AsyncStorage.removeItem("userToken");
               setIsCheckingAuth(false);
             }
           }
         });
 
-        return () => unsubscribe();
+        return () => {
+          unsubscribe();
+          isSubscribed = false;
+        };
       } catch (error) {
         console.error("Initial auth check error:", error);
         if (isSubscribed) {
@@ -114,9 +118,6 @@ export default function Index() {
     };
 
     checkAuth();
-    return () => {
-      isSubscribed = false;
-    };
   }, []);
 
   const viewableItemsChanged = useRef(

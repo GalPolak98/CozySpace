@@ -80,6 +80,14 @@ const InitialLayout = () => {
         />
 
         <Stack.Screen
+          name="breathingExercises"
+          options={{
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
           name="+not-found"
           options={{
             headerTitle: "Not Found",
