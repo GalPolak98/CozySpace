@@ -292,8 +292,7 @@ export const translations = {
           },
 
           breathing: {
-            menuTitle: "Breathing Exercises",
-            title: "4-4-4 Breathing",
+            title: "Breathing Exercises",
             start: "Start",
             stop: "Stop",
             inhale: "Inhale",
@@ -303,6 +302,7 @@ export const translations = {
             exhale: "Exhale",
             musicOn: "Play music",
             musicOff: "Turn off music",
+            menuTitle: "Breathing Exercises",
             guideMessages: {
               ready: "Ready to start your breathing exercise?",
               inProgress: "Focus on your breath",
@@ -310,13 +310,98 @@ export const translations = {
               holdGuide: "Hold your breath gently",
               exhaleGuide: "Exhale slowly through your mouth",
               sessionComplete: "Great job! Take a moment to notice how you feel",
-              tip: "Find a comfortable position and keep your shoulders relaxed"
+              tip: "Find a comfortable position and keep your shoulders relaxed",
             },
             sessionCount: "Session {{count}}",
             breathingTechnique: "4-4-4 Breathing Technique",
-            focusMessage: "Breathe with the circle's movement",
-          }
-      },
+            focusMessage: "Take a moment to breathe and relax",
+            circle: {
+              ready: "Ready?", 
+            },
+            patternSelection: {
+              title: "Select Breathing exercise",
+              timing: {
+                inhale: "Inhale",
+                exhale: "Exhale",
+                hold: "Hold",
+                seconds: "s"
+              },
+            },
+            stats: {
+              guidance: "Guidance",
+              minutes: "min",
+              seconds: "sec",
+              pattern: "Pattern"
+            },
+            breathingGuide: {
+              guide: "Guide",
+              about: "About",
+              benefits: "Benefits",
+              howToPractice: "How to Practice",
+              preparation: "Preparation",
+              tips: "Tips",
+              patterns: {
+                "4-4-4-4": {
+                  name: "Box Breathing",
+                  description: "Box breathing (4-4-4-4) is a powerful stress-management technique. It helps activate your body's natural relaxation response.",
+                  preparation: [
+                     "Find a quiet, comfortable place to sit or lie down",
+                     "Keep your back straight but relaxed",
+                     "Rest your hands gently on your lap or by your sides",
+                     "Close your eyes or maintain a soft, unfocused gaze",
+                      "Take a moment to notice your natural breathing",
+                  ],
+                  benefits: [
+                    "Reduces stress and anxiety levels",
+                    "Improves concentration and focus",
+                    "Helps regulate blood pressure",
+                    "Promotes better sleep quality",
+                    "Enhances emotional control",
+                    "Increases mindfulness"
+                  ],
+                  steps: [
+                      "Inhale deeply through your nose for 4 seconds",
+                      "Hold your breath for 4 seconds",
+                      "Exhale slowly through your mouth for 4 seconds",
+                      "Hold empty lungs for 4 seconds",
+                      "Repeat the process"
+                  ]
+                },
+              "4-7-8": {
+                name: "Relaxing Breath",
+                description: "The 4-7-8 breathing technique, also known as 'relaxing breath,' is a powerful tool for managing anxiety and sleep. Developed by Dr. Andrew Weil, it acts as a natural tranquilizer for your nervous system.",
+                preparation: [
+                  "Find a quiet, comfortable place to sit or lie down",
+                  "Keep your back straight but relaxed",
+                  "Place the tip of your tongue against the upper part of your palate, next to your front teeth",
+                  "Close your eyes or maintain a soft, unfocused gaze",
+                   "Take a moment to notice your natural breathing",
+                ],
+                benefits: [
+                  "Helps manage anxiety and panic attacks",
+                  "Improves sleep quality and helps with insomnia",
+                  "Reduces stress response",
+                  "Controls cravings and emotional reactions",
+                  "Lowers heart rate and blood pressure",
+                  "Enhances meditation practice"
+                ],
+                steps: [
+                   "Inhale quietly through your nose for 4 seconds",
+                   "Hold your breath for 7 seconds",
+                   "Exhale completely through your mouth making a whoosh sound for 8 seconds",
+                   "Start the next cycle immediately without pause",
+                ],
+                tips: [
+                  "Keep the tip of your tongue in position throughout the exercise",
+                  "Exhale through your mouth around your tongue",
+                  "Try to make the exhalation long and audible",
+                  "Start with 4 cycles and gradually increase",
+                ]
+              }
+            }
+          },
+          },
+        }
     },
     he: {
       translation: {
@@ -651,7 +736,7 @@ export const translations = {
           },
 
           breathing: {
-            title: "תרגיל נשימה",
+            title: "תרגילי נשימה",
             start: {
               male: "התחל",
               female: "התחילי",
@@ -677,27 +762,240 @@ export const translations = {
               female: "כבי מוזיקה",
               default: "כבו מוזיקה"
             },
-            menuTitle: "תרגיל נשימה",
+            menuTitle: "תרגילי נשימה",
             guideMessages: {
-              ready: "מוכנים להתחיל את תרגיל הנשימה?",
-              inProgress: "התמקדו בנשימה",
-              inhaleGuide: "שאפו אוויר עמוק דרך האף",
-              holdGuide: "החזיקו את הנשימה בעדינות",
-              exhaleGuide: "נשפו לאט דרך הפה",
-              sessionComplete: "כל הכבוד! קחו רגע להרגיש את ההשפעה",
-              tip: "מצאו תנוחה נוחה ושמרו על הכתפיים רפויות"
+              ready: {
+                male: "מוכן להתחיל את תרגיל הנשימה?",
+                female: "מוכנה להתחיל את תרגיל הנשימה?",
+                default: "מוכנים להתחיל את תרגיל הנשימה?"
+              },
+              inProgress: {
+                male: "התמקד בנשימה",
+                female: "התמקדי בנשימה",
+                default: "התמקדו בנשימה"
+              },
+              inhaleGuide: {
+                male: "שאף אוויר עמוק דרך האף",
+                female: "שאפי אוויר עמוק דרך האף",
+                default: "שאפו אוויר עמוק דרך האף"
+              },
+              holdGuide: {
+                male: "החזק את הנשימה בעדינות",
+                female: "החזיקי את הנשימה בעדינות",
+                default: "החזיקו את הנשימה בעדינות"
+              },
+              exhaleGuide: {
+                male: "נשוף לאט דרך הפה",
+                female: "נשפי לאט דרך הפה",
+                default: "נשפו לאט דרך הפה"
+              },
+              sessionComplete: {
+                male: "כל הכבוד! קח רגע להרגיש את ההשפעה",
+                female: "כל הכבוד! קחי רגע להרגיש את ההשפעה",
+                default: "כל הכבוד! קחו רגע להרגיש את ההשפעה"
+              },
+              tip: {
+                male: "מצא תנוחה נוחה ושמור על הכתפיים רפויות",
+                female: "מצאי תנוחה נוחה ושמרי על הכתפיים רפויות",
+                default: "מצאו תנוחה נוחה ושמרו על הכתפיים רפויות"
+              }
             },
             sessionCount: "אימון {{count}}",
             breathingTechnique: "טכניקת נשימה 4-4-4",
             focusMessage: {
-              male: "נשום יחד עם תנועת העיגול",
-              female: "נשמי יחד עם תנועת העיגול",
-              default: "נשמו יחד עם תנועת העיגול"
+              male: "קח רגע לנשום ולהירגע",
+              female: "קחי רגע לנשום ולהירגע",
+              default: "קחו רגע לנשום ולהירגע"
             },
+            circle: {
+              ready: {
+                male: "מוכן?",
+                female: "מוכנה?",
+                default: "מוכנים?"
+              }
+            },
+            patternSelection: {
+              title: {
+                male: "בחר תרגיל נשימה",
+                female: "בחרי תרגיל נשימה",
+                default: "בחרו תרגיל נשימה"
+              },
+              timing: {
+                inhale: "שאיפה",
+                exhale: "נשיפה",
+                hold: "החזקה",
+                seconds: "שניות"
+              },
+            },
+            stats: {
+              guidance: "הדרכה",
+              minutes: "דקות",
+              seconds: "שניות",
+              pattern: "תבנית"
+            },
+            breathingGuide: {
+              guide: "מדריך",
+              about: "אודות",
+              benefits: "יתרונות",
+              howToPractice: "איך לתרגל",
+              preparation: "הכנה",
+              tips: "טיפים",
+              patterns: {
+                "4-4-4-4": {
+                  name: "נשימת קופסה",
+                  description: "נשימת קופסה (4-4-4-4) היא טכניקה חזקה לניהול מתח. היא מסייעת להפעיל את תגובת ההרגעה הטבעית של גופך.",
+                  preparation: [
+                    {
+                      male: "מצא מקום שקט ונוח לשבת או לשכב",
+                      female: "מצאי מקום שקט ונוח לשבת או לשכב",
+                      default: "מצאו מקום שקט ונוח לשבת או לשכב"
+                    },
+                    {
+                      male: "שמור על הגב ישר אך רפוי",
+                      female: "שמרי על הגב ישר אך רפוי",
+                      default: "שמרו על הגב ישר אך רפוי"
+                    },
+                    {
+                      male: "הנח את ידיך בעדינות על ברכיך או בצדי גופך",
+                      female: "הניחי את ידייך בעדינות על ברכייך או בצדי גופך",
+                      default: "הניחו את ידיכם בעדינות על ברכיכם או בצדי גופכם"
+                    },
+                    {
+                      male: "עצום את עיניך או שמור על מבט רך ולא ממוקד",
+                      female: "עצמי את עינייך או שמרי על מבט רך ולא ממוקד",
+                      default: "עצמו את עיניכם או שמרו על מבט רך ולא ממוקד"
+                    },
+                    {
+                      male: "קח רגע להרגיש את הנשימה הטבעית שלך",
+                      female: "קחי רגע להרגיש את הנשימה הטבעית שלך",
+                      default: "קחו רגע להרגיש את הנשימה הטבעית שלכם"
+                    }
+                  ],
+                  benefits: [
+                    "מפחית רמות מתח וחרדה",
+                    "משפר ריכוז וקשב",
+                    "עוזר בויסות לחץ דם",
+                    "מקדם איכות שינה טובה יותר",
+                    "מחזק שליטה רגשית",
+                    "מגביר מודעות"
+                  ],
+                  steps: [
+                    {
+                      male: "שאף עמוק דרך האף במשך 4 שניות",
+                      female: "שאפי עמוק דרך האף במשך 4 שניות",
+                      default: "שאפו עמוק דרך האף במשך 4 שניות"
+                    },
+                    {
+                      male: "החזק את הנשימה למשך 4 שניות",
+                      female: "החזיקי את הנשימה למשך 4 שניות",
+                      default: "החזיקו את הנשימה למשך 4 שניות"
+                    },
+                    {
+                      male: "נשוף לאט דרך הפה במשך 4 שניות",
+                      female: "נשפי לאט דרך הפה במשך 4 שניות",
+                      default: "נשפו לאט דרך הפה במשך 4 שניות"
+                    },
+                    {
+                      male: "החזק ריאות ריקות למשך 4 שניות",
+                      female: "החזיקי ריאות ריקות למשך 4 שניות",
+                      default: "החזיקו ריאות ריקות למשך 4 שניות"
+                    },
+                    {
+                      male: "חזור על התהליך",
+                      female: "חזרי על התהליך",
+                      default: "חזרו על התהליך"
+                    }
+                  ]
+                },
+                "4-7-8": {
+                  name: "נשימה מרגיעה",
+                  description:  "טכניקת הנשימה 4-7-8, המכונה גם 'נשימה מרגיעה', היא כלי חזק לניהול חרדה ושינה. פותחה על ידי ד\"ר אנדרו וייל, והיא פועלת כמרגיעה טבעית למערכת העצבים שלך.",
+                  preparation: [
+                    {
+                      male: "מצא מקום שקט ונוח לשבת או לשכב",
+                      female: "מצאי מקום שקט ונוח לשבת או לשכב",
+                      default: "מצאו מקום שקט ונוח לשבת או לשכב"
+                    },
+                    {
+                      male: "שמור על הגב ישר אך רפוי",
+                      female: "שמרי על הגב ישר אך רפוי",
+                      default: "שמרו על הגב ישר אך רפוי"
+                    },
+                     "כדאי להצמיד את קצה הלשון לחלק העליון של החך, בצמוד לשיניים הקדמיות",
+                    {
+                      male: "עצום את עיניך או שמור על מבט רך ולא ממוקד",
+                      female: "עצמי את עינייך או שמרי על מבט רך ולא ממוקד",
+                      default: "עצמו את עיניכם או שמרו על מבט רך ולא ממוקד"
+                    },
+                    {
+                      male: "קח רגע להרגיש את הנשימה הטבעית שלך",
+                      female: "קחי רגע להרגיש את הנשימה הטבעית שלך",
+                      default: "קחו רגע להרגיש את הנשימה הטבעית שלכם"
+                    }
+                  ],
+                  benefits: [
+                    "עוזר בניהול חרדה והתקפי פאניקה",
+                    "משפר איכות שינה ועוזר בנדודי שינה",
+                    "מפחית תגובת מתח",
+                    "שולט בדחפים ותגובות רגשיות",
+                    "מוריד דופק ולחץ דם",
+                    "משפר תרגול מדיטציה"
+                  ],
+                  steps: [
+                    {
+                      male: "שאף בשקט דרך האף במשך 4 שניות",
+                      female: "שאפי בשקט דרך האף במשך 4 שניות",
+                      default: "שאפו בשקט דרך האף במשך 4 שניות"
+                    },
+                    {
+                      male: "החזק את הנשימה למשך 7 שניות",
+                      female: "החזיקי את הנשימה למשך 7 שניות",
+                      default: "החזיקו את הנשימה למשך 7 שניות"
+                    },
+                    {
+                      male: "נשוף לחלוטין דרך הפה, כשאתה משמיע קול של נשיפה במשך 8 שניות",
+                      female: "נשפי לחלוטין דרך הפה, כשאת משמיעה קול של נשיפה במשך 8 שניות",
+                      default: "נשפו לחלוטין דרך הפה, כשאתם משמיעים קול של נשיפה במשך 8 שניות"
+                    },
+                    {
+                      male: "התחל את המחזור הבא מיד ללא הפסקה",
+                      female: "התחילי את המחזור הבא מיד ללא הפסקה",
+                      default: "התחילו את המחזור הבא מיד ללא הפסקה"
+                    }
+                  ],
+                  tips: [
+                    {
+                      male: "שמור על קצה הלשון במקומו לאורך כל התרגיל",
+                      female: "שמרי על קצה הלשון במקומו לאורך כל התרגיל",
+                      default: "שמרו על קצה הלשון במקומו לאורך כל התרגיל"
+                    },
+                    {
+                      male: "נשוף דרך הפה מסביב ללשון",
+                      female: "נשפי דרך הפה מסביב ללשון",
+                      default: "נשפו דרך הפה מסביב ללשון"
+                    },
+                    {
+                      male: "השתדל לעשות את הנשיפה ארוכה ושמיעה",
+                      female: "השתדלי לעשות את הנשיפה ארוכה ושמיעה",
+                      default: "השתדלו לעשות את הנשיפה ארוכה ושמיעה"
+                    },
+                    {
+                      male: "התחל עם 4 מחזורים והגדל בהדרגה",
+                      female: "התחילי עם 4 מחזורים והגדילי בהדרגה",
+                      default: "התחילו עם 4 מחזורים והגדילו בהדרגה"
+                    }
+                  ]
+                }
+              }
+            }
+              
           }
       },
     },
+    
   };
+  
+
 
 export const availableLanguages = [
     { code: 'en', label: 'English', nativeLabel: 'English' },

@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     paddingVertical: 10,
   },
   leftContainer: {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Animated, Dimensions } from "react-native";
 import { Audio } from "expo-av";
 import { useLocalSearchParams } from "expo-router";
@@ -21,7 +21,7 @@ import {
   BREATHING_PATTERNS,
   PhaseType,
 } from "@/types/breathing";
-import GenericHeader from "@/components/navigation/GenericHeader";
+import ThemedText from "@/components/ThemedText";
 
 const BreathingScreen = () => {
   const { gender } = useLocalSearchParams<{ gender: string }>();
@@ -35,53 +35,42 @@ const BreathingScreen = () => {
   const [currentPattern, setCurrentPattern] =
     useState<BreathingPatternType>("4-4-4-4");
   const insets = useSafeAreaInsets();
-
-  // Use the custom animation hook
+  const [sessionDuration, setSessionDuration] = useState(0);
+  const sessionTimeRef = useRef<NodeJS.Timeout>();
   const { currentPhase, timeLeft, circleScale, circleOpacity } =
-    useBreathingAnimation(isActive, currentPattern);
-
-  const { theme: currentTheme } = useTheme();
+    useBreathingAnimation(isActive, currentPattern, sound);
   const { t, isRTL, getGenderedText } = useLanguage();
+  const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
-
   const windowWidth = Dimensions.get("window").width;
   const baseCircleSize = Math.min(windowWidth * 0.6, 250);
   const maxCircleSize = baseCircleSize * 1.5;
 
-  // Define breathing phases text
-  const phases = {
-    inhale: {
-      text: t.breathing.inhale,
-    },
-    holdIn: {
-      text: t.breathing.holdIn,
-    },
-    exhale: {
-      text: t.breathing.exhale,
-    },
-    holdOut: {
-      text: t.breathing.holdOut,
-    },
-  };
-
-  // Handle pattern change
   const handlePatternChange = async (newPattern: BreathingPatternType) => {
-    // If exercise is active, stop it
-    if (isActive) {
-      await toggleExercise();
-    }
-
-    // Change pattern
-    setCurrentPattern(newPattern);
-
-    // Reload audio with new pattern's music
-    if (sound) {
-      await sound.unloadAsync();
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        BREATHING_PATTERNS[newPattern].musicPath,
-        { isLooping: true }
-      );
-      setSound(newSound);
+    try {
+      if (isActive) {
+        setIsActive(false);
+      }
+      if (sound) {
+        const status = await sound.getStatusAsync();
+        if (status.isLoaded) {
+          await sound.stopAsync();
+          await sound.unloadAsync();
+        }
+        setSound(undefined);
+      }
+      setCurrentPattern(newPattern);
+      try {
+        const { sound: newSound } = await Audio.Sound.createAsync(
+          BREATHING_PATTERNS[newPattern].musicPath,
+          { isLooping: true }
+        );
+        setSound(newSound);
+      } catch (error) {
+        console.error("Error creating new sound:", error);
+      }
+    } catch (error) {
+      console.error("Error changing pattern:", error);
     }
   };
 
@@ -95,7 +84,6 @@ const BreathingScreen = () => {
           staysActiveInBackground: true,
           playThroughEarpieceAndroid: false,
         });
-
         const { sound } = await Audio.Sound.createAsync(
           BREATHING_PATTERNS[currentPattern].musicPath,
           { isLooping: true }
@@ -107,10 +95,7 @@ const BreathingScreen = () => {
         setIsLoading(false);
       }
     };
-
     setupAudio();
-
-    // Cleanup function to stop and unload sound when component unmounts
     return () => {
       sound?.stopAsync().then(() => {
         sound?.unloadAsync();
@@ -118,11 +103,27 @@ const BreathingScreen = () => {
     };
   }, []);
 
-  // Handle exercise start/stop
+  useEffect(() => {
+    if (isActive) {
+      setSessionDuration(0);
+      sessionTimeRef.current = setInterval(() => {
+        setSessionDuration((prev) => prev + 1);
+      }, 1000);
+    } else {
+      if (sessionTimeRef.current) {
+        clearInterval(sessionTimeRef.current);
+      }
+    }
+    return () => {
+      if (sessionTimeRef.current) {
+        clearInterval(sessionTimeRef.current);
+      }
+    };
+  }, [isActive]);
+
   const toggleExercise = async () => {
     try {
       if (!isActive) {
-        // Starting the exercise
         setIsActive(true);
         setSessionCount((prev) => prev + 1);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -131,7 +132,6 @@ const BreathingScreen = () => {
           setIsMusicPlaying(true);
         }
       } else {
-        // Stopping the exercise
         setIsActive(false);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         if (sound) {
@@ -144,14 +144,6 @@ const BreathingScreen = () => {
       console.error("Error toggling exercise:", error);
     }
   };
-
-  const buttonText = isActive
-    ? gender
-      ? getGenderedText(t.breathing.stop, gender)
-      : t.breathing.stop.default
-    : gender
-    ? getGenderedText(t.breathing.start, gender)
-    : t.breathing.start.default;
 
   const getPhaseText = (phase: PhaseType) => {
     const pattern = BREATHING_PATTERNS[currentPattern];
@@ -176,53 +168,78 @@ const BreathingScreen = () => {
           paddingHorizontal: 16,
         }}
       >
-        {/* Top section */}
-        <View style={{ marginTop: 20 }}>
-          <ProgressPills currentPhase={currentPhase} colors={colors} />
+        <View
+          style={{
+            paddingHorizontal: 20,
+            paddingBottom: 4,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+          }}
+        >
+          <ThemedText
+            style={{
+              fontFamily: "Poppins-Regular",
+              color: colors.textSecondary,
+              marginTop: 4,
+              textAlign: isRTL ? "right" : "left",
+            }}
+            isRTL={isRTL}
+            className="text-xl"
+          >
+            {getGenderedText(t.breathing.focusMessage, gender)}
+          </ThemedText>
+        </View>
+        <View style={{ marginTop: 12, marginBottom: 8 }}>
+          <ProgressPills
+            currentPhase={currentPhase}
+            colors={colors}
+            pattern={currentPattern}
+          />
         </View>
 
-        {/* Circle container with fixed height */}
         <View
           style={{
             height: maxCircleSize,
             width: maxCircleSize,
             justifyContent: "center",
             alignItems: "center",
-            marginVertical: 20,
+            marginVertical: 14,
           }}
         >
           <BreathingCircle
             scale={circleScale}
             opacity={circleOpacity}
             size={baseCircleSize}
-            colors={colors}
             phaseText={getPhaseText(currentPhase)}
             timeLeft={timeLeft}
             isActive={isActive}
-            isRTL={isRTL}
+            gender={gender}
           />
         </View>
 
-        {/* Bottom section */}
         <View
           style={{
             width: "100%",
             alignItems: "center",
-            marginTop: "auto",
             paddingBottom: Math.max(20, insets.bottom + 10),
           }}
         >
           <Stats
-            sessionCount={sessionCount}
+            sessionDuration={sessionDuration}
             colors={colors}
             isGuided={isGuideVisible}
             onGuidePress={() => setIsGuideVisible(true)}
             currentPattern={currentPattern}
             onPatternPress={() => setIsPatternModalVisible(true)}
+            gender={gender}
           />
 
           <CustomButton
-            title={buttonText}
+            title={
+              isActive
+                ? getGenderedText(t.breathing.stop, gender)
+                : getGenderedText(t.breathing.start, gender)
+            }
             handlePress={toggleExercise}
             containerStyles={{
               paddingHorizontal: 48,
@@ -244,6 +261,7 @@ const BreathingScreen = () => {
                 name={isActive ? "stop" : "play-arrow"}
                 size={28}
                 color={colors.text}
+                style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }}
               />
             }
             iconPosition={isRTL ? "right" : "left"}
@@ -256,8 +274,8 @@ const BreathingScreen = () => {
           visible={isGuideVisible}
           onClose={() => setIsGuideVisible(false)}
           colors={colors}
-          isRTL={isRTL}
           currentPattern={currentPattern}
+          gender={gender}
         />
 
         <PatternSelectionModal
@@ -266,7 +284,7 @@ const BreathingScreen = () => {
           onSelect={handlePatternChange}
           currentPattern={currentPattern}
           colors={colors}
-          isRTL={isRTL}
+          gender={gender}
         />
       </View>
     </View>
