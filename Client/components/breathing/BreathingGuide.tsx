@@ -10,88 +10,95 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import ThemedText from "@/components/ThemedText";
 import { CustomTheme } from "@/types/Theme";
-import { BreathingPatternType, BREATHING_PATTERNS } from "@/types/breathing";
+import { BreathingPatternType } from "@/types/breathing";
+import { useLanguage } from "@/context/LanguageContext";
+
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+interface GenderedText {
+  male: string;
+  female: string;
+  default: string;
+}
+
+interface BreathingPattern {
+  name: string;
+  description: GenderedText;
+  preparation: GenderedText[];
+  benefits: string[];
+  steps: GenderedText[];
+  tips?: GenderedText[];
+}
 
 interface GuideModalProps {
   visible: boolean;
   onClose: () => void;
   colors: CustomTheme;
-  isRTL: boolean;
   currentPattern: BreathingPatternType;
+  gender?: string;
 }
-
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-const PATTERN_GUIDES = {
-  "4-4-4-4": {
-    name: "Box Breathing",
-    description:
-      "Box breathing (4-4-4-4) is a powerful stress-management technique used by Navy SEALs, athletes, and anxiety specialists. It helps activate your body's natural relaxation response.",
-    preparation: [
-      "Find a quiet, comfortable place to sit or lie down",
-      "Keep your back straight but relaxed",
-      "Rest your hands gently on your lap or by your sides",
-      "Close your eyes or maintain a soft, unfocused gaze",
-      "Take a moment to notice your natural breathing",
-    ],
-    benefits: [
-      "Reduces stress and anxiety levels",
-      "Improves concentration and focus",
-      "Helps regulate blood pressure",
-      "Promotes better sleep quality",
-      "Enhances emotional control",
-      "Increases mindfulness",
-    ],
-    steps: [
-      "Inhale deeply through your nose for 4 seconds",
-      "Hold your breath for 4 seconds",
-      "Exhale slowly through your mouth for 4 seconds",
-      "Hold empty lungs for 4 seconds",
-      "Repeat the cycle",
-    ],
-  },
-  "4-7-8": {
-    name: "Relaxing Breath",
-    description:
-      "The 4-7-8 breathing technique, also known as 'relaxing breath,' is a powerful tool for managing anxiety and sleep. Developed by Dr. Andrew Weil, it acts as a natural tranquilizer for the nervous system.",
-    preparation: [
-      "Find a quiet, comfortable place to sit or lie down",
-      "Keep your back straight but relaxed",
-      "Place the tip of your tongue against the ridge behind your upper front teeth",
-      "Close your eyes or maintain a soft, unfocused gaze",
-      "Take a moment to notice your natural breathing",
-    ],
-    benefits: [
-      "Helps manage anxiety and panic attacks",
-      "Improves sleep quality and helps with insomnia",
-      "Reduces stress response",
-      "Controls cravings and emotional reactions",
-      "Lowers heart rate and blood pressure",
-      "Enhances meditation practice",
-    ],
-    steps: [
-      "Inhale quietly through your nose for 4 seconds",
-      "Hold your breath for 7 seconds",
-      "Exhale completely through your mouth making a whoosh sound for 8 seconds",
-      "Start the next cycle immediately without pause",
-    ],
-    tips: [
-      "Keep the tip of your tongue in position throughout the exercise",
-      "Exhale through your mouth around your tongue",
-      "Try to make the exhalation long and audible",
-      "Start with 4 cycles and gradually increase",
-    ],
-  },
-};
 
 export const BreathingGuideModal: React.FC<GuideModalProps> = ({
   visible,
   onClose,
   colors,
-  isRTL,
   currentPattern,
+  gender,
 }) => {
-  const guide = PATTERN_GUIDES[currentPattern];
+  const { t, getGenderedText, isRTL } = useLanguage();
+  const guide = t.breathing.breathingGuide.patterns[currentPattern];
+
+  const renderStep = (step: GenderedText, index: number) => (
+    <View
+      key={index}
+      style={[
+        styles.stepItem,
+        { flexDirection: isRTL ? "row-reverse" : "row" },
+      ]}
+    >
+      <View style={[styles.stepNumber, { backgroundColor: colors.primary }]}>
+        <ThemedText style={[styles.stepNumberText]} isRTL={isRTL}>
+          {index + 1}
+        </ThemedText>
+      </View>
+      <ThemedText
+        style={[
+          styles.stepText,
+          {
+            color: colors.textSecondary,
+            textAlign: isRTL ? "right" : "left",
+          },
+        ]}
+        isRTL={isRTL}
+      >
+        {getGenderedText(step, gender)}
+      </ThemedText>
+    </View>
+  );
+
+  const renderBenefit = (benefit: string, index: number) => (
+    <View
+      key={index}
+      style={[
+        styles.benefitItem,
+        { flexDirection: isRTL ? "row-reverse" : "row" },
+      ]}
+    >
+      <MaterialIcons name="check-circle" size={20} color={colors.primary} />
+      <ThemedText
+        style={[
+          styles.benefitText,
+          {
+            color: colors.textSecondary,
+            textAlign: isRTL ? "right" : "left",
+          },
+        ]}
+        isRTL={isRTL}
+      >
+        {benefit}
+      </ThemedText>
+    </View>
+  );
 
   return (
     <Modal
@@ -104,9 +111,26 @@ export const BreathingGuideModal: React.FC<GuideModalProps> = ({
         <View
           style={[styles.modalContent, { backgroundColor: colors.background }]}
         >
-          <View style={[styles.header, { borderBottomColor: colors.border }]}>
-            <ThemedText style={[styles.title, { color: colors.text }]}>
-              {guide.name} Guide
+          <View
+            style={[
+              styles.header,
+              {
+                borderBottomColor: colors.border,
+                flexDirection: isRTL ? "row-reverse" : "row",
+              },
+            ]}
+          >
+            <ThemedText
+              style={[
+                styles.title,
+                {
+                  color: colors.text,
+                  textAlign: isRTL ? "right" : "left",
+                },
+              ]}
+              isRTL={isRTL}
+            >
+              {`${t.breathing.breathingGuide.guide} - ${guide.name} `}
             </ThemedText>
             <TouchableOpacity
               onPress={onClose}
@@ -120,131 +144,183 @@ export const BreathingGuideModal: React.FC<GuideModalProps> = ({
             style={styles.scrollView}
             showsVerticalScrollIndicator={false}
           >
+            {/* About Section */}
             <View style={[styles.section, { backgroundColor: colors.surface }]}>
-              <View style={styles.sectionHeader}>
+              <View
+                style={[
+                  styles.sectionHeader,
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
+                ]}
+              >
                 <MaterialIcons
                   name="info-outline"
                   size={24}
                   color={colors.primary}
                 />
                 <ThemedText
-                  style={[styles.sectionTitle, { color: colors.text }]}
+                  style={[
+                    styles.sectionTitle,
+                    {
+                      color: colors.text,
+                      marginLeft: isRTL ? 0 : 8,
+                      marginRight: isRTL ? 8 : 0,
+                      textAlign: isRTL ? "right" : "left",
+                    },
+                  ]}
+                  isRTL={isRTL}
                 >
-                  About {guide.name}
+                  {`${t.breathing.breathingGuide.about} ${guide.name}`}
                 </ThemedText>
               </View>
               <ThemedText
-                style={[styles.description, { color: colors.textSecondary }]}
+                style={[
+                  styles.description,
+                  {
+                    color: colors.textSecondary,
+                    textAlign: isRTL ? "right" : "left",
+                  },
+                ]}
+                isRTL={isRTL}
               >
-                {guide.description}
+                {getGenderedText(guide.description, gender)}
               </ThemedText>
             </View>
 
+            {/* Benefits Section */}
             <View style={[styles.section, { backgroundColor: colors.surface }]}>
-              <View style={styles.sectionHeader}>
+              <View
+                style={[
+                  styles.sectionHeader,
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
+                ]}
+              >
                 <MaterialIcons
                   name="medical-services"
                   size={24}
                   color={colors.primary}
                 />
                 <ThemedText
-                  style={[styles.sectionTitle, { color: colors.text }]}
+                  style={[
+                    styles.sectionTitle,
+                    {
+                      color: colors.text,
+                      marginLeft: isRTL ? 0 : 8,
+                      marginRight: isRTL ? 8 : 0,
+                      textAlign: isRTL ? "right" : "left",
+                    },
+                  ]}
+                  isRTL={isRTL}
                 >
-                  Benefits
+                  {t.breathing.breathingGuide.benefits}
                 </ThemedText>
               </View>
               <View style={styles.benefitsList}>
-                {guide.benefits.map((benefit, index) => (
-                  <View key={index} style={styles.benefitItem}>
-                    <MaterialIcons
-                      name="check-circle"
-                      size={20}
-                      color={colors.primary}
-                    />
-                    <ThemedText
-                      style={[
-                        styles.benefitText,
-                        { color: colors.textSecondary },
-                      ]}
-                    >
-                      {benefit}
-                    </ThemedText>
-                  </View>
-                ))}
+                {guide.benefits.map(renderBenefit)}
               </View>
             </View>
 
+            {/* Steps Section */}
             <View style={[styles.section, { backgroundColor: colors.surface }]}>
-              <View style={styles.sectionHeader}>
+              <View
+                style={[
+                  styles.sectionHeader,
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
+                ]}
+              >
                 <MaterialIcons
                   name="tips-and-updates"
                   size={24}
                   color={colors.primary}
                 />
                 <ThemedText
-                  style={[styles.sectionTitle, { color: colors.text }]}
+                  style={[
+                    styles.sectionTitle,
+                    {
+                      color: colors.text,
+                      marginLeft: isRTL ? 0 : 8,
+                      marginRight: isRTL ? 8 : 0,
+                      textAlign: isRTL ? "right" : "left",
+                    },
+                  ]}
+                  isRTL={isRTL}
                 >
-                  How to Practice
+                  {t.breathing.breathingGuide.howToPractice}
                 </ThemedText>
               </View>
               <View style={styles.stepsList}>
-                {guide.steps.map((step, index) => (
-                  <View key={index} style={styles.stepItem}>
-                    <View
-                      style={[
-                        styles.stepNumber,
-                        { backgroundColor: colors.primary },
-                      ]}
-                    >
-                      <ThemedText style={styles.stepNumberText}>
-                        {index + 1}
-                      </ThemedText>
-                    </View>
-                    <ThemedText
-                      style={[styles.stepText, { color: colors.textSecondary }]}
-                    >
-                      {step}
-                    </ThemedText>
-                  </View>
-                ))}
+                {guide.steps.map(renderStep)}
               </View>
             </View>
 
+            {/* Preparation Section */}
             <View style={[styles.section, { backgroundColor: colors.surface }]}>
-              <View style={styles.sectionHeader}>
+              <View
+                style={[
+                  styles.sectionHeader,
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
+                ]}
+              >
                 <MaterialIcons
                   name="accessibility-new"
                   size={24}
                   color={colors.primary}
                 />
                 <ThemedText
-                  style={[styles.sectionTitle, { color: colors.text }]}
+                  style={[
+                    styles.sectionTitle,
+                    {
+                      color: colors.text,
+                      marginLeft: isRTL ? 0 : 8,
+                      marginRight: isRTL ? 8 : 0,
+                      textAlign: isRTL ? "right" : "left",
+                    },
+                  ]}
+                  isRTL={isRTL}
                 >
-                  Preparation
+                  {t.breathing.breathingGuide.preparation}
                 </ThemedText>
               </View>
               <View style={styles.stepsList}>
-                {guide.preparation.map((step, index) => (
-                  <View key={index} style={styles.stepItem}>
-                    <View
-                      style={[
-                        styles.stepNumber,
-                        { backgroundColor: colors.primary },
-                      ]}
-                    >
-                      <ThemedText style={styles.stepNumberText}>
-                        {index + 1}
-                      </ThemedText>
-                    </View>
-                    <ThemedText
-                      style={[styles.stepText, { color: colors.textSecondary }]}
-                    >
-                      {step}
-                    </ThemedText>
-                  </View>
-                ))}
+                {guide.preparation.map(renderStep)}
               </View>
             </View>
+
+            {/* Tips Section */}
+            {guide.tips && (
+              <View
+                style={[styles.section, { backgroundColor: colors.surface }]}
+              >
+                <View
+                  style={[
+                    styles.sectionHeader,
+                    { flexDirection: isRTL ? "row-reverse" : "row" },
+                  ]}
+                >
+                  <MaterialIcons
+                    name="lightbulb"
+                    size={24}
+                    color={colors.primary}
+                  />
+                  <ThemedText
+                    style={[
+                      styles.sectionTitle,
+                      {
+                        color: colors.text,
+                        marginLeft: isRTL ? 0 : 8,
+                        marginRight: isRTL ? 8 : 0,
+                        textAlign: isRTL ? "right" : "left",
+                      },
+                    ]}
+                    isRTL={isRTL}
+                  >
+                    {t.breathing.breathingGuide.tips}
+                  </ThemedText>
+                </View>
+                <View style={styles.stepsList}>
+                  {guide.tips.map(renderStep)}
+                </View>
+              </View>
+            )}
           </ScrollView>
         </View>
       </View>
@@ -342,3 +418,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+export default BreathingGuideModal;

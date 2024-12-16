@@ -82,9 +82,9 @@ const HomePatient = () => {
             params: { gender },
           });
           break;
-        case "/breathingExercise":
+        case "/breathingExercises":
           router.push({
-            pathname: "/breathingExercise",
+            pathname: "/breathingExercises",
             params: { gender },
           });
           break;
@@ -139,7 +139,7 @@ const HomePatient = () => {
           color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
         />
       ),
-      route: "/breathingExercise",
+      route: "/breathingExercises",
     },
   ];
 

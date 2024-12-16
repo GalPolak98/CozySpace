@@ -10,6 +10,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import ThemedText from "@/components/ThemedText";
 import { CustomTheme } from "@/types/Theme";
 import { BreathingPatternType, BREATHING_PATTERNS } from "@/types/breathing";
+import { useLanguage } from "@/context/LanguageContext";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -19,7 +20,7 @@ interface PatternSelectionModalProps {
   onSelect: (pattern: BreathingPatternType) => void;
   currentPattern: BreathingPatternType;
   colors: CustomTheme;
-  isRTL?: boolean;
+  gender?: string;
 }
 
 export const PatternSelectionModal: React.FC<PatternSelectionModalProps> = ({
@@ -28,8 +29,28 @@ export const PatternSelectionModal: React.FC<PatternSelectionModalProps> = ({
   onSelect,
   currentPattern,
   colors,
-  isRTL = false,
+  gender,
 }) => {
+  const { t, getGenderedText, isRTL, currentLanguage } = useLanguage();
+
+  const getPatternName = (pattern: any) => {
+    const localizedName = pattern.name[currentLanguage as "en" | "he"];
+    return `${localizedName} (${pattern.type})`;
+  };
+
+  const formatTiming = (pattern: any) => {
+    const timing = t.breathing.patternSelection.timing;
+    return `${timing.inhale}: ${pattern.inhale / 1000} ${timing.seconds}, ${
+      timing.hold
+    }: ${pattern.holdIn / 1000} ${timing.seconds}, ${timing.exhale}: ${
+      pattern.exhale / 1000
+    } ${timing.seconds}${
+      pattern.holdOut
+        ? `, ${timing.hold}: ${pattern.holdOut / 1000} ${timing.seconds}`
+        : ""
+    }`;
+  };
+
   return (
     <Modal
       visible={visible}
@@ -49,8 +70,14 @@ export const PatternSelectionModal: React.FC<PatternSelectionModalProps> = ({
               isRTL && styles.modalHeaderRTL,
             ]}
           >
-            <ThemedText style={styles.modalTitle} isRTL={isRTL}>
-              Select Breathing Pattern
+            <ThemedText
+              style={[
+                styles.modalTitle,
+                { textAlign: isRTL ? "right" : "left" },
+              ]}
+              isRTL={isRTL}
+            >
+              {getGenderedText(t.breathing.patternSelection.title, gender)}
             </ThemedText>
             <TouchableOpacity
               onPress={onClose}
@@ -85,11 +112,12 @@ export const PatternSelectionModal: React.FC<PatternSelectionModalProps> = ({
                   {
                     color:
                       currentPattern === key ? colors.background : colors.text,
+                    textAlign: isRTL ? "right" : "left",
                   },
                 ]}
                 isRTL={isRTL}
               >
-                {pattern.name} ({key})
+                {getPatternName(pattern)}
               </ThemedText>
               <ThemedText
                 style={[
@@ -99,15 +127,12 @@ export const PatternSelectionModal: React.FC<PatternSelectionModalProps> = ({
                       currentPattern === key
                         ? colors.background
                         : colors.textSecondary,
+                    textAlign: isRTL ? "right" : "left",
                   },
                 ]}
                 isRTL={isRTL}
               >
-                {`Inhale: ${pattern.inhale / 1000}s, Hold: ${
-                  pattern.holdIn / 1000
-                }s, Exhale: ${pattern.exhale / 1000}s${
-                  pattern.holdOut ? `, Hold: ${pattern.holdOut / 1000}s` : ""
-                }`}
+                {formatTiming(pattern)}
               </ThemedText>
             </TouchableOpacity>
           ))}

@@ -2,10 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { Animated, Easing } from 'react-native';
 import { PhaseType, BREATHING_PATTERNS, BreathingPatternType } from '@/types/breathing';
 import * as Haptics from 'expo-haptics';
+import { Audio } from 'expo-av';
 
 export const useBreathingAnimation = (
   isActive: boolean, 
-  currentPattern: BreathingPatternType
+  currentPattern: BreathingPatternType,
+  sound?: Audio.Sound
 ) => {
   const [currentPhase, setCurrentPhase] = useState<PhaseType>("inhale");
   const [timeLeft, setTimeLeft] = useState<number>(
@@ -17,6 +19,8 @@ export const useBreathingAnimation = (
   
   const phaseTimerRef = useRef<NodeJS.Timeout>();
   const animationRef = useRef<Animated.CompositeAnimation>();
+  const cycleCountRef = useRef<number>(0);
+  const isSoundPlayingRef = useRef<boolean>(false);
 
   const resetAnimation = () => {
     if (animationRef.current) {
@@ -29,6 +33,36 @@ export const useBreathingAnimation = (
     
     setCurrentPhase("inhale");
     setTimeLeft(BREATHING_PATTERNS[currentPattern].phases.inhale.duration);
+    cycleCountRef.current = 0;
+    isSoundPlayingRef.current = false;
+  };
+
+  const checkSoundStatus = async (sound: Audio.Sound) => {
+    try {
+      const status = await sound.getStatusAsync();
+      return status.isLoaded;
+    } catch {
+      return false;
+    }
+  };
+
+  const restartSound = async () => {
+    if (!sound || isSoundPlayingRef.current) return;
+    
+    try {
+      isSoundPlayingRef.current = true;
+      
+      const isLoaded = await checkSoundStatus(sound);
+      if (isLoaded) {
+        await sound.stopAsync();
+        await sound.setPositionAsync(0);
+        await sound.playAsync();
+      }
+    } catch (error) {
+      console.error('Error restarting sound:', error);
+    } finally {
+      isSoundPlayingRef.current = false;
+    }
   };
 
   const createPhaseAnimation = (phase: PhaseType) => {
@@ -87,12 +121,24 @@ export const useBreathingAnimation = (
     }
 
     const pattern = BREATHING_PATTERNS[currentPattern];
-    const totalCycleDuration = pattern.inhale + pattern.holdIn + pattern.exhale + pattern.holdOut;
+    const totalCycleDuration = pattern.inhale + pattern.holdIn + pattern.exhale + 
+      (currentPattern === "4-7-8" ? 0 : pattern.holdOut);
     let currentTime = 0;
+
+    // Start with sound
+    restartSound();
 
     const updatePhaseAndTime = () => {
       phaseTimerRef.current = setInterval(() => {
         currentTime = (currentTime + 1000) % totalCycleDuration;
+
+        // Check if we're starting a new cycle
+        if (currentTime === 0) {
+          cycleCountRef.current += 1;
+          setTimeout(() => {
+            restartSound();
+          }, 100);
+        }
 
         if (currentTime < pattern.inhale) {
           setCurrentPhase("inhale");
@@ -105,7 +151,7 @@ export const useBreathingAnimation = (
           setCurrentPhase("exhale");
           setTimeLeft(Math.ceil((pattern.inhale + pattern.holdIn + pattern.exhale - currentTime) / 1000));
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        } else if (pattern.holdOut > 0) {
+        } else if (currentPattern !== "4-7-8") {
           setCurrentPhase("holdOut");
           setTimeLeft(Math.ceil((totalCycleDuration - currentTime) / 1000));
         }
@@ -116,7 +162,6 @@ export const useBreathingAnimation = (
       const runPhase = (phase: PhaseType) => {
         if (!isActive) return;
 
-        // For 4-7-8 pattern, skip holdOut phase
         if (currentPattern === "4-7-8" && phase === "holdOut") {
           runPhase("inhale");
           return;
@@ -131,6 +176,14 @@ export const useBreathingAnimation = (
               exhale: currentPattern === "4-4-4-4" ? "holdOut" : "inhale",
               holdOut: "inhale",
             }[phase] as PhaseType;
+            
+            if (nextPhase === "inhale" && phase !== "holdOut") {
+              cycleCountRef.current += 1;
+              setTimeout(() => {
+                restartSound();
+              }, 50);
+            }
+            
             runPhase(nextPhase);
           }
         });
@@ -156,5 +209,6 @@ export const useBreathingAnimation = (
     timeLeft,
     circleScale,
     circleOpacity,
+    cycleCount: cycleCountRef.current,
   };
 };
