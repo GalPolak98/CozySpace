@@ -43,7 +43,6 @@ async generateInitialMessage(language: string): Promise<string | null> {
   if (!this.gender) return null;
   
   try {
-    // First try Azure OpenAI
     const prompt = getGenderAwarePrompt(INITIAL_MESSAGE_PROMPT, language as Language, this.gender as Gender);
  
     const response = await axios.post(
@@ -73,7 +72,6 @@ async generateInitialMessage(language: string): Promise<string | null> {
     let botResponse = response.data.choices[0].message.content.trim();
  
     if (!this.isCompleteSentence(botResponse)) {
-      // Fallback to predefined messages
       const messages = INITIAL_MESSAGES[language as 'en' | 'he'];
       const randomIndex = Math.floor(Math.random() * messages.length);
       botResponse = messages[randomIndex];
@@ -83,7 +81,6 @@ async generateInitialMessage(language: string): Promise<string | null> {
     return botResponse;
  
   } catch (error) {
-    // On error, use predefined messages
     const messages = INITIAL_MESSAGES[language as 'en' | 'he'];
     const randomIndex = Math.floor(Math.random() * messages.length);
     const fallbackMessage = messages[randomIndex];
@@ -138,7 +135,6 @@ async generateInitialMessage(language: string): Promise<string | null> {
   }
 
   private isCompleteSentence(text: string): boolean {
-    // Basic check for complete sentences
     const lastChar = text.trim().slice(-1);
     return ['.', '!', '?'].includes(lastChar);
   }
@@ -147,7 +143,6 @@ async generateInitialMessage(language: string): Promise<string | null> {
     return new Promise<void>((resolve) => {
       setTimeout(async () => {
         try {
-          // Get location in its own try block
           let locationString = 'Location not available';
           try {
             const { status } = await Location.getForegroundPermissionsAsync();
@@ -220,43 +215,17 @@ async generateInitialMessage(language: string): Promise<string | null> {
         this.conversationHistory = this.conversationHistory.slice(-6);
       }
 
-      const response = await axios.post(
-        `${this.EXPO_PUBLIC_AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
-        {
-          messages: [
-            {
-              role: "system",
-              content: getGenderAwarePrompt(SYSTEM_PROMPT, language as Language, this.gender as Gender, this.conversationHistory)
-            },
-            ...this.conversationHistory.map(msg => ({
-              role: msg.startsWith("User:") ? "user" : "assistant",
-              content: msg.replace(/^(User:|Assistant:)\s*/, '')
-            }))
-          ],
-          temperature: 0.7,
-          max_tokens: 250,
-          top_p: 0.95,
-          presence_penalty: 0.1, 
-          frequency_penalty: 0.1,
-          stop: ["User:", "Assistant:"]
-        },
-        {
-          headers: {
-            'api-key': this.EXPO_PUBLIC_AZURE_API_KEY,
-            'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8'
-          },
-          responseType: 'json',
-          responseEncoding: 'utf8'
-        }
-      );
-
-      let botResponse = response.data.choices[0].message.content.trim();
+    let botResponse = await this.attemptResponse(language, false);
+    
+    if (!this.isCompleteSentence(botResponse)) {
+      console.log('First response incomplete, retrying with stricter parameters');
+      botResponse = await this.attemptResponse(language, true);
 
       if (!this.isCompleteSentence(botResponse)) {
-        const fallbackResponse = this.getFallbackResponse(userMessage);
-        botResponse = fallbackResponse.text;
+          const fallbackResponse = this.getFallbackResponse(userMessage);
+          botResponse = fallbackResponse.text;
       }
+    }
 
       this.conversationHistory.push(`Assistant: ${botResponse}`);
       return { text: botResponse };
@@ -274,6 +243,51 @@ async generateInitialMessage(language: string): Promise<string | null> {
       return this.getFallbackResponse(userMessage);
     }
   }
+
+  private async attemptResponse(language: string, isRetry: boolean): Promise<string> {
+    const systemPrompt = getGenderAwarePrompt(SYSTEM_PROMPT, language as Language, this.gender as Gender, this.conversationHistory);
+    console.log(systemPrompt)
+    const enhancedPrompt = isRetry ? 
+      `${systemPrompt}\n\nVERY IMPORTANT: Previous response was incomplete. You must provide a complete, well-formed response with proper punctuation and at least 2-3 full sentences.` :
+      systemPrompt;
+
+    const response = await axios.post(
+      `${this.EXPO_PUBLIC_AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
+      {
+        messages: [
+          {
+            role: "system",
+            content: enhancedPrompt
+          },
+          ...this.conversationHistory.map(msg => ({
+            role: msg.startsWith("User:") ? "user" : "assistant",
+            content: msg.replace(/^(User:|Assistant:|Admin:)\s*/, '')
+          }))
+        ],
+        temperature: isRetry ? 0.5 : 0.7,
+        max_tokens: 250,
+        top_p: isRetry ? 0.8 : 0.95,
+        presence_penalty: isRetry ? 0.2 : 0.1,
+        frequency_penalty: isRetry ? 0.2 : 0.1,
+        stop: ["User:", "Assistant:"]
+      },
+      {
+        headers: {
+          'api-key': this.EXPO_PUBLIC_AZURE_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept-Charset': 'UTF-8'
+        }
+      }
+    );
+
+    return response.data.choices[0].message.content.trim();
+  }
+}
+
+export const createChatService = (userId: string, gender: string | null, language: Language = 'en', fullname: string) => 
+  new ChatService(userId, gender, language, fullname);
+
+
 
   // private async translateText(text: string, from: string, to: string): Promise<string> {
   //   try {
@@ -396,7 +410,77 @@ async generateInitialMessage(language: string): Promise<string | null> {
   //     return fallbackResponse;
   //   }
   // }
-}
 
-export const createChatService = (userId: string, gender: string | null, language: Language = 'en', fullname: string) => 
-  new ChatService(userId, gender, language, fullname);
+
+
+
+///////////////////// last ////////////////////
+// async getChatResponse(userMessage: string, language: string = 'en'): Promise<ChatResponse> {
+//   try {
+//     if (this.isEmergency(userMessage)) {
+//        this.sendEmergencyAlert(userMessage);
+//        this.conversationHistory.push(`Admin: The user expressed concerning thoughts. Please help them deal with the situation compassionately.`);
+//       }
+//     else
+//     {
+//       this.conversationHistory.push(`User: ${userMessage}`);
+//     }
+    
+//     if (this.conversationHistory.length > 6) {
+//       this.conversationHistory = this.conversationHistory.slice(-6);
+//     }
+
+//     const response = await axios.post(
+//       `${this.EXPO_PUBLIC_AZURE_ENDPOINT}/openai/deployments/${this.MODEL_DEPLOYMENT}/chat/completions?api-version=${this.API_VERSION_DEPLOYMENT}`,
+//       {
+//         messages: [
+//           {
+//             role: "system",
+//             content: getGenderAwarePrompt(SYSTEM_PROMPT, language as Language, this.gender as Gender, this.conversationHistory)
+//           },
+//           ...this.conversationHistory.map(msg => ({
+//             role: msg.startsWith("User:") ? "user" : "assistant",
+//             content: msg.replace(/^(User:|Assistant:)\s*/, '')
+//           }))
+//         ],
+//         temperature: 0.7,
+//         max_tokens: 250,
+//         top_p: 0.95,
+//         presence_penalty: 0.1, 
+//         frequency_penalty: 0.1,
+//         stop: ["User:", "Assistant:"]
+//       },
+//       {
+//         headers: {
+//           'api-key': this.EXPO_PUBLIC_AZURE_API_KEY,
+//           'Content-Type': 'application/json',
+//           'Accept-Charset': 'UTF-8'
+//         },
+//         responseType: 'json',
+//         responseEncoding: 'utf8'
+//       }
+//     );
+
+//     let botResponse = response.data.choices[0].message.content.trim();
+
+//     if (!this.isCompleteSentence(botResponse)) {
+//       const fallbackResponse = this.getFallbackResponse(userMessage);
+//       botResponse = fallbackResponse.text;
+//     }
+
+//     this.conversationHistory.push(`Assistant: ${botResponse}`);
+//     return { text: botResponse };
+
+//   } catch (error) {
+//     console.error('Chat API Error:', error);
+
+//     if (axios.isAxiosError(error) && error.response) {
+//       console.error('Error response:', {
+//         status: error.response.status,
+//         data: error.response.data
+//       });
+//     }
+
+//     return this.getFallbackResponse(userMessage);
+//   }
+// }
