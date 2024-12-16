@@ -3,70 +3,104 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import ThemedText from "@/components/ThemedText";
 import { CustomTheme } from "@/types/Theme";
-import { BreathingPatternType, BREATHING_PATTERNS } from "@/types/breathing";
+import { BreathingPatternType } from "@/types/breathing";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface StatsProps {
-  sessionCount: number;
+  sessionDuration: number;
   colors: CustomTheme;
   isGuided: boolean;
   onGuidePress: () => void;
   currentPattern: BreathingPatternType;
   onPatternPress: () => void;
+  gender?: string;
 }
 
 export const Stats: React.FC<StatsProps> = ({
-  sessionCount,
+  sessionDuration,
   colors,
   isGuided,
   onGuidePress,
   currentPattern,
   onPatternPress,
-}) => (
-  <View style={styles.container}>
-    <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
-      <MaterialIcons name="timer" size={24} color={colors.primary} />
-      <ThemedText style={[styles.statText, { color: colors.textSecondary }]}>
-        {sessionCount} sessions
-      </ThemedText>
-    </View>
-    <TouchableOpacity
-      style={[styles.statCard, { backgroundColor: colors.surface }]}
-      onPress={onPatternPress}
-      activeOpacity={0.7}
-    >
-      <Feather name="wind" size={24} color={colors.primary} />
-      <ThemedText style={[styles.statText, { color: colors.textSecondary }]}>
-        {currentPattern}
-      </ThemedText>
-    </TouchableOpacity>
-    <TouchableOpacity
+  gender,
+}) => {
+  const { t, isRTL, getGenderedText } = useLanguage();
+
+  const formatDuration = (duration: number) => {
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  return (
+    <View
       style={[
-        styles.statCard,
-        {
-          backgroundColor: colors.surface,
-          borderColor: isGuided ? colors.primary : "transparent",
-          borderWidth: isGuided ? 2 : 0,
-        },
+        styles.container,
+        { flexDirection: isRTL ? "row-reverse" : "row" },
       ]}
-      onPress={onGuidePress}
-      activeOpacity={0.7}
     >
-      <MaterialIcons
-        name={isGuided ? "lightbulb" : "lightbulb-outline"}
-        size={24}
-        color={colors.primary}
-      />
-      <ThemedText
-        style={[
-          styles.statText,
-          { color: isGuided ? colors.primary : colors.textSecondary },
-        ]}
+      <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+        <MaterialIcons name="timer" size={24} color={colors.primary} />
+        <ThemedText
+          style={[
+            styles.statText,
+            { color: colors.textSecondary, textAlign: "center" },
+          ]}
+          isRTL={isRTL}
+        >
+          {formatDuration(sessionDuration)}
+        </ThemedText>
+      </View>
+      <TouchableOpacity
+        style={[styles.statCard, { backgroundColor: colors.surface }]}
+        onPress={onPatternPress}
+        activeOpacity={0.7}
       >
-        {isGuided ? "Guidance" : "Guidance"}
-      </ThemedText>
-    </TouchableOpacity>
-  </View>
-);
+        <Feather name="wind" size={24} color={colors.primary} />
+        <ThemedText
+          style={[
+            styles.statText,
+            { color: colors.textSecondary, textAlign: "center" },
+          ]}
+          isRTL={isRTL}
+        >
+          {currentPattern}
+        </ThemedText>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[
+          styles.statCard,
+          {
+            backgroundColor: colors.surface,
+            borderColor: isGuided ? colors.primary : "transparent",
+            borderWidth: isGuided ? 2 : 0,
+          },
+        ]}
+        onPress={onGuidePress}
+        activeOpacity={0.7}
+      >
+        <MaterialIcons
+          name={isGuided ? "lightbulb" : "lightbulb-outline"}
+          size={24}
+          color={colors.primary}
+        />
+        <ThemedText
+          style={[
+            styles.statText,
+            {
+              color: isGuided ? colors.primary : colors.textSecondary,
+              textAlign: "center",
+            },
+          ]}
+          isRTL={isRTL}
+        >
+          {getGenderedText(t.breathing.stats.guidance, gender)}
+        </ThemedText>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

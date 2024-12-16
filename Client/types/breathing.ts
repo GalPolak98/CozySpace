@@ -19,8 +19,13 @@ interface RelaxingBreathPhases {
   exhale: BreathingPhase;
 }
 
+interface LocalizedName {
+  en: string;
+  he: string;
+}
+
 interface BaseBreathingPattern {
-  name: string;
+  name: LocalizedName;
   inhale: number;
   holdIn: number;
   exhale: number;
@@ -45,7 +50,10 @@ export type BreathingPatternType = BreathingPattern["type"];
 export const BREATHING_PATTERNS: Record<BreathingPatternType, BreathingPattern> = {
   "4-4-4-4": {
     type: "4-4-4-4",
-    name: "Box Breathing",
+    name: {
+      en: "Box Breathing",
+      he: "נשימת קופסה"
+    },
     inhale: 4000,
     holdIn: 4000,
     exhale: 4000,
@@ -72,7 +80,10 @@ export const BREATHING_PATTERNS: Record<BreathingPatternType, BreathingPattern> 
   },
   "4-7-8": {
     type: "4-7-8",
-    name: "Relaxing Breath",
+    name: {
+      en: "Relaxing Breath",
+      he: "נשימה מרגיעה"
+    },
     inhale: 4000,
     holdIn: 7000,
     exhale: 8000,
