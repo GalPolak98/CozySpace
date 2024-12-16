@@ -312,7 +312,7 @@ export const translations = {
           },
 
           breathing: {
-            title: "4-4-4 Breathing",
+            title: "Breathing",
             start: "Start",
             stop: "Stop",
             inhale: "Inhale",
