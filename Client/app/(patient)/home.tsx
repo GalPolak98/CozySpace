@@ -13,7 +13,7 @@ import useAuth from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import Loader from "@/components/Loader";
 
-type RouteType = "/chat" | "/guidedNote" | "/directNote" | "/breathingExercise";
+type RouteType = "/chat" | "/guidedNote" | "/directNote" | "/breathingExercises";
 
 interface MenuItem {
   title: string;

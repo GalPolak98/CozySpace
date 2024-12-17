@@ -82,6 +82,10 @@ export const translations = {
             weeklyAnxietyLevels: 'Weekly Anxiety Levels'
 
           },
+          information:{
+            recordings: 'Recordings',
+            notes: 'Notes'
+          },
           errors: {
             invalidEmail: 'Please enter a valid email address',
             userDisabled: 'This account has been disabled',
@@ -538,6 +542,11 @@ export const translations = {
             home: 'בית',
             profile: 'פרופיל',
             reports: 'דוחות',
+            information: 'מידע'
+          },
+          information:{
+            recordings: 'הקלטות',
+            notes: 'פתקים'
           },
           reports: {
             averageAnxietyIntensity: 'עוצמת חרדה ממוצעת',
