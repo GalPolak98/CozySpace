@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Animated, Dimensions } from "react-native";
+import { View, Dimensions, StyleSheet, ScrollView } from "react-native";
 import { Audio } from "expo-av";
 import { useLocalSearchParams } from "expo-router";
 import { useLanguage } from "@/context/LanguageContext";
@@ -161,132 +161,155 @@ const BreathingScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View
-        style={{
-          flex: 1,
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
           alignItems: "center",
-          paddingHorizontal: 16,
         }}
+        showsVerticalScrollIndicator={false}
       >
         <View
           style={{
-            paddingHorizontal: 20,
-            paddingBottom: 4,
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border,
+            flex: 1,
+            alignItems: "center",
+            paddingHorizontal: 16,
           }}
         >
-          <ThemedText
+          {/* Title section */}
+          <View
             style={{
-              fontFamily: "Poppins-Regular",
-              color: colors.textSecondary,
-              marginTop: 4,
-              textAlign: isRTL ? "right" : "left",
+              width: "100%",
+              paddingHorizontal: 20,
+              paddingBottom: 4,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
             }}
-            isRTL={isRTL}
-            className="text-xl"
           >
-            {getGenderedText(t.breathing.focusMessage, gender)}
-          </ThemedText>
-        </View>
-        <View style={{ marginTop: 12, marginBottom: 8 }}>
-          <ProgressPills
-            currentPhase={currentPhase}
-            colors={colors}
-            pattern={currentPattern}
-          />
-        </View>
+            <ThemedText
+              style={{
+                fontFamily: "Poppins-Regular",
+                color: colors.textSecondary,
+                marginTop: 4,
+                textAlign: "center",
+              }}
+              className="text-xl"
+            >
+              {getGenderedText(t.breathing.focusMessage, gender)}
+            </ThemedText>
+          </View>
 
-        <View
-          style={{
-            height: maxCircleSize,
-            width: maxCircleSize,
-            justifyContent: "center",
-            alignItems: "center",
-            marginVertical: 14,
-          }}
-        >
-          <BreathingCircle
-            scale={circleScale}
-            opacity={circleOpacity}
-            size={baseCircleSize}
-            phaseText={getPhaseText(currentPhase)}
-            timeLeft={timeLeft}
-            isActive={isActive}
-            gender={gender}
-          />
-        </View>
+          {/* Progress Pills */}
+          <View
+            style={{
+              width: "100%",
+              marginTop: 8,
+              marginBottom: 24,
+              alignItems: "center",
+            }}
+          >
+            <ProgressPills
+              currentPhase={currentPhase}
+              colors={colors}
+              pattern={currentPattern}
+            />
+          </View>
 
-        <View
-          style={{
-            width: "100%",
-            alignItems: "center",
-            paddingBottom: Math.max(20, insets.bottom + 10),
-          }}
-        >
-          <Stats
-            sessionDuration={sessionDuration}
+          {/* Circle container */}
+          <View
+            style={{
+              height: maxCircleSize,
+              width: maxCircleSize,
+              justifyContent: "center",
+              alignItems: "center",
+              marginVertical: 16,
+              flex: 1,
+              maxHeight: windowWidth * 0.8, // Prevent circle from being too tall on Android
+            }}
+          >
+            <BreathingCircle
+              scale={circleScale}
+              opacity={circleOpacity}
+              size={baseCircleSize}
+              phaseText={getPhaseText(currentPhase)}
+              timeLeft={timeLeft}
+              isActive={isActive}
+              gender={gender}
+            />
+          </View>
+
+          {/* Bottom section */}
+          <View
+            style={{
+              width: "100%",
+              alignItems: "center",
+              paddingBottom: Math.max(20, insets.bottom + 10),
+            }}
+          >
+            <Stats
+              sessionDuration={sessionDuration}
+              colors={colors}
+              isGuided={isGuideVisible}
+              onGuidePress={() => setIsGuideVisible(true)}
+              currentPattern={currentPattern}
+              onPatternPress={() => setIsPatternModalVisible(true)}
+              gender={gender}
+            />
+
+            <CustomButton
+              title={
+                isActive
+                  ? getGenderedText(t.breathing.stop, gender)
+                  : getGenderedText(t.breathing.start, gender)
+              }
+              handlePress={toggleExercise}
+              containerStyles={{
+                paddingHorizontal: 48,
+                paddingVertical: 16,
+                borderRadius: 999,
+                elevation: 4,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                marginTop: 10,
+              }}
+              textStyles={{
+                fontSize: 18,
+                fontFamily: "Poppins-SemiBold",
+              }}
+              icon={
+                <MaterialIcons
+                  name={isActive ? "stop" : "play-arrow"}
+                  size={28}
+                  color={colors.text}
+                  style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }}
+                />
+              }
+              iconPosition={isRTL ? "right" : "left"}
+              variant={isActive ? "secondary" : "primary"}
+              isRTL={isRTL}
+            />
+          </View>
+
+          {/* Modals remain unchanged */}
+          <BreathingGuideModal
+            visible={isGuideVisible}
+            onClose={() => setIsGuideVisible(false)}
             colors={colors}
-            isGuided={isGuideVisible}
-            onGuidePress={() => setIsGuideVisible(true)}
             currentPattern={currentPattern}
-            onPatternPress={() => setIsPatternModalVisible(true)}
             gender={gender}
           />
 
-          <CustomButton
-            title={
-              isActive
-                ? getGenderedText(t.breathing.stop, gender)
-                : getGenderedText(t.breathing.start, gender)
-            }
-            handlePress={toggleExercise}
-            containerStyles={{
-              paddingHorizontal: 48,
-              paddingVertical: 16,
-              borderRadius: 999,
-              elevation: 4,
-              shadowColor: colors.primary,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              marginTop: 20,
-            }}
-            textStyles={{
-              fontSize: 18,
-              fontFamily: "Poppins-SemiBold",
-            }}
-            icon={
-              <MaterialIcons
-                name={isActive ? "stop" : "play-arrow"}
-                size={28}
-                color={colors.text}
-                style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }}
-              />
-            }
-            iconPosition={isRTL ? "right" : "left"}
-            variant={isActive ? "secondary" : "primary"}
-            isRTL={isRTL}
+          <PatternSelectionModal
+            visible={isPatternModalVisible}
+            onClose={() => setIsPatternModalVisible(false)}
+            onSelect={handlePatternChange}
+            currentPattern={currentPattern}
+            colors={colors}
+            gender={gender}
           />
         </View>
-
-        <BreathingGuideModal
-          visible={isGuideVisible}
-          onClose={() => setIsGuideVisible(false)}
-          colors={colors}
-          currentPattern={currentPattern}
-          gender={gender}
-        />
-
-        <PatternSelectionModal
-          visible={isPatternModalVisible}
-          onClose={() => setIsPatternModalVisible(false)}
-          onSelect={handlePatternChange}
-          currentPattern={currentPattern}
-          colors={colors}
-          gender={gender}
-        />
-      </View>
+      </ScrollView>
     </View>
   );
 };
