@@ -100,6 +100,24 @@ export const getNotes: RequestHandler = async (req, res, next) => {
   }
 };
 
+
+export const getNotification: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    // Call the userService to get the notes for the user
+    const notification = await userService.getNotificationsForUser(userId);
+    if (!notification) {
+      res.status(404).json({ error: 'No notifications found for this user' });
+      return;
+    }
+
+    res.status(200).json({ success: true, notification });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const getGuidedNotes: RequestHandler = async (req, res, next) => {
   try {
     const { userId } = req.params;

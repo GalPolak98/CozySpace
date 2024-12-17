@@ -37,7 +37,7 @@ export async function saveNotificationToServer(notification: Notifications.Notif
     if (!response.ok) {
       throw new Error(`Failed to save notification to the server: ${responseBody}`);
     }
-    console.log("Notification saved successfully");
+    console.log("Notification saved successfully!!!!!!!!!!!!");
 
   } catch (error) {
     console.error("Error saving notification:", error);

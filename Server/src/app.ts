@@ -24,7 +24,7 @@ const expoPushToken = process.env.EXPO_PUSH_TOKEN || '';
 //   const message = 'Please take care';
   
 //   await sendPushNotification(expoPushToken, title, message);
-// }, 30000); 
+// }, 10000); 
 
 // Middleware
 app.use(cors());

@@ -28,8 +28,9 @@ const NotesSection: React.FC = () => {
 
   const getCurrentDateTime = () => {
     const now = new Date();
-    return now.toLocaleString(isRTL ? 'he-IL' : 'en-US');
+    return now.toISOString(); // Return the timestamp in ISO 8601 format
   };
+  
 
   useEffect(() => {
     const loadDraftNote = async () => {

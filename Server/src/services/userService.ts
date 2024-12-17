@@ -415,6 +415,14 @@ async updatePatientPreferences(userId: string, updateData: {
 
 
 
+async getNotificationsForUser(userId: string) {
+  const patient = await PatientModel.findOne({ userId });
+  if (!patient) {
+    throw new Error('Patient not found');
+  }
+  return patient.notifications;  
+}
+
 async getGuidedNotesForUser(userId: string) {
   const patient = await PatientModel.findOne({ userId });
   if (!patient) {

@@ -38,7 +38,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       (token) => setExpoPushToken(token),
       (error) => setError(error)
     );
-
+    console.log("🔔 checkkkkkk");
     // Listener for received notifications
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {

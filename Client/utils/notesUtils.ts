@@ -18,17 +18,48 @@ interface GuidedNote {
   }
 
 const parseTimestamp = (timestamp: string, isRTL: boolean): number => {
-  if (isRTL) {
-    // Hebrew date format parsing
-    const [datePart, timePart] = timestamp.split(', ');
-    const [day, month, year] = datePart.split('.').map(Number);
-    const [hours, minutes, seconds] = timePart.split(':').map(Number);
-    return new Date(year, month - 1, day, hours, minutes, seconds).getTime();
-  } else {
-    // English date format parsing
-    return new Date(timestamp).getTime();
+  try {
+    if (!timestamp) {
+      console.warn('Invalid or empty timestamp:', timestamp);
+      return 0; // Default or fallback timestamp
+    }
+
+    if (isRTL) {
+      // Hebrew date format parsing: DD.MM.YYYY, HH:mm:ss
+      const [datePart, timePart] = timestamp.split(', ');
+      if (!datePart || !timePart) {
+        console.warn('Invalid RTL timestamp format:', timestamp);
+        return 0;
+      }
+
+      const [day, month, year] = datePart.split('.').map(Number);
+      const [hours, minutes, seconds = 0] = timePart.split(':').map(Number); // Default seconds to 0
+      if (
+        isNaN(day) || isNaN(month) || isNaN(year) ||
+        isNaN(hours) || isNaN(minutes) || isNaN(seconds)
+      ) {
+        console.warn('Invalid date or time parts in RTL timestamp:', timestamp);
+        return 0;
+      }
+
+      // Return timestamp in milliseconds
+      return new Date(year, month - 1, day, hours, minutes, seconds).getTime();
+    } else {
+      // English date format parsing
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid English timestamp format:', timestamp);
+        return 0;
+      }
+
+      return date.getTime();
+    }
+  } catch (error) {
+    console.error('Error parsing timestamp:', error, 'Input:', timestamp);
+    return 0;
   }
 };
+
 
 export const loadNotes = async (
   userId: string | null, 
@@ -46,13 +77,14 @@ export const loadNotes = async (
     if (!response.ok) throw new Error('Failed to fetch notes');
 
     const fetchedNotes = (await response.json()).notes;
+    console.log("fetched notes:", fetchedNotes)
     const sortedNotes = Array.isArray(fetchedNotes)
       ? fetchedNotes.sort((a, b) => parseTimestamp(b.timestamp, isRTL) - parseTimestamp(a.timestamp, isRTL))
       : [fetchedNotes];
 
     return sortedNotes;
   } catch (error) {
-    console.error('Failed to fetch notes', error);
+    console.error('Failed to fetch notes!!', error);
     Alert.alert(t.common.error, t.note.fetchError);
     return [];
   }
