@@ -78,7 +78,7 @@ useEffect(() => {
         return noteDate >= startDate && noteDate <= endDate;
       });
 
-      console.log("Filtered Notes:", filteredNotes);
+      // console.log("Filtered Notes:", filteredNotes);
 
       if (filteredNotes.length > 0) {
         const totalAnxietyRating = filteredNotes.reduce(

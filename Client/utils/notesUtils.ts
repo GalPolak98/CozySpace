@@ -78,7 +78,7 @@ export const loadNotes = async (
     if (!response.ok) throw new Error('Failed to fetch notes');
 
     const fetchedNotes = (await response.json()).notes;
-    console.log("fetched notes:", fetchedNotes)
+    // console.log("fetched notes:", fetchedNotes)
     const sortedNotes = Array.isArray(fetchedNotes)
       ? fetchedNotes.sort((a, b) => parseTimestamp(b.timestamp, isRTL) - parseTimestamp(a.timestamp, isRTL))
       : [fetchedNotes];

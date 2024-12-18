@@ -66,7 +66,7 @@ export default function RecordingsInfoScreen() {
       <TouchableOpacity
         onPress={() => playRecording(item)}
         style={[
-          styles.noteCard,
+          styles.recordingCard,
           {
             backgroundColor: theme === 'dark' ? '#333' : '#f5f5f5',
             flexDirection: isRTL ? 'row-reverse' : 'row', 
@@ -74,10 +74,10 @@ export default function RecordingsInfoScreen() {
         ]}
       >
         <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
-          <Text style={[styles.noteTitle, { color: theme === 'dark' ? '#fff' : '#000' }]}>
+          <Text style={[styles.recordingTitle, { color: theme === 'dark' ? '#fff' : '#000' }]}>
             {t.recording.recordedOn}: {date}
           </Text>
-          <Text style={[styles.noteContent, { color: theme === 'dark' ? '#ddd' : '#555' }]}>
+          <Text style={[styles.recordingContent, { color: theme === 'dark' ? '#ddd' : '#555' }]}>
             {t.recording.at}: {time}
           </Text>
         </View>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   list: {
     width: '100%',
   },
-  noteCard: {
+  recordingCard: {
     padding: 15,
     marginBottom: 15,
     borderRadius: 10,
@@ -137,12 +137,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  noteTitle: {
+  recordingTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  noteContent: {
+  recordingContent: {
     fontSize: 14,
   },
 });

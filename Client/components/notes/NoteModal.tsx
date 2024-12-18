@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard, Modal, Platform, TextInput, TouchableOpacity, View, ScrollView } from 'react-native';
+import { Keyboard, Modal, Platform, TouchableOpacity, View, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
@@ -9,7 +9,8 @@ import { theme } from '@/styles/Theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUserData } from '@/hooks/useUserData';
 import useAuth from '@/hooks/useAuth';
-import { Note } from '../../app/notesInfo/_layout';  // Adjust the import path based on your file structure
+import { Note } from '../../app/notesInfo/_layout';
+import NotebookInput from './NoteInput'; 
 
 interface NoteModalProps {
   isModalVisible: boolean;
@@ -18,7 +19,7 @@ interface NoteModalProps {
   setEditedNote: (content: string) => void;
   saveNote: () => void;
   deleteNote: (noteId: string) => void;
-  selectedNote: Note | null;  // Use the Note interface here
+  selectedNote: Note | null;
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({
@@ -31,15 +32,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
   selectedNote,
 }) => {
   const { theme: currentTheme } = useTheme();
-  const { t, isRTL, getGenderedText} = useLanguage();
+  const { t, isRTL, getGenderedText } = useLanguage();
   const colors = currentTheme === 'dark' ? theme.dark : theme.light;
   const insets = useSafeAreaInsets();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const userId = useAuth();
-  const {
-    gender,
-  } = useUserData(userId);
-  
+  const { gender } = useUserData(userId);
+
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
@@ -55,7 +54,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
       keyboardWillHide.remove();
     };
   }, []);
-  
+
   return (
     <Modal
       animationType="fade"
@@ -76,57 +75,41 @@ const NoteModal: React.FC<NoteModalProps> = ({
           style={{
             borderRadius: 15,
             width: '85%',
-            padding: 25,
+            padding: 15,
             backgroundColor: colors.surface,
             elevation: 5,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.25,
             shadowRadius: 4,
-            marginBottom: isKeyboardVisible ? 30 : 0 
+            marginBottom: isKeyboardVisible ? 30 : 0,
           }}
         >
-          <ThemedText 
-            style={{ 
-              fontSize: 18, 
-              fontWeight: 'bold', 
+          <ThemedText
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
               marginBottom: 10,
-              textAlign: isRTL ? 'right' : 'left'
+              textAlign: isRTL ? 'right' : 'left',
             }}
           >
             {getGenderedText(t.note.editNote, gender as string)}
           </ThemedText>
 
-          <ScrollView style={{ marginBottom: 20 }}>
-            <TextInput
-              value={editedNote}
-              onChangeText={setEditedNote}
-              style={{
-                height: 200,  // Increase height for larger notes
-                minHeight: 100,  // Ensure it's still usable for smaller notes
-                borderWidth: 1,
-                borderColor: colors.textSecondary,
-                borderRadius: 8,
-                padding: 12,
-                fontSize: 16,
-                color: colors.text,
-                backgroundColor: colors.background,
-                textAlignVertical: 'top',
-                textAlign: isRTL ? 'right' : 'left',
-                writingDirection: isRTL ? 'rtl' : 'ltr',
-              }}
-              placeholder={getGenderedText(t.note.placeholder, gender as string)}
-              placeholderTextColor={colors.textSecondary}
-              multiline={true}
-              scrollEnabled={true}  // Make the text input scrollable
+          <ScrollView>
+            <NotebookInput
+              note={editedNote}
+              setNote={setEditedNote}
             />
           </ScrollView>
 
-          <View style={{ 
-            flexDirection: isRTL ? 'row-reverse' : 'row', 
-            justifyContent: 'space-between', 
-            marginTop: 20 
-          }}>
+          <View
+            style={{
+              flexDirection: isRTL ? 'row-reverse' : 'row',
+              justifyContent: 'space-between',
+              marginTop: 10,
+            }}
+          >
             <TouchableOpacity
               onPress={() => setIsModalVisible(false)}
               style={{
