@@ -1,6 +1,14 @@
 import mongoose, { Schema } from "mongoose";
 import { baseModelFields, IBaseModel } from "./BaseModel";
 
+
+interface IBreathingSession {
+  timestamp: string;
+  durationSec: number;  // in seconds
+  patternType: string;  // e.g., "4-4-4-4"
+  completed: boolean;
+}
+
 export interface IPatient extends IBaseModel {
     personalInfo: {
       firstName: string;
@@ -50,6 +58,7 @@ export interface IPatient extends IBaseModel {
         timestamp: string;
       }
     ];
+    breathingSessions: IBreathingSession[];
   }
   
   const PatientSchema = new Schema({
@@ -102,7 +111,13 @@ export interface IPatient extends IBaseModel {
         uri: { type: String, required: true },
         timestamp: { type: String, required: true },
       }
-    ]
+    ],
+    breathingSessions: [{
+      timestamp: { type: String, required: true },
+      durationSec: { type: Number, required: true },
+      patternType: { type: String, required: true },
+      completed: { type: Boolean, default: true }
+    }]
   });
   
   export const PatientModel = mongoose.model<IPatient>('Patient', PatientSchema);

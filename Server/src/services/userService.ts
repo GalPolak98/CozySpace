@@ -294,14 +294,13 @@ async updatePatientPreferences(userId: string, updateData: {
     console.log('New therapist:', newTherapistId);
 
     if (oldTherapistId !== newTherapistId) {
-      // Remove from old therapist
       if (oldTherapistId && oldTherapistId !== 'none') {
           await TherapistModel.findOneAndUpdate(
           { userId: oldTherapistId },
           { 
             $pull: { 
               patients: { 
-                userId: userId  // Using userId directly
+                userId: userId  
               } 
             } 
           },
@@ -309,7 +308,6 @@ async updatePatientPreferences(userId: string, updateData: {
         );
       }
 
-      // Add to new therapist
       if (newTherapistId && newTherapistId !== 'none') {
         const fullName = `${patient.personalInfo.firstName} ${patient.personalInfo.lastName}`;
         
@@ -318,7 +316,7 @@ async updatePatientPreferences(userId: string, updateData: {
           { 
             $addToSet: { 
               patients: {
-                userId: userId,  // Using userId directly
+                userId: userId,  
                 fullName: fullName
               } 
             } 
@@ -328,7 +326,6 @@ async updatePatientPreferences(userId: string, updateData: {
       }
     }
 
-    // Update patient preferences
     if (updateData.therapistInfo) {
       patient.therapistInfo = updateData.therapistInfo;
     }
@@ -349,6 +346,42 @@ async updatePatientPreferences(userId: string, updateData: {
   }
 }
 
+
+async saveBreathingSession(userId: string, sessionData: {
+  timestamp: string;
+  durationSec: number;
+  patternType: string;
+  completed: boolean;
+}) {
+  const session = await PatientModel.startSession();
+  session.startTransaction();
+
+  try {
+    const patient = await PatientModel.findOne({ userId }).session(session);
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
+    patient.breathingSessions.push(sessionData);
+    await patient.save({ session });
+
+    await session.commitTransaction();
+    return { success: true, message: 'Breathing session saved successfully' };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
+async getBreathingSessions(userId: string) {
+  const patient = await PatientModel.findOne({ userId });
+  if (!patient) {
+    throw new Error('Patient not found');
+  }
+  return patient.breathingSessions;
+}
 }
 
 // Create and export a single instance

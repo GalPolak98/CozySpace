@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, ScrollView, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import { theme } from '@/styles/Theme';
-import CustomButton from '@/components/CustomButton';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import { View, ScrollView, Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import { theme } from "@/styles/Theme";
+import CustomButton from "@/components/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
 
 interface OnboardingContainerProps {
   children: React.ReactNode;
@@ -32,26 +32,26 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
   const showContinueButton = !isRoleSelection;
 
   return (
-    <View 
-      style={{ 
+    <View
+      style={{
         backgroundColor: colors.background,
         flex: 1,
       }}
     >
-      <ScrollView 
-        contentContainerStyle={{ 
+      <ScrollView
+        contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: insets.bottom + 100, 
+          paddingBottom: insets.bottom + 100,
         }}
         showsVerticalScrollIndicator={false}
         className="px-4"
       >
         {children}
       </ScrollView>
-      
+
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
@@ -63,11 +63,14 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
           paddingTop: 16,
         }}
       >
-        <View 
+        <View
           className="space-x-4"
           style={{
-            flexDirection: isRTL ? 'row-reverse' : 'row',
-            gap: 16 // Replace space-x-4 with gap for RTL support
+            flexDirection: isRTL ? "row-reverse" : "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 16,
+            width: "100%",
           }}
         >
           {showBackButton && (
@@ -75,8 +78,11 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
               title={t.common.back}
               handlePress={onBack}
               variant="secondary"
-              containerStyles="flex-1"
-              isRTL={isRTL}
+              containerStyles={{
+                flex: 1,
+                minWidth: 120,
+                margin: 8,
+              }}
             />
           )}
           {showContinueButton && (
@@ -84,8 +90,12 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
               title={isLastStep ? t.common.complete : t.common.continue}
               handlePress={onNext}
               variant="primary"
-              containerStyles={!showBackButton ? "w-full" : "flex-1"}
-              isRTL={isRTL}
+              containerStyles={{
+                flex: 1,
+                minWidth: 120,
+                margin: 8,
+                ...(!showBackButton && { maxWidth: "80%" }),
+              }}
             />
           )}
         </View>

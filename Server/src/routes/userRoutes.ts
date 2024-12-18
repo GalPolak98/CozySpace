@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, getUserProfile, updatePatientTherapist, saveGuidedNotes, addNote,updateNote, saveRecording, getNotes, deleteNote, updateUserPreferences} from '../controllers/userController';
+import { registerUser, getUserProfile, updatePatientTherapist, saveGuidedNotes, addNote,updateNote, saveRecording, getNotes, deleteNote, updateUserPreferences, saveBreathingSession, getBreathingSessions} from '../controllers/userController';
 
 const router = express.Router();
 
@@ -18,5 +18,7 @@ router.put('/:userId/:noteId', updateNote);
 router.post('/:userId/saveRecording', saveRecording);
 router.put('/:patientId/therapist', updatePatientTherapist);
 
+router.post('/:userId/breathingSessions', saveBreathingSession);
+router.get('/:userId/breathingSessions', getBreathingSessions);
 
 export default router;
