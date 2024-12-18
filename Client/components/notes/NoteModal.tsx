@@ -17,7 +17,7 @@ interface NoteModalProps {
   setEditedNote: (content: string) => void;
   saveNote: () => void;
   deleteNote: (noteId: string) => void;
-  selectedNote: { _id: string; content: string; timestamp: string } | null;
+  selectedNote: { _id: string; content: string; date: string; timestamp: string } | null;
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({

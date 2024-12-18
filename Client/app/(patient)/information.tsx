@@ -25,20 +25,7 @@ const InformationPatient = () => {
   const fadeAnim = new Animated.Value(0);
   const slideAnim = new Animated.Value(50);
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+
 
   const handleNavigation = async (route: RouteType) => {
     setIsLoading(true);
@@ -88,6 +75,7 @@ const InformationPatient = () => {
   return (
     <ThemedView className="flex-1">
       <View className="px-4 py-6">
+        
         <ThemedText className="text-2xl font-bold mb-4">
           Patient Information
         </ThemedText>

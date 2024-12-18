@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 interface Note {
   _id: string;
   content: string;
+  date: string;  
   timestamp: string;
 }
 

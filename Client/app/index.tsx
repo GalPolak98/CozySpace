@@ -14,6 +14,7 @@ import Loader from '@/components/Loader';
 import { AuthRoutingService } from '@/services/authRoutingService';
 import { translations } from '@/constants/translations';
 import { useNotification } from '@/context/NotificationContext';
+import * as FileSystem from 'expo-file-system';
 
 const { width, height } = Dimensions.get("window");
 
@@ -69,8 +70,12 @@ export default function Index() {
   }).current;
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
+
+
+  
   // Authentication check effect
   useEffect(() => {
+
     let isSubscribed = true;
 
     const checkAuth = async () => {

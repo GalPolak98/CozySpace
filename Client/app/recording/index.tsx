@@ -1,109 +1,129 @@
-import React, { useState, useRef } from 'react';
-import { Alert } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
-import useAudioRecordingPermission from '../../hooks/useRecordingPermission';
-import useAuth from '../../hooks/useAuth';
-import RecordingButton from '../../components/RecordButton';
-import { useLanguage } from '@/context/LanguageContext';
+import { FontAwesome } from '@expo/vector-icons';
+import { useTheme } from '@/components/ThemeContext';
 
-const RecordingsSection: React.FC = () => {
-  const [recording, setRecording] = useState<boolean>(false);
-  const [recordings, setRecordings] = useState<{ uri: string; timestamp: string }[]>([]);
-  const { permissionResponse, requestPermission } = useAudioRecordingPermission();
-  const userId = useAuth();
-  const recordingInstance = useRef<Audio.Recording | null>(null);
-  const { t, isRTL } = useLanguage();
+export default function App() {
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [recordingStatus, setRecordingStatus] = useState<'idle' | 'recording' | 'stopped'>('idle');
+  const [audioPermission, setAudioPermission] = useState<boolean | null>(null);
+  const { theme: currentTheme } = useTheme();
 
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    return now.toLocaleString(isRTL ? 'he-IL' : 'en-US');
-  };
-
-  const startRecording = async () => {
-    try {
-      if (permissionResponse?.status !== 'granted') {
-        await requestPermission();
+  useEffect(() => {
+    async function getPermission() {
+      try {
+        const permission = await Audio.requestPermissionsAsync();
+        console.log('Permission Granted: ' + permission.granted);
+        setAudioPermission(permission.granted);
+      } catch (error) {
+        console.error(error);
       }
-      if (permissionResponse?.status === 'granted') {
-        if (recordingInstance.current) {
-          Alert.alert(t.common.error, t.recording.alreadyInProgress);
-          return;
-        }
+    }
 
+    getPermission();
+
+    return () => {
+      if (recording) {
+        stopRecording();
+      }
+    };
+  }, [recording]);
+
+  async function startRecording() {
+    try {
+      if (audioPermission) {
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
-
-        const { recording } = await Audio.Recording.createAsync(
-          Audio.RecordingOptionsPresets.HIGH_QUALITY
-        );
-        recordingInstance.current = recording;
-        setRecording(true);
       }
-    } catch (err) {
-      console.error('Failed to start recording', err);
-      Alert.alert(t.common.error, t.recording.startError);
+
+      const newRecording = new Audio.Recording();
+      console.log('Starting Recording');
+      await newRecording.prepareToRecordAsync();
+      await newRecording.startAsync();
+      setRecording(newRecording);
+      setRecordingStatus('recording');
+    } catch (error) {
+      console.error('Failed to start recording', error);
     }
-  };
+  }
 
-  const stopRecording = async () => {
-    if (recordingInstance.current) {
-      try {
-        await recordingInstance.current.stopAndUnloadAsync();
-        const uri = recordingInstance.current.getURI();
-        setRecording(false);
-
-        recordingInstance.current = null;
-
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-        });
-
-        if (uri) {
-          const base64String = await FileSystem.readAsStringAsync(uri, {
-            encoding: FileSystem.EncodingType.Base64,
+  async function stopRecording() {
+    try {
+      if (recordingStatus === 'recording' && recording) {
+        console.log('Stopping Recording');
+        await recording.stopAndUnloadAsync();
+        const recordingUri = recording.getURI();
+  
+        if (recordingUri) {
+          // Create a file name for the recording
+          const fileName = `recording-${Date.now()}.caf`;
+  
+          // Move the recording to the new directory with the new file name
+          await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'recordings/', { intermediates: true });
+          console.log(FileSystem.documentDirectory + 'recordings/' + fileName);
+          await FileSystem.moveAsync({
+            from: recordingUri,
+            to: FileSystem.documentDirectory + 'recordings/' + fileName,
           });
-
-          const newRecording = {
-            userId,
-            uri: base64String,
-            timestamp: getCurrentDateTime(),
-          };
-
-          const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/saveRecording`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newRecording),
-          });
-
-          if (!response.ok) {
-            const errorResponse = await response.json();
-            throw new Error(errorResponse.message || t.recording.saveError);
-          }
-
-          const savedRecording = await response.json();
-          setRecordings((prevRecordings) => [...prevRecordings, savedRecording]);
-
-          Alert.alert(t.common.success, t.recording.saveSuccess);
         }
-      } catch (error) {
-        console.error('Failed to save recording', error);
-        Alert.alert(t.common.error, t.recording.saveError);
+  
+        // Reset states to record again
+        setRecording(null);
+        setRecordingStatus('stopped');
+      } else {
+        console.warn('Recording is not active or already stopped.');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.warn('Recording has already been unloaded.');
+      } else {
+        console.error('Failed to stop recording', error);
       }
     }
-  };
+  }
+  
+  
+
+  async function handleRecordButtonPress() {
+    if (recording) {
+      await stopRecording();
+    } else {
+      await startRecording();
+    }
+  }
 
   return (
-    <RecordingButton
-      recording={recording}
-      startRecording={startRecording}
-      stopRecording={stopRecording}
-    />
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.button} onPress={handleRecordButtonPress}>
+        <FontAwesome name={recording ? 'stop-circle' : 'circle'} size={40} color="white" />
+      </TouchableOpacity>
+      <Text style={[styles.recordingStatusText, { color: currentTheme === 'light' ? 'black' : 'white' }]}>
+        {`Recording status: ${recordingStatus}`}
+      </Text>
+    </View>
   );
-};
+}
 
-export default RecordingsSection;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70,
+    height: 70,
+    borderRadius: 64,
+    backgroundColor: 'red',
+  },
+  recordingStatusText: {
+    marginTop: 16,
+    fontSize: 16,
+  },
+});

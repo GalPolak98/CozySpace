@@ -423,6 +423,15 @@ async getNotificationsForUser(userId: string) {
   return patient.notifications;  
 }
 
+
+async getRecordingsForUser(userId: string) {
+  const patient = await PatientModel.findOne({ userId });
+  if (!patient) {
+    throw new Error('Patient not found');
+  }
+  return patient.recordings;  
+}
+
 async getGuidedNotesForUser(userId: string) {
   const patient = await PatientModel.findOne({ userId });
   if (!patient) {

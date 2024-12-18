@@ -59,16 +59,6 @@ const NotesSection: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      const fetchedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
-
-      setNotes(fetchedNotes);
-    };
-    
-    fetchNotes();
-  }, [userId]);
-
   const addNote = async () => {
     if (note.trim() === '') return;
 
@@ -100,52 +90,52 @@ const NotesSection: React.FC = () => {
     }
   };
 
-  const deleteNote = async (noteId: string) => {
-    if (!userId || !noteId) return;
+  // const deleteNote = async (noteId: string) => {
+  //   if (!userId || !noteId) return;
 
-    try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
-        method: 'DELETE',
-      });
+  //   try {
+  //     const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
+  //       method: 'DELETE',
+  //     });
 
-      if (!response.ok) throw new Error('Failed to delete note');
+  //     if (!response.ok) throw new Error('Failed to delete note');
 
-      const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+  //     const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
 
-      setNotes(updatedNotes);
-      Alert.alert(t.common.success, t.note.deleteSuccess);
-    } catch (error) {
-      console.error('Error deleting note:', error);
-      Alert.alert(t.common.error, t.note.deleteError);
-    }
-  };
+  //     setNotes(updatedNotes);
+  //     Alert.alert(t.common.success, t.note.deleteSuccess);
+  //   } catch (error) {
+  //     console.error('Error deleting note:', error);
+  //     Alert.alert(t.common.error, t.note.deleteError);
+  //   }
+  // };
 
-  const updateNote = async (updatedNote: { _id: string; content: string; timestamp: string }) => {
-    if (!updatedNote._id) return;
+  // const updateNote = async (updatedNote: { _id: string; content: string; timestamp: string }) => {
+  //   if (!updatedNote._id) return;
 
-    try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedNote),
-      });
+  //   try {
+  //     const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
+  //       method: 'PUT',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(updatedNote),
+  //     });
 
-      if (!response.ok) throw new Error('Failed to update note');
+  //     if (!response.ok) throw new Error('Failed to update note');
 
-      const savedNote = await response.json();
-      setNotes(prevNotes =>
-        prevNotes.map(note => (note._id === updatedNote._id ? savedNote : note))
-      );
-      setEditedNote('');
-      const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+  //     const savedNote = await response.json();
+  //     setNotes(prevNotes =>
+  //       prevNotes.map(note => (note._id === updatedNote._id ? savedNote : note))
+  //     );
+  //     setEditedNote('');
+  //     const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
 
-      setNotes(updatedNotes);
-      Alert.alert(t.common.success, t.note.updateSuccess);
-    } catch (error) {
-      console.error('Failed to update note', error);
-      Alert.alert(t.common.error, t.note.updateError);
-    }
-  };
+  //     setNotes(updatedNotes);
+  //     Alert.alert(t.common.success, t.note.updateSuccess);
+  //   } catch (error) {
+  //     console.error('Failed to update note', error);
+  //     Alert.alert(t.common.error, t.note.updateError);
+  //   }
+  // };
 
   return (
     <View style={[styles.container, { backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9' }]}>
@@ -155,16 +145,7 @@ const NotesSection: React.FC = () => {
       scrollToOverflowEnabled={true}
       enableOnAndroid={true}
       enableAutomaticScroll={true}>
-        <View style={[styles.header, { width: '100%' }]}>
-          {notes.length > 0 && (
-            <NoteCard 
-              note={notes[0]} 
-              setSelectedNote={setSelectedNote} 
-              setEditedNote={setEditedNote} 
-              setIsModalVisible={setIsModalVisible}
-            />
-          )}
-        </View>        
+       
 
         <View 
           style={[
@@ -192,15 +173,16 @@ const NotesSection: React.FC = () => {
               }
             ]}
           >
-            <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
-              {t.note.addNote}
-            </ThemedText>
+          <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
+            {typeof t.note.addNote === 'string' ? t.note.addNote : t.note.addNote.default}
+          </ThemedText>
+
           </TouchableOpacity>
         </View>
       </View>
       </KeyboardAwareScrollView>
 
-      <NoteModal
+      {/* <NoteModal
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
         editedNote={editedNote}
@@ -220,7 +202,7 @@ const NotesSection: React.FC = () => {
         }}
         deleteNote={deleteNote}
         selectedNote={selectedNote}
-      />
+      /> */}
     </View>
   );
 };
