@@ -16,6 +16,7 @@ export default function RecordingsInfoScreen() {
   const [recordings, setRecordings] = useState<string[]>([]);
   const [sound, setSound] = useState<Audio.Sound | null>(null); // State to manage the audio sound
   const recordingsDirectory = FileSystem.documentDirectory + 'recordings/'; // Path to the recordings directory
+  const { isRTL, t } = useLanguage();
 
   // Fetch recordings from file system
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function RecordingsInfoScreen() {
         const audioFiles = files.filter((file) => file.endsWith('.caf'));
         setRecordings(audioFiles);
       } catch (error) {
-        Alert.alert('Error', 'Failed to load recordings');
+        Alert.alert(t.errors.error, t.errors.loadError);
         console.error(error);
       }
     };
@@ -43,15 +44,11 @@ export default function RecordingsInfoScreen() {
       setSound(sound); // Set the sound object in the state
     } catch (error) {
       console.error('Error loading or playing sound', error);
-      Alert.alert('Error', 'Failed to play recording');
+      Alert.alert(t.errors.error, t.errors.playingRecording);
+
     }
   };
 
-  // Function to format the timestamp to a human-readable date
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(parseInt(timestamp.replace('recording-', '').replace('.caf', '')));
-    return date.toLocaleString(); // Format date in a human-readable way
-  };
 
   const getDateAndTime = (fileName: string) => {
     const timestamp = fileName.replace('recording-', '').replace('.caf', '');
@@ -67,27 +64,45 @@ export default function RecordingsInfoScreen() {
     const { date, time } = getDateAndTime(item); // Get date and time separately
   
     return (
-      <TouchableOpacity 
-        onPress={() => playRecording(item)} 
-        style={[styles.noteCard, { backgroundColor: theme === 'dark' ? '#333' : '#f5f5f5' }]}
+      <TouchableOpacity
+        onPress={() => playRecording(item)}
+        style={[
+          styles.noteCard,
+          {
+            backgroundColor: theme === 'dark' ? '#333' : '#f5f5f5',
+            flexDirection: isRTL ? 'row-reverse' : 'row', // Adjust layout for RTL
+          },
+        ]}
       >
-      <Text style={[styles.noteTitle, { color: theme === 'dark' ? '#fff' : '#000' }]}>
-        Recorded on: {date} 
-      </Text>
-      <Text style={[styles.noteContent, { color: theme === 'dark' ? '#ddd' : '#555' }]}>
-        At: {time}
-      </Text>
+        <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
+          <Text style={[styles.noteTitle, { color: theme === 'dark' ? '#fff' : '#000' }]}>
+            {t.recording.recordedOn}: {date}
+          </Text>
+          <Text style={[styles.noteContent, { color: theme === 'dark' ? '#ddd' : '#555' }]}>
+            {t.recording.at}: {time}
+          </Text>
+        </View>
       </TouchableOpacity>
     );
   };
+  
 
   return (
     <>
       <Stack.Screen />
       <ThemedView style={[styles.container, { backgroundColor: theme === 'dark' ? '#121212' : '#fff' }]}>
-        <ThemedText style={[styles.header, { color: theme === 'dark' ? '#fff' : '#000' }]}>
-          Recordings
-        </ThemedText>
+      <ThemedText
+        style={[
+          styles.header,
+          {
+            color: theme === 'dark' ? '#fff' : '#000',
+            textAlign: isRTL ? 'right' : 'left', // Adjust alignment for header text
+          },
+        ]}
+      >
+        {t.information.recordings}
+      </ThemedText>
+
         <FlatList
           data={recordings}
           keyExtractor={(item) => item}

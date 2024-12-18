@@ -105,7 +105,8 @@ export const translations = {
             passwordsNoMatch: 'Passwords do not match',
             authFailed: 'Failed to complete authentication',
             error: "Error",
-            loadError: "Failed to load data"
+            loadError: "Failed to load data",
+            playingRecording: 'Failed to play recording',
           },
 
           success: {
@@ -126,6 +127,8 @@ export const translations = {
             startError: 'Failed to start recording.',
             saveError: 'Failed to save recording. Please try again.',
             saveSuccess: 'Recording saved successfully!',
+            recordedOn: 'Recorded on',
+            at: 'At'
           },
           tabsPatient: {
             home: 'Home',
@@ -497,7 +500,8 @@ export const translations = {
             passwordsNoMatch: 'הסיסמאות אינן תואמות',
             authFailed: 'ההתחברות נכשלה',
             error: "שגיאה",
-            loadError: "טעינת הנתונים נכשלה"
+            loadError: "טעינת הנתונים נכשלה",
+            playingRecording: 'נכשל בניגון ההקלטה',
           },
 
           success: {
@@ -537,6 +541,8 @@ export const translations = {
             startError: 'נכשל בהתחלת ההקלטה.',
             saveError: 'נכשל בשמירת ההקלטה. אנא נסה שוב.',
             saveSuccess: 'ההקלטה נשמרה בהצלחה!',
+            recordedOn: 'הוקלט בתאריך',
+            at: 'בשעה'
           },
           tabsPatient: {
             home: 'בית',
