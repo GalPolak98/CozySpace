@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard, Modal, Platform, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, Modal, Platform, TextInput, TouchableOpacity, View, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
@@ -9,6 +9,7 @@ import { theme } from '@/styles/Theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUserData } from '@/hooks/useUserData';
 import useAuth from '@/hooks/useAuth';
+import { Note } from '../../app/notesInfo/_layout';  // Adjust the import path based on your file structure
 
 interface NoteModalProps {
   isModalVisible: boolean;
@@ -17,7 +18,7 @@ interface NoteModalProps {
   setEditedNote: (content: string) => void;
   saveNote: () => void;
   deleteNote: (noteId: string) => void;
-  selectedNote: { _id: string; content: string; date: string; timestamp: string } | null;
+  selectedNote: Note | null;  // Use the Note interface here
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({
@@ -96,26 +97,30 @@ const NoteModal: React.FC<NoteModalProps> = ({
             {getGenderedText(t.note.editNote, gender as string)}
           </ThemedText>
 
-          <TextInput
-            value={editedNote}
-            onChangeText={setEditedNote}
-            style={{
-              height: 100,
-              borderWidth: 1,
-              borderColor: colors.textSecondary,
-              borderRadius: 8,
-              padding: 12,
-              fontSize: 16,
-              color: colors.text,
-              backgroundColor: colors.background,
-              textAlignVertical: 'top',
-              textAlign: isRTL ? 'right' : 'left',
-              writingDirection: isRTL ? 'rtl' : 'ltr',
-            }}
-            placeholder={getGenderedText(t.note.placeholder, gender as string)}
-            placeholderTextColor={colors.textSecondary}
-            multiline={true}
-          />
+          <ScrollView style={{ marginBottom: 20 }}>
+            <TextInput
+              value={editedNote}
+              onChangeText={setEditedNote}
+              style={{
+                height: 200,  // Increase height for larger notes
+                minHeight: 100,  // Ensure it's still usable for smaller notes
+                borderWidth: 1,
+                borderColor: colors.textSecondary,
+                borderRadius: 8,
+                padding: 12,
+                fontSize: 16,
+                color: colors.text,
+                backgroundColor: colors.background,
+                textAlignVertical: 'top',
+                textAlign: isRTL ? 'right' : 'left',
+                writingDirection: isRTL ? 'rtl' : 'ltr',
+              }}
+              placeholder={getGenderedText(t.note.placeholder, gender as string)}
+              placeholderTextColor={colors.textSecondary}
+              multiline={true}
+              scrollEnabled={true}  // Make the text input scrollable
+            />
+          </ScrollView>
 
           <View style={{ 
             flexDirection: isRTL ? 'row-reverse' : 'row', 

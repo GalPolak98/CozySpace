@@ -1,24 +1,24 @@
 import React from 'react';
-import { Stack } from 'expo-router';
 import { StyleSheet, FlatList, TouchableOpacity, View } from 'react-native';
 import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
 
-interface Note {
+// Change this to export the interface
+export interface Note {
   _id: string;
   date: string;
   content: string;
   timestamp?: string;
 }
 
-interface NotesLayoutProps {
+export interface NotesListProps {
   notes: Note[];
-  children: React.ReactNode;
+  onNotePress: (note: Note) => void;
 }
 
-export function NotesList({ notes }: { notes: Note[] }) {
+export function NotesList({ notes, onNotePress }: NotesListProps) {
   const { theme } = useTheme();
 
   const renderNote = ({ item }: { item: Note }) => (
@@ -30,6 +30,7 @@ export function NotesList({ notes }: { notes: Note[] }) {
           borderLeftColor: theme === 'dark' ? '#4A90E2' : '#2196F3',
         },
       ]}
+      onPress={() => onNotePress(item)}
     >
       <View style={styles.noteHeader}>
         <View style={styles.dateContainer}>
@@ -81,49 +82,7 @@ export function NotesList({ notes }: { notes: Note[] }) {
   );
 }
 
-export default function NotesLayout() {
-  const { theme } = useTheme();
-
-  return (
-    <>
-      <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown: false, // Hides the header completely
-          // Alternatively, you can provide an empty title if needed
-          // title: '',
-        }}
-      />
-      </Stack>
-    </>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 4,
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statsText: {
-    marginLeft: 8,
-    fontSize: 14,
-  },
   list: {
     paddingBottom: 20,
   },
@@ -175,13 +134,5 @@ const styles = StyleSheet.create({
   },
   timestampText: {
     fontSize: 12,
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerButton: {
-    padding: 8,
-    marginLeft: 8,
   },
 });

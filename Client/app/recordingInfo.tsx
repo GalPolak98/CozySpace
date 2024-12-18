@@ -3,19 +3,19 @@ import { Stack } from 'expo-router';
 import { StyleSheet, FlatList, Text, View, Alert, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
 import useAuth from '@/hooks/useAuth';
-import * as FileSystem from 'expo-file-system'; // Import FileSystem
-import { Audio } from 'expo-av'; // Import Audio from expo-av
+import * as FileSystem from 'expo-file-system'; 
+import { Audio } from 'expo-av'; 
 import ThemedText from '../components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function RecordingsInfoScreen() {
-  const { theme } = useTheme(); // Get the theme (dark or light)
+  const { theme } = useTheme(); 
   const userId = useAuth();
 
   const [recordings, setRecordings] = useState<string[]>([]);
-  const [sound, setSound] = useState<Audio.Sound | null>(null); // State to manage the audio sound
-  const recordingsDirectory = FileSystem.documentDirectory + 'recordings/'; // Path to the recordings directory
+  const [sound, setSound] = useState<Audio.Sound | null>(null); 
+  const recordingsDirectory = FileSystem.documentDirectory + 'recordings/'; 
   const { isRTL, t } = useLanguage();
 
   // Fetch recordings from file system
@@ -38,10 +38,10 @@ export default function RecordingsInfoScreen() {
   const playRecording = async (fileName: string) => {
     try {
       const { sound } = await Audio.Sound.createAsync(
-        { uri: recordingsDirectory + fileName }, // Full URI of the file
-        { shouldPlay: true } // Automatically play the audio
+        { uri: recordingsDirectory + fileName }, 
+        { shouldPlay: true } 
       );
-      setSound(sound); // Set the sound object in the state
+      setSound(sound); 
     } catch (error) {
       console.error('Error loading or playing sound', error);
       Alert.alert(t.errors.error, t.errors.playingRecording);
@@ -54,14 +54,13 @@ export default function RecordingsInfoScreen() {
     const timestamp = fileName.replace('recording-', '').replace('.caf', '');
     const date = new Date(parseInt(timestamp));
     return {
-      date: date.toLocaleDateString(), // Format as local date
-      time: date.toLocaleTimeString(), // Format as local time
+      date: date.toLocaleDateString(), 
+      time: date.toLocaleTimeString(), 
     };
   };
   
-  // Render function for the recording item
   const renderRecordingItem = ({ item }: { item: string }) => {
-    const { date, time } = getDateAndTime(item); // Get date and time separately
+    const { date, time } = getDateAndTime(item); 
   
     return (
       <TouchableOpacity
@@ -70,7 +69,7 @@ export default function RecordingsInfoScreen() {
           styles.noteCard,
           {
             backgroundColor: theme === 'dark' ? '#333' : '#f5f5f5',
-            flexDirection: isRTL ? 'row-reverse' : 'row', // Adjust layout for RTL
+            flexDirection: isRTL ? 'row-reverse' : 'row', 
           },
         ]}
       >
@@ -96,7 +95,7 @@ export default function RecordingsInfoScreen() {
           styles.header,
           {
             color: theme === 'dark' ? '#fff' : '#000',
-            textAlign: isRTL ? 'right' : 'left', // Adjust alignment for header text
+            textAlign: isRTL ? 'right' : 'left', 
           },
         ]}
       >

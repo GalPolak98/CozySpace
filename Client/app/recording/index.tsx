@@ -4,12 +4,14 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function App() {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordingStatus, setRecordingStatus] = useState<'idle' | 'recording' | 'stopped'>('idle');
   const [audioPermission, setAudioPermission] = useState<boolean | null>(null);
   const { theme: currentTheme } = useTheme();
+  const { t, isRTL } = useLanguage();
 
   useEffect(() => {
     async function getPermission() {
@@ -102,7 +104,9 @@ export default function App() {
         <FontAwesome name={recording ? 'stop-circle' : 'circle'} size={40} color="white" />
       </TouchableOpacity>
       <Text style={[styles.recordingStatusText, { color: currentTheme === 'light' ? 'black' : 'white' }]}>
-        {`Recording status: ${recordingStatus}`}
+
+      {t.recording.status}: {t.recording.statusRecording[recordingStatus]}
+
       </Text>
     </View>
   );

@@ -84,7 +84,9 @@ export const translations = {
           },
           information:{
             recordings: 'Recordings',
-            notes: 'Notes'
+            notes: 'Notes',
+            patientInformation: 'Patient Information',
+            description: 'Access and manage your medical information'
           },
           errors: {
             invalidEmail: 'Please enter a valid email address',
@@ -121,6 +123,11 @@ export const translations = {
             documentNow: 'Document Now'
           },
           recording: {
+            statusRecording: {
+              "idle": "Idle",
+              "recording": "Recording",
+              "stopped": "Stopped"
+            },
             startRecording: 'Start recording for documentation',
             stopRecording: 'Stop recording for documentation',
             alreadyInProgress: 'A recording is already in progress.',
@@ -128,7 +135,8 @@ export const translations = {
             saveError: 'Failed to save recording. Please try again.',
             saveSuccess: 'Recording saved successfully!',
             recordedOn: 'Recorded on',
-            at: 'At'
+            at: 'At',
+            status: 'Status'
           },
           tabsPatient: {
             home: 'Home',
@@ -527,6 +535,11 @@ export const translations = {
             }
           },
           recording: {
+            statusRecording: {
+              "idle": "התחל",
+              "recording": "מקליט",
+              "stopped": "עצר"
+            },
             startRecording: {
               male: 'התחל הקלטה לתיעוד',
               female: 'התחילי הקלטה לתיעוד',
@@ -542,7 +555,8 @@ export const translations = {
             saveError: 'נכשל בשמירת ההקלטה. אנא נסה שוב.',
             saveSuccess: 'ההקלטה נשמרה בהצלחה!',
             recordedOn: 'הוקלט בתאריך',
-            at: 'בשעה'
+            at: 'בשעה',
+            status: 'סטטוס'
           },
           tabsPatient: {
             home: 'בית',
@@ -552,7 +566,9 @@ export const translations = {
           },
           information:{
             recordings: 'הקלטות',
-            notes: 'פתקים'
+            notes: 'פתקים',
+            patientInformation: 'מידע על המטופל',
+            description: 'גש למידע הרפואי שלך ונהל אותו'
           },
           reports: {
             averageAnxietyIntensity: 'עוצמת חרדה ממוצעת',

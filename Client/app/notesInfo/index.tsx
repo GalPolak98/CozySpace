@@ -4,7 +4,7 @@ import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
-import { NotesList } from './_layout';
+import { NotesList, Note } from './_layout';  // Make sure to export Note interface from _layout.tsx
 import { loadNotes } from '../../utils/notesUtils';  
 import useAuth from '../../hooks/useAuth';
 import NoteModal from '../../components/notes/NoteModal';
@@ -13,10 +13,11 @@ import { useLanguage } from '@/context/LanguageContext';
 
 export default function NotesScreen() {
   const { theme } = useTheme();
-  const [notes, setNotes] = React.useState<{ _id: string; content: string; date: string; timestamp: string }[]>([]);
-  const [loading, setLoading] = React.useState<boolean>(true);
+  
+  const [notes, setNotes] = React.useState<Note[]>([]);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);  const [loading, setLoading] = React.useState<boolean>(true);
   const userId = useAuth();
-  const [selectedNote, setSelectedNote] = useState<{ _id: string; content: string; date: string; timestamp: string } | null>(null);
+  // const [selectedNote, setSelectedNote] = useState<{ _id: string; content: string; date: string; timestamp: string } | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const { t, isRTL } = useLanguage();
@@ -58,8 +59,12 @@ export default function NotesScreen() {
   }, [userId]);
   
   
-
-
+  const handleNotePress = (note: Note) => {
+    setSelectedNote(note);
+    setEditedNote(note.content);
+    setIsModalVisible(true);
+  };
+  
   const deleteNote = async (noteId: string) => {
     if (!userId || !noteId) return;
 
@@ -117,23 +122,27 @@ export default function NotesScreen() {
 
   return (
     <ThemedView style={{ flex: 1, padding: 16 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <ThemedText style={{ fontSize: 28, fontWeight: 'bold', color: theme === 'dark' ? '#fff' : '#000' }}>
-          Notes
+      <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+    <ThemedText style={{ fontSize: 28, fontWeight: 'bold', color: theme === 'dark' ? '#fff' : '#000' }}>
+      {t.information.notes}
+    </ThemedText>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <MaterialIcons 
+          name="notes" 
+          size={20} 
+          color={theme === 'dark' ? '#4A90E2' : '#2196F3'}
+        />
+        <ThemedText style={{ marginLeft: isRTL ? 8 : 0, marginRight: isRTL ? 0 : 8, fontSize: 14, color: theme === 'dark' ? '#999' : '#666' }}>
+          {notes.length} {t.information.notes}
         </ThemedText>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons 
-            name="notes" 
-            size={20} 
-            color={theme === 'dark' ? '#4A90E2' : '#2196F3'}
-          />
-          <ThemedText style={{ marginLeft: 8, fontSize: 14, color: theme === 'dark' ? '#999' : '#666' }}>
-            {notes.length} Notes
-          </ThemedText>
-        </View>
       </View>
-      <NotesList notes={notes} />
-      <NoteModal
+    </View>
+
+    <NotesList 
+      notes={notes} 
+      onNotePress={handleNotePress} 
+    />  
+    <NoteModal
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
         editedNote={editedNote}

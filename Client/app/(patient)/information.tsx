@@ -14,7 +14,6 @@ interface MenuItem {
   title: string;
   icon: React.ReactNode;
   route: RouteType;
-  description: string;
 }
 
 const InformationPatient = () => {
@@ -48,7 +47,6 @@ const InformationPatient = () => {
   const menuItems: MenuItem[] = [
     {
       title: t.information.notes,
-      description: "Record and organize your medical notes easily",
       icon: (
         <MaterialIcons
           name="notes"
@@ -60,7 +58,6 @@ const InformationPatient = () => {
     },
     {
       title: t.information.recordings,
-      description: "Save and manage your voice recordings",
       icon: (
         <MaterialIcons
           name="record-voice-over"
@@ -77,10 +74,10 @@ const InformationPatient = () => {
       <View className="px-4 py-6">
         
         <ThemedText className="text-2xl font-bold mb-4">
-          Patient Information
+          {t.information.patientInformation}
         </ThemedText>
         <ThemedText className="text-base mb-6 opacity-80">
-          Access and manage your medical information
+        {t.information.patientInformationDescription}
         </ThemedText>
 
         <View className="space-y-4">
@@ -113,7 +110,7 @@ const InformationPatient = () => {
                 }}
               >
                 <CustomButton
-                  title={`${item.title}\n${item.description}`}
+                  title={`${item.title}`}
                   handlePress={() => handleNavigation(item.route)}
                   icon={item.icon}
                   iconPosition={isRTL ? "right" : "left"}
