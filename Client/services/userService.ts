@@ -38,13 +38,12 @@ class UserService {
       );
 
       const data = await response.json();
-      return data.user; // This will be null if user doesn't exist
+      return data.user; 
     } catch (error) {
       if (error instanceof Error && error.message.includes('404')) {
-        // User not found - return null instead of throwing
+        
         return null;
       }
-      // For other errors, throw with more context
       throw new Error(`Failed to fetch user: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -147,6 +146,30 @@ class UserService {
       return await response.json();
     } catch (error) {
       throw new Error(`Failed to update preferences: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  async saveBreathingSession(userId: string, sessionData: {
+    timestamp: string;
+    durationSec: number;
+    patternType: string;
+    completed: boolean;
+  }) {
+    try {
+      const response = await this.fetchWithTimeout(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/breathingSessions`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sessionData),
+        }
+      );
+  
+      return await response.json();
+    } catch (error) {
+      throw new Error(`Failed to save breathing session: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }

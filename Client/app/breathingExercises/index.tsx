@@ -22,6 +22,8 @@ import {
   PhaseType,
 } from "@/types/breathing";
 import ThemedText from "@/components/ThemedText";
+import { userService } from "@/services/userService";
+import useAuth from "@/hooks/useAuth";
 
 const BreathingScreen = () => {
   const { gender } = useLocalSearchParams<{ gender: string }>();
@@ -45,6 +47,7 @@ const BreathingScreen = () => {
   const windowWidth = Dimensions.get("window").width;
   const baseCircleSize = Math.min(windowWidth * 0.6, 250);
   const maxCircleSize = baseCircleSize * 1.5;
+  const userId = useAuth();
 
   const handlePatternChange = async (newPattern: BreathingPatternType) => {
     try {
@@ -144,6 +147,39 @@ const BreathingScreen = () => {
       console.error("Error toggling exercise:", error);
     }
   };
+
+  useEffect(() => {
+    if (!isActive && sessionDuration > 0) {
+      const now = new Date();
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      const localTime = now.toLocaleString("en-US", {
+        timeZone: timezone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      });
+
+      const saveSession = async () => {
+        try {
+          await userService.saveBreathingSession(userId as string, {
+            timestamp: localTime,
+            durationSec: sessionDuration,
+            patternType: currentPattern,
+            completed: true,
+          });
+        } catch (error) {
+          console.error("Error saving breathing session:", error);
+        }
+      };
+
+      saveSession();
+    }
+  }, [isActive, sessionDuration]);
 
   const getPhaseText = (phase: PhaseType) => {
     const pattern = BREATHING_PATTERNS[currentPattern];

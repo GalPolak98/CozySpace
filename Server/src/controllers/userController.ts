@@ -228,3 +228,25 @@ export const updateUserPreferences: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const saveBreathingSession: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const sessionData = req.body;
+
+    const result = await userService.saveBreathingSession(userId, sessionData);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getBreathingSessions: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const sessions = await userService.getBreathingSessions(userId);
+    res.status(200).json({ success: true, sessions });
+  } catch (error) {
+    next(error);
+  }
+};
