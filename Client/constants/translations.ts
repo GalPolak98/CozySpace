@@ -319,7 +319,7 @@ export const translations = {
           },
 
           breathing: {
-            title: "Breathing Exercises",
+            title: "Breathing",
             start: "Start",
             stop: "Stop",
             inhale: "Inhale",
@@ -792,7 +792,7 @@ export const translations = {
           },
 
           breathing: {
-            title: "תרגילי נשימה",
+            title: "נשימות",
             start: {
               male: "התחל",
               female: "התחילי",

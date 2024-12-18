@@ -2,20 +2,11 @@ import React from "react";
 import { useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
 import { Stack } from "expo-router";
-import { useLanguage } from "@/context/LanguageContext";
-import GenericHeader from "@/components/navigation/GenericHeader";
+import BreathingHeader from "@/components/breathing/BreathingHeader";
 
 const HeaderWrapper = () => {
   const { theme: currentTheme, toggleTheme } = useTheme();
-  const { t } = useLanguage();
-
-  return (
-    <GenericHeader
-      title={t.breathing.title}
-      toggleTheme={toggleTheme}
-      backPath="/(patient)/home"
-    />
-  );
+  return <BreathingHeader toggleTheme={toggleTheme} />;
 };
 
 const BreathingLayoutInner = () => {

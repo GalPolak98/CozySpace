@@ -1,6 +1,14 @@
 import mongoose, { Schema } from "mongoose";
 import { baseModelFields, IBaseModel } from "./BaseModel";
 
+
+interface IBreathingSession {
+  timestamp: string;
+  durationSec: number;  // in seconds
+  patternType: string;  // e.g., "4-4-4-4"
+  completed: boolean;
+}
+
 export interface IPatient extends IBaseModel {
     personalInfo: {
       firstName: string;
@@ -50,17 +58,7 @@ export interface IPatient extends IBaseModel {
         timestamp: string;
       }
     ];
-    notifications: [  
-      {
-        _id: { type: Schema.Types.ObjectId, auto: true }, 
-        expoNotificationId: string;  
-
-        notificationTimestamp: Date;
-        tapped: boolean;
-        anxietyDuration: number;  
-        favoriteRelaxationMethod: string;
-      }
-    ];
+    breathingSessions: IBreathingSession[];
   }
   
   const PatientSchema = new Schema({
@@ -114,17 +112,12 @@ export interface IPatient extends IBaseModel {
         timestamp: { type: String, required: true },
       }
     ],
-    notifications: [
-      {
-        _id: { type: Schema.Types.ObjectId, auto: true },  
-        expoNotificationId: { type: String, required: true },  
-
-        notificationTimestamp: { type: Date, required: false },
-        tapped: { type: Boolean, required: false },
-        anxietyDuration: { type: Number, required: false },
-        favoriteRelaxationMethod: { type: String, required: false },
-      }
-    ]
+    breathingSessions: [{
+      timestamp: { type: String, required: true },
+      durationSec: { type: Number, required: true },
+      patternType: { type: String, required: true },
+      completed: { type: Boolean, default: true }
+    }]
   });
   
   export const PatientModel = mongoose.model<IPatient>('Patient', PatientSchema);
