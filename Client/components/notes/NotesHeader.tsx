@@ -2,7 +2,6 @@ import { useLanguage } from "@/context/LanguageContext";
 import GenericHeader from "../navigation/GenericHeader";
 import React from "react";
 
-// For Notes Header
 const NotesHeader = ({ toggleTheme }: { toggleTheme: () => void }) => {
   const { t } = useLanguage();
 
