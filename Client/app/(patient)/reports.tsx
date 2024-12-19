@@ -11,6 +11,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { loadNotes, loadGuidedNotes } from '../../utils/notesUtils';  
 import { loadNotifications } from '../../utils/notificationsUtils'; 
 
+
 const ReportsScreen = () => {
   const { t,isRTL } = useLanguage();  
 
@@ -35,6 +36,20 @@ const ReportsScreen = () => {
 
   const dayLabels = generateDayLabels(dateRange.startDate, dateRange.endDate);
   console.log('startDate', dateRange.startDate , 'endDate', dateRange.endDate);
+
+  const markedDates = useMemo(() => {
+    const marked: { [key: string]: { selected: boolean; selectedColor: string; selectedTextColor: string } } = {};
+    const days = eachDayOfInterval({ start: dateRange.startDate, end: dateRange.endDate });
+    days.forEach((day) => {
+      marked[format(day, 'yyyy-MM-dd')] = {
+        selected: true,
+        selectedColor: '#3B82F6', // Blue color for the selected date range
+        selectedTextColor: 'white'
+      };
+    });
+    return marked;
+  }, [dateRange]);
+
 useEffect(() => {
   const fetchAndFilterNotes = async () => {
     if (!userId) return;
@@ -248,6 +263,8 @@ useEffect(() => {
         isSelectingStartDate={isSelectingStartDate}
         handleDayPress={handleDayPress}
         setVisible={setDatePickerVisible}
+        markedDates={markedDates} // Pass markedDates to highlight the selected range
+
       />
     </ThemedView>
   );

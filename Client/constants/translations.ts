@@ -79,8 +79,9 @@ export const translations = {
             anxietyEvents: 'Anxiety Events',
             dateRange: 'Date Range',
             change: 'Edit',
-            weeklyAnxietyLevels: 'Weekly Anxiety Levels'
-
+            weeklyAnxietyLevels: 'Weekly Anxiety Levels',
+            selectStartDate: 'Select Start Date',
+            selectEndtDate: 'Select End Date'
           },
           information:{
             recordings: 'Recordings',
@@ -583,7 +584,9 @@ export const translations = {
             anxietyEvents: 'אירועי חרדה',
             dateRange: 'טווח זמנים',
             change: 'ערוך',
-            weeklyAnxietyLevels: 'רמות חרדה שבועיות'
+            weeklyAnxietyLevels: 'רמות חרדה שבועיות',
+            selectStartDate: 'בחר תאריך התחלה',
+            selectEndtDate: 'בחר תאריך סיום'
           },
           note: {
             placeholder: {
