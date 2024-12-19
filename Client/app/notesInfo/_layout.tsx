@@ -4,6 +4,7 @@ import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 // Change this to export the interface
 export interface Note {
@@ -20,6 +21,7 @@ export interface NotesListProps {
 
 export function NotesList({ notes, onNotePress }: NotesListProps) {
   const { theme } = useTheme();
+  const { isRTL, t } = useLanguage();
 
   const renderNote = ({ item }: { item: Note }) => (
     <TouchableOpacity
@@ -72,17 +74,31 @@ export function NotesList({ notes, onNotePress }: NotesListProps) {
   );
 
   return (
-    <FlatList
-      data={notes}
-      keyExtractor={(item) => item._id}
-      renderItem={renderNote}
-      contentContainerStyle={styles.list}
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={styles.container}>
+      {notes.length === 0 ? (
+        <View style={styles.emptyStateContainer}>
+          <ThemedText style={[styles.emptyStateText, { color: theme === 'dark' ? '#aaa' : '#666' }]}>
+          {t.note.noNotesMessage}
+          </ThemedText>
+        </View>
+      ) : (
+        <FlatList
+          data={notes}
+          keyExtractor={(item) => item._id}
+          renderItem={renderNote}
+          contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
   list: {
     paddingBottom: 20,
   },
@@ -96,6 +112,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     borderLeftWidth: 4,
+  },
+  emptyStateContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    marginTop: 20,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
   },
   noteHeader: {
     flexDirection: 'row',

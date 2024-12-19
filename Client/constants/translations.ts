@@ -124,9 +124,9 @@ export const translations = {
           },
           recording: {
             statusRecording: {
-              "idle": "Idle",
-              "recording": "Recording",
-              "stopped": "Stopped"
+              idle: "Idle",
+              recording: "Recording",
+              stopped: "Stopped",
             },
             startRecording: 'Start recording for documentation',
             stopRecording: 'Stop recording for documentation',
@@ -136,12 +136,15 @@ export const translations = {
             saveSuccess: 'Recording saved successfully!',
             recordedOn: 'Recorded on',
             at: 'At',
-            status: 'Status'
+            status: 'Status',
+            noRecordingsMessage: "No recordings available!"
+
           },
           tabsPatient: {
             home: 'Home',
             profile: 'Profile',
-            reports: 'Reports'
+            reports: 'Reports',
+            information: 'Information',
           },
           note: {
             placeholder: 'Write your thoughts here...',
@@ -156,6 +159,7 @@ export const translations = {
             deleteError: 'Failed to delete note. Please try again.',
             updateSuccess: 'Note updated successfully!',
             updateError: 'Failed to update note. Please try again.',
+            noNotesMessage: "No notes available!",
           },
           directedNote: {
             notAuthenticated: 'User is not authenticated.',
@@ -536,9 +540,9 @@ export const translations = {
           },
           recording: {
             statusRecording: {
-              "idle": "התחל",
-              "recording": "מקליט",
-              "stopped": "עצר"
+              idle: "התחל",
+              recording: "מקליט",
+              stopped: "עצר",
             },
             startRecording: {
               male: 'התחל הקלטה לתיעוד',
@@ -556,7 +560,9 @@ export const translations = {
             saveSuccess: 'ההקלטה נשמרה בהצלחה!',
             recordedOn: 'הוקלט בתאריך',
             at: 'בשעה',
-            status: 'סטטוס'
+            status: 'סטטוס',
+            noRecordingsMessage:"אין הקלטות זמינות!"
+
           },
           tabsPatient: {
             home: 'בית',
@@ -604,6 +610,7 @@ export const translations = {
             deleteError: 'נכשל במחיקת הפתק. אנא נסה שוב.',
             updateSuccess: 'הפתק עודכן בהצלחה!',
             updateError: 'נכשל בעדכון הפתק. אנא נסה שוב.',
+            noNotesMessage: "אין פתקים זמינים!"
           },
           directedNote: {
             notAuthenticated: 'המשתמש אינו מחובר.',

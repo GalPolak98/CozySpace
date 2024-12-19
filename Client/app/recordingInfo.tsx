@@ -15,13 +15,30 @@ export default function RecordingsInfoScreen() {
 
   const [recordings, setRecordings] = useState<string[]>([]);
   const [sound, setSound] = useState<Audio.Sound | null>(null); 
-  const recordingsDirectory = FileSystem.documentDirectory + 'recordings/'; 
   const { isRTL, t } = useLanguage();
+  const [recordingsDirectory, setRecordingsDirectory] = useState<string | null>(null);
+
+  // Set recordings directory once userId is available
+  useEffect(() => {
+    if (userId) {
+      setRecordingsDirectory(`${FileSystem.documentDirectory}recordings/${userId}/`);
+    }
+  }, [userId]);
 
   // Fetch recordings from file system
   useEffect(() => {
     const loadRecordings = async () => {
+      if (!recordingsDirectory) return;
+
       try {
+        console.log('recording directory:', recordingsDirectory);
+        const directoryInfo = await FileSystem.getInfoAsync(recordingsDirectory);
+        if (!directoryInfo.exists) {
+          console.log(`not exists`);
+          await FileSystem.makeDirectoryAsync(recordingsDirectory, { intermediates: true });
+        }
+
+        console.log('exists');
         const files = await FileSystem.readDirectoryAsync(recordingsDirectory);
         const audioFiles = files.filter((file) => file.endsWith('.caf'));
         setRecordings(audioFiles);
@@ -32,10 +49,12 @@ export default function RecordingsInfoScreen() {
     };
 
     loadRecordings();
-  }, []);
+  }, [recordingsDirectory]);
 
   // Function to handle playing the recording
   const playRecording = async (fileName: string) => {
+    if (!recordingsDirectory) return;
+
     try {
       const { sound } = await Audio.Sound.createAsync(
         { uri: recordingsDirectory + fileName }, 
@@ -45,10 +64,8 @@ export default function RecordingsInfoScreen() {
     } catch (error) {
       console.error('Error loading or playing sound', error);
       Alert.alert(t.errors.error, t.errors.playingRecording);
-
     }
   };
-
 
   const getDateAndTime = (fileName: string) => {
     const timestamp = fileName.replace('recording-', '').replace('.caf', '');
@@ -84,7 +101,6 @@ export default function RecordingsInfoScreen() {
       </TouchableOpacity>
     );
   };
-  
 
   return (
     <>
@@ -102,13 +118,21 @@ export default function RecordingsInfoScreen() {
         {t.information.recordings}
       </ThemedText>
 
-        <FlatList
-          data={recordings}
-          keyExtractor={(item) => item}
-          renderItem={renderRecordingItem}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
+      {recordings.length === 0 ? (
+          <View style={styles.emptyStateContainer}>
+            <Text style={[styles.emptyStateText, { color: theme === 'dark' ? '#aaa' : '#666' }]}>
+            {t.recording.noRecordingsMessage}
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={recordings}
+            keyExtractor={(item) => item}
+            renderItem={renderRecordingItem}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </ThemedView>
     </>
   );
@@ -144,5 +168,15 @@ const styles = StyleSheet.create({
   },
   recordingContent: {
     fontSize: 14,
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginHorizontal: 20,
   },
 });

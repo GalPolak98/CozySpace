@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
+import useAuth from '@/hooks/useAuth';
 
 export default function App() {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
@@ -12,6 +13,7 @@ export default function App() {
   const [audioPermission, setAudioPermission] = useState<boolean | null>(null);
   const { theme: currentTheme } = useTheme();
   const { t, isRTL } = useLanguage();
+  const userId = useAuth();
 
   useEffect(() => {
     async function getPermission() {
@@ -63,14 +65,18 @@ export default function App() {
         if (recordingUri) {
           // Create a file name for the recording
           const fileName = `recording-${Date.now()}.caf`;
-  
+          const userDirectory = FileSystem.documentDirectory + `recordings/${userId}/`;
+
           // Move the recording to the new directory with the new file name
-          await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'recordings/', { intermediates: true });
-          console.log(FileSystem.documentDirectory + 'recordings/' + fileName);
+          await FileSystem.makeDirectoryAsync(userDirectory, { intermediates: true });
+          const destinationUri = userDirectory + fileName;
+
           await FileSystem.moveAsync({
             from: recordingUri,
-            to: FileSystem.documentDirectory + 'recordings/' + fileName,
+            to: destinationUri,
           });
+          console.log('Recording saved to:', destinationUri);
+
         }
   
         // Reset states to record again
