@@ -6,12 +6,17 @@ import connectToDatabase from './db';
 import { emailService } from './services/emailService';
 import { ParsedQs } from 'qs';
 import routes from './routes';
+import { WebSocketServer } from 'ws';
+import { createServer, Server } from 'http';
+import sensorService from './services/sensorService';
 
 // Load environment variables
 dotenv.config();
 
 // Initialize express app
 const app: Express = express();
+let server: Server;
+let wss: WebSocketServer;
 
 // Set port
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
@@ -141,13 +146,96 @@ app.use((req: express.Request, res: express.Response) => {
   res.status(404).send('Route not found');
 });
 
+const initializeWebSocket = () => {
+  wss = new WebSocketServer({ server });
+
+  wss.on('connection', (ws) => {
+    console.log('New WebSocket connection established');
+
+    ws.on('message', (message: string) => {
+      try {
+        const data = JSON.parse(message.toString());
+        if (data.type === 'register' && data.userId) {
+          console.log(`Registering WebSocket for user: ${data.userId}`);
+          sensorService.registerWebSocket(data.userId, ws);
+        }
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      console.log('WebSocket connection closed');
+    });
+
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  });
+};
+
+// Cleanup function
+const cleanup = async () => {
+  console.log('Starting server cleanup...');
+
+  // Cleanup sensor service first
+  sensorService.cleanup();
+
+  // Close all WebSocket connections
+  if (wss) {
+    const closeWebSockets = new Promise<void>((resolve) => {
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.close();
+        }
+      });
+      wss.close(() => {
+        console.log('WebSocket server closed');
+        resolve();
+      });
+    });
+
+    await closeWebSockets;
+  }
+
+  // Close HTTP server
+  if (server) {
+    await new Promise<void>((resolve) => {
+      server.close(() => {
+        console.log('HTTP server closed');
+        resolve();
+      });
+    });
+  }
+
+  console.log('Cleanup completed');
+};
+
+// Graceful shutdown handler
+const gracefulShutdown = async () => {
+  console.log('Received shutdown signal');
+  try {
+    await cleanup();
+    process.exit(0);
+  } catch (error) {
+    console.error('Error during cleanup:', error);
+    process.exit(1);
+  }
+};
+
+// Register shutdown handlers
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 // Connect to the database
 connectToDatabase()
   .then(() => {
     // Start the server only after successfully connecting to the database
-    app.listen(PORT, () => {
-      console.log("Server is running on port", PORT);
+    server = createServer(app);
+    initializeWebSocket();
+
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT} (HTTP and WebSocket)`);
     });
   })
   .catch((error) => {
