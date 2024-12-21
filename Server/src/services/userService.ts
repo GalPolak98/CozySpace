@@ -382,6 +382,28 @@ async getBreathingSessions(userId: string) {
   }
   return patient.breathingSessions;
 }
+
+async getAllPatients() {
+  const session = await UserModel.startSession();
+  session.startTransaction();
+
+  try {
+    const patients = await PatientModel.find({}, {
+      'userId': 1,
+      'personalInfo.firstName': 1,
+      'personalInfo.lastName': 1,
+      'personalInfo.email': 1
+    });
+
+    await session.commitTransaction();
+    return patients;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
 }
 
 // Create and export a single instance

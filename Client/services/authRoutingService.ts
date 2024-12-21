@@ -40,6 +40,10 @@ export class AuthRoutingService {
                   console.log('Routing therapist to home');
                   router.replace('/(therapist)/home');
                   break;
+                case 'admin':
+                  console.log('Routing admin to home');
+                  router.replace('/(admin)/home');
+                  break;
                 default:
                   console.log('Invalid user type, routing to initial settings');
                   router.replace('/(auth)/initialUserSettings');
@@ -88,6 +92,9 @@ export class AuthRoutingService {
               break;
             case 'therapist':
               router.replace('/(therapist)/home');
+              break;
+            case 'admin':
+              router.replace('/(admin)/home');
               break;
             default:
               router.replace('/(auth)/initialUserSettings');
