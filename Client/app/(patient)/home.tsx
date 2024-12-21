@@ -12,6 +12,9 @@ import * as Location from "expo-location";
 import useAuth from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import Loader from "@/components/Loader";
+import { websocketService } from "@/services/websocketService";
+import { useWebSocket } from "@/hooks/useWebSocket";
+import { AnxietyDataViewer } from "@/components/AnxietyDataViewer";
 
 type RouteType =
   | "/chat"
@@ -32,6 +35,7 @@ const HomePatient = () => {
   const [locationPermission, setLocationPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const userId = useAuth();
+  const { isConnected, error: wsError, reconnect } = useWebSocket();
   const {
     gender,
     fullName,
@@ -42,6 +46,49 @@ const HomePatient = () => {
   useEffect(() => {
     requestLocationPermission();
   }, []);
+
+  useEffect(() => {
+    const initWebSocket = async () => {
+      try {
+        if (userId) {
+          await websocketService.initialize(userId);
+        }
+      } catch (error) {
+        console.error("Failed to initialize WebSocket:", error);
+      }
+    };
+
+    initWebSocket();
+
+    // Setup background task for WebSocket
+    const setupBackgroundTask = async () => {
+      try {
+        await websocketService.setupBackgroundTask();
+      } catch (error) {
+        console.error("Failed to setup background task:", error);
+      }
+    };
+
+    setupBackgroundTask();
+
+    return () => {
+      websocketService.cleanup().catch((error) => {
+        console.error("Error during cleanup:", error);
+      });
+    };
+  }, [userId]);
+
+  // Monitor WebSocket connection status
+  useEffect(() => {
+    if (!isConnected && userId) {
+      // Attempt to reconnect if connection is lost
+      const reconnectTimeout = setTimeout(() => {
+        reconnect();
+      }, 5000); // Wait 5 seconds before attempting to reconnect
+
+      return () => clearTimeout(reconnectTimeout);
+    }
+  }, [isConnected, userId, reconnect]);
 
   useEffect(() => {
     if (userDataError) {
@@ -188,6 +235,10 @@ const HomePatient = () => {
         {/* Recordings Section */}
         <View className="mt-8">
           <RecordingsSection />
+        </View>
+
+        <View>
+          <AnxietyDataViewer userId={userId as string} />
         </View>
       </ScrollView>
     </ThemedView>

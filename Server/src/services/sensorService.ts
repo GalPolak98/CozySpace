@@ -1,6 +1,7 @@
+// backend/services/sensorService.ts
 import { EventEmitter } from 'events';
 import WebSocket from 'ws';
-import { SensorConfig, UserState } from '../models/sensorTypes';
+import { SensorConfig, UserState, SensorData } from '../models/sensorTypes';
 import { anxietyDetector } from './anxietyDetectorLogic';
 import { mockDataService } from './mockDataService';
 
@@ -9,13 +10,16 @@ class SensorService extends EventEmitter {
   private simulationIntervals: Map<string, NodeJS.Timeout>;
   private userStates: Map<string, UserState>;
   private autoStopTimers: Map<string, NodeJS.Timeout>;
-  private readonly AUTO_STOP_DURATION = 15 * 60 * 1000; // 15 minutes
+  private webSocketConnections: Map<string, WebSocket>;
+  private readonly AUTO_STOP_DURATION = 15 * 60 * 1000;
+  private readonly DEFAULT_SAMPLING_RATE = 5000;
 
   private constructor() {
     super();
     this.simulationIntervals = new Map();
     this.userStates = new Map();
     this.autoStopTimers = new Map();
+    this.webSocketConnections = new Map();
   }
 
   public static getInstance(): SensorService {
@@ -40,129 +44,164 @@ class SensorService extends EventEmitter {
     return state;
   }
 
+  public isUserConnected(userId: string): boolean {
+    const ws = this.webSocketConnections.get(userId);
+    return ws?.readyState === WebSocket.OPEN;
+  }
+
+  private sendToUser(userId: string, data: any): void {
+    const ws = this.webSocketConnections.get(userId);
+    if (ws?.readyState === WebSocket.OPEN) {
+      try {
+        ws.send(JSON.stringify(data));
+      } catch (error) {
+        console.error(`[SensorService] Error sending data to user ${userId}:`, error);
+      }
+    }
+  }
+
   public registerWebSocket(userId: string, ws: WebSocket): void {
     console.log(`[SensorService] Registering WebSocket for user: ${userId}`);
     
-    // Clean up any existing WebSocket
-    const existingState = this.userStates.get(userId);
-    if (existingState?.webSocket) {
-      try {
-        existingState.webSocket.close();
-      } catch (error) {
-        console.error(`[SensorService] Error closing existing WebSocket for user ${userId}:`, error);
-      }
+    // Clean up existing connection if any
+    const existingWs = this.webSocketConnections.get(userId);
+    if (existingWs && existingWs.readyState === WebSocket.OPEN) {
+        console.log(`[SensorService] Existing connection found for user: ${userId}, skipping registration`);
+        return;
     }
 
-    const userState = this.getUserState(userId);
-    userState.webSocket = ws;
-    this.userStates.set(userId, userState);
+    // Store the new WebSocket connection
+    this.webSocketConnections.set(userId, ws);
 
+    // Set up WebSocket event handlers
     ws.on('close', () => {
-      console.log(`[SensorService] WebSocket closed for user: ${userId}`);
-      const state = this.userStates.get(userId);
-      if (state) {
-        state.webSocket = undefined;
-        state.isActive = false;
-        this.userStates.set(userId, state);
-        this.stopSimulation(userId);
-      }
+        console.log(`[SensorService] WebSocket closed for user: ${userId}`);
+        this.webSocketConnections.delete(userId);
+        
+        // Don't stop simulation on WebSocket close
+        // Just pause data sending until new connection is established
+        this.pauseSimulation(userId);
     });
 
     ws.on('error', (error) => {
-      console.error(`[SensorService] WebSocket error for user ${userId}:`, error);
+        console.error(`[SensorService] WebSocket error for user ${userId}:`, error);
     });
 
+    // Send initial connection status and current simulation state
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ 
-        type: 'connection', 
-        status: 'connected',
-        userId 
-      }));
+        const userState = this.getUserState(userId);
+        ws.send(JSON.stringify({ 
+            type: 'connection', 
+            status: 'connected',
+            userId,
+            simulationActive: userState.isActive
+        }));
     }
   }
 
   public startSimulation(config: SensorConfig): void {
     const userId = config.userId;
-    console.log(`[SensorService] Starting simulation for user: ${userId}`);
     
-    this.stopSimulation(userId);
+    console.log(`[SensorService] Starting simulation for user: ${userId}`);
 
     const userState = this.getUserState(userId);
     userState.isActive = true;
+    userState.consecutiveAnxiousReadings = 0;
     this.userStates.set(userId, userState);
 
-    // Set auto-stop timer
+    // Notify about simulation start
+    this.sendToUser(userId, {
+        type: 'simulationStatus',
+        userId,
+        isActive: true
+    });
+
+    // Don't start a new interval if one already exists
+    if (this.simulationIntervals.has(userId)) {
+        console.log(`[SensorService] Simulation already running for user: ${userId}`);
+        return;
+    }
+
+    // Set up auto-stop timer
     const autoStopTimer = setTimeout(() => {
-      console.log(`[SensorService] Auto-stopping simulation for user: ${userId} after 15 minutes`);
-      this.stopSimulation(userId);
+        console.log(`[SensorService] Auto-stopping simulation for user: ${userId} after 15 minutes`);
+        this.stopSimulation(userId);
+        this.autoStopTimers.delete(userId);
     }, this.AUTO_STOP_DURATION);
 
+    // Store the auto-stop timer
     this.autoStopTimers.set(userId, autoStopTimer);
 
     const interval = setInterval(() => {
-      const currentState = this.userStates.get(userId);
-      if (!currentState?.isActive || !currentState.webSocket || currentState.webSocket.readyState !== WebSocket.OPEN) {
-        console.log(`[SensorService] Stopping inactive simulation for user: ${userId}`);
-        this.stopSimulation(userId);
-        return;
-      }
+        const currentState = this.userStates.get(userId);
+        if (!currentState?.isActive) {
+            console.log(`[SensorService] Simulation inactive for user: ${userId}`);
+            this.stopSimulation(userId);
+            return;
+        }
 
-      try {
-        // Get sensor data from mock service (this can be replaced with real sensor data later)
-        const sensorData = mockDataService.generateSensorData(userId);
-        const analysis = anxietyDetector.analyzeAnxiety(sensorData, currentState);
+        try {
+            const sensorDataJson = mockDataService.generateSensorData(userId);
+            const sensorData: SensorData = JSON.parse(sensorDataJson);
+            const analysis = anxietyDetector.analyzeAnxiety(sensorData, currentState);
 
-        currentState.consecutiveAnxiousReadings = analysis.isAnxious ? 
-          currentState.consecutiveAnxiousReadings + 1 : 0;
-        this.userStates.set(userId, currentState);
-
-        currentState.webSocket.send(JSON.stringify({
-          type: 'sensorUpdate',
-          data: { sensorData, analysis }
-        }));
-      } catch (error) {
-        console.error(`[SensorService] Error in simulation interval for user ${userId}:`, error);
-        this.stopSimulation(userId);
-      }
-    }, config.samplingRate || 1000);
+            this.sendToUser(userId, {
+                type: 'sensorUpdate',
+                userId,
+                rawData: sensorDataJson,
+                data: {
+                    sensorData,
+                    analysis
+                }
+            });
+        } catch (error) {
+            console.error(`[SensorService] Error in simulation interval for user ${userId}:`, error);
+        }
+    }, config.samplingRate || this.DEFAULT_SAMPLING_RATE);
 
     this.simulationIntervals.set(userId, interval);
+}
+
+  private pauseSimulation(userId: string): void {
+    const interval = this.simulationIntervals.get(userId);
+    if (interval) {
+      clearInterval(interval);
+      this.simulationIntervals.delete(userId);
+    }
   }
 
   public stopSimulation(userId: string): void {
     console.log(`[SensorService] Stopping simulation for user: ${userId}`);
     
     // Clear timers
-    const autoStopTimer = this.autoStopTimers.get(userId);
-    if (autoStopTimer) {
-      clearTimeout(autoStopTimer);
-      this.autoStopTimers.delete(userId);
-    }
-
     const interval = this.simulationIntervals.get(userId);
     if (interval) {
       clearInterval(interval);
       this.simulationIntervals.delete(userId);
     }
 
+    const autoStopTimer = this.autoStopTimers.get(userId);
+    if (autoStopTimer) {
+        clearTimeout(autoStopTimer);
+        this.autoStopTimers.delete(userId);
+    }
+  
     // Update user state
     const userState = this.userStates.get(userId);
     if (userState) {
       userState.isActive = false;
       userState.consecutiveAnxiousReadings = 0;
-      
-      if (userState.webSocket?.readyState === WebSocket.OPEN) {
-        try {
-          userState.webSocket.send(JSON.stringify({
-            type: 'simulationStopped',
-            userId
-          }));
-        } catch (error) {
-          console.error(`[SensorService] Error sending stop notification to user ${userId}:`, error);
-        }
-      }
-
       this.userStates.set(userId, userState);
+      
+      // Send simulation stopped notification through existing WebSocket
+      const ws = this.webSocketConnections.get(userId);
+      if (ws?.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'simulationStatus',
+          userId,
+          isActive: false
+        }));
+      }
     }
   }
 
@@ -171,29 +210,28 @@ class SensorService extends EventEmitter {
     
     [...this.autoStopTimers.entries()].forEach(([userId, timer]) => {
       clearTimeout(timer);
-      this.autoStopTimers.delete(userId);
     });
+    this.autoStopTimers.clear();
 
     [...this.simulationIntervals.entries()].forEach(([userId, interval]) => {
       clearInterval(interval);
-      this.simulationIntervals.delete(userId);
     });
+    this.simulationIntervals.clear();
 
-    [...this.userStates.entries()].forEach(([userId, state]) => {
-      if (state.webSocket?.readyState === WebSocket.OPEN) {
+    [...this.webSocketConnections.entries()].forEach(([userId, ws]) => {
+      if (ws.readyState === WebSocket.OPEN) {
         try {
-          state.webSocket.send(JSON.stringify({
+          ws.send(JSON.stringify({
             type: 'serverShutdown',
             userId
           }));
-          state.webSocket.close();
+          ws.close();
         } catch (error) {
           console.error(`[SensorService] Error closing WebSocket for user ${userId}:`, error);
         }
       }
-      state.isActive = false;
-      state.webSocket = undefined;
     });
+    this.webSocketConnections.clear();
 
     this.userStates.clear();
     mockDataService.cleanup();

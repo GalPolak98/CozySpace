@@ -67,6 +67,15 @@ const InitialLayout = () => {
         />
 
         <Stack.Screen
+          name="(admin)"
+          options={{
+            headerTitle: "",
+            gestureEnabled: false,
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
           name="chat"
           options={{
             headerTitle: "",

@@ -5,12 +5,12 @@ import { PatientModel } from './Patient';
 
 export interface IUser {
   userId: string;
-  userType: 'patient' | 'therapist';
+  userType: 'patient' | 'therapist' | 'admin';
 }
 
 const UserSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true },
-  userType: { type: String, required: true, enum: ['patient', 'therapist'] }
+  userType: { type: String, required: true, enum: ['patient', 'therapist', 'admin'] }
 });
 
 export const UserModel = mongoose.model<IUser>('User', UserSchema);
