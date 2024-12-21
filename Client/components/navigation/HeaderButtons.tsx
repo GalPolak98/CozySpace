@@ -10,6 +10,8 @@ import { auth } from "@/services/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authManager } from "@/services/authManager";
 import LanguageToggle from "./LanguageToggle";
+import { websocketService } from "@/services/websocketService";
+import { sensorService } from "@/services/sensorService";
 
 export const HeaderRight = () => (
   <View className="flex-row">
@@ -22,6 +24,30 @@ export const HeaderLeft = () => {
   const { theme: currentTheme } = useTheme();
   const { t, isRTL } = useLanguage();
   const colors = theme[currentTheme];
+
+  const cleanupServices = async () => {
+    try {
+      // Get current user ID before cleanup
+      const userId = auth.currentUser?.uid;
+
+      // Stop any active monitoring/simulation
+      if (userId) {
+        await sensorService.stopSensorSimulation(userId);
+      }
+
+      await websocketService.cleanup();
+
+      await authManager.cleanup();
+      const keysToRemove = ["userToken", "userId", "userRole", "lastLoginTime"];
+
+      await Promise.all(
+        keysToRemove.map((key) => AsyncStorage.removeItem(key))
+      );
+    } catch (error) {
+      console.error("Service cleanup error:", error);
+      throw error;
+    }
+  };
 
   const handleLogout = async () => {
     Alert.alert(
@@ -37,7 +63,7 @@ export const HeaderLeft = () => {
           style: "destructive",
           onPress: async () => {
             try {
-              authManager.cleanup();
+              await cleanupServices();
               await auth.signOut();
               await AsyncStorage.removeItem("userToken");
               router.replace("/(auth)/sign-in");
