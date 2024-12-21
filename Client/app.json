@@ -44,6 +44,12 @@
           "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location for emergency services.",
           "isIosBackgroundLocationEnabled": false
         }
+      ],
+      [
+        "expo-background-fetch",
+        {
+          "startOnBoot": true
+        }
       ]
     ],
     "experiments": {

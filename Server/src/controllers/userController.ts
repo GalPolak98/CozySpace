@@ -169,3 +169,12 @@ export const getBreathingSessions: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllPatients: RequestHandler = async (req, res, next) => {
+  try {
+    const patients = await userService.getAllPatients();
+    res.status(200).json({ success: true, patients });
+  } catch (error) {
+    next(error);
+  }
+};
