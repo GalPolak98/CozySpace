@@ -31,14 +31,12 @@ export default function RecordingsInfoScreen() {
       if (!recordingsDirectory) return;
 
       try {
-        console.log('recording directory:', recordingsDirectory);
+        // console.log('recording directory:', recordingsDirectory);
         const directoryInfo = await FileSystem.getInfoAsync(recordingsDirectory);
         if (!directoryInfo.exists) {
-          console.log(`not exists`);
           await FileSystem.makeDirectoryAsync(recordingsDirectory, { intermediates: true });
         }
 
-        console.log('exists');
         const files = await FileSystem.readDirectoryAsync(recordingsDirectory);
         const audioFiles = files.filter((file) => file.endsWith('.caf'));
         setRecordings(audioFiles);

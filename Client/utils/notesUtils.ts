@@ -107,7 +107,7 @@ export const loadGuidedNotes = async (
       if (!response.ok) throw new Error('Failed to fetch notes');
   
       const fetchedNotes = (await response.json()).notes;
-      console.log(fetchedNotes)
+      // console.log(fetchedNotes)
       return fetchedNotes;
     } catch (error) {
       console.error('Failed to fetch notes', error);

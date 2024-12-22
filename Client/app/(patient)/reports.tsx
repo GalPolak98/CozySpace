@@ -35,7 +35,7 @@ const ReportsScreen = () => {
   };
 
   const dayLabels = generateDayLabels(dateRange.startDate, dateRange.endDate);
-  console.log('startDate', dateRange.startDate , 'endDate', dateRange.endDate);
+  // console.log('startDate', dateRange.startDate , 'endDate', dateRange.endDate);
 
   const markedDates = useMemo(() => {
     const marked: { [key: string]: { selected: boolean; selectedColor: string; selectedTextColor: string } } = {};
@@ -67,7 +67,7 @@ useEffect(() => {
       });
 
           setNotesCount(filteredNotes.length); // Set count of filtered notes
-          console.log('Filtered Notes Count:', filteredNotes.length);
+          // console.log('Filtered Notes Count:', filteredNotes.length);
         } catch (error) {
           console.error('Failed to filter notes', error);
         }
@@ -130,7 +130,7 @@ useEffect(() => {
         });
 
         setWeeklyData(weeklyData);
-        console.log("Weekly Data after aggregation:", weeklyData);
+        // console.log("Weekly Data after aggregation:", weeklyData);
       } else {
         // Reset data if no notes match
         console.log("No notes match the date range");
@@ -152,7 +152,7 @@ useEffect(() => {
       try {
         const fetchedNotifications = await loadNotifications(userId, isRTL, t as { common: { error: string }; notifications: { fetchError: string } });
   
-        console.log(fetchedNotifications); 
+        // console.log(fetchedNotifications); 
   
         if (Array.isArray(fetchedNotifications)) {
           const notificationsCount = fetchedNotifications.length;
