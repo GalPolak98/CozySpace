@@ -1,5 +1,4 @@
-// hooks/useAnxietyMonitor.ts
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { websocketManager } from '@/services/websocketManager';
 import type { AnxietyAnalysis, SensorData } from '@/types/sensorTypes';
 import { useWebSocketConnection } from './useWebSocketConnection';
@@ -13,81 +12,120 @@ interface AnxietyState {
   sensorData: SensorData | null;
 }
 
+export interface ListenerInfo {
+  handler: (data: any) => void;
+  refCount: number;
+}
+
+export const activeListeners = new Map<string, ListenerInfo>();
+
+// Static variable to store the latest state
+export const latestState = new Map<string, AnxietyState>();
+
+const anxietyMonitorSubscribers = new Map<string, number>();
+
 export const useAnxietyMonitor = (userId: string) => {
-  const [anxietyState, setAnxietyState] = useState<AnxietyState>({
-    isAnxious: false,
-    severity: 'mild',
-    confidence: 0,
-    lastUpdate: null,
-    analysis: null,
-    sensorData: null
-  });
+  const [anxietyState, setAnxietyState] = useState<AnxietyState>(() => 
+    latestState.get(userId) || {
+      isAnxious: false,
+      severity: 'mild',
+      confidence: 0,
+      lastUpdate: null,
+      analysis: null,
+      sensorData: null
+    }
+  );
 
   const { isConnected } = useWebSocketConnection(userId);
+  const stateUpdateRef = useRef(setAnxietyState);
 
-  const handleSensorData = useCallback((data: any) => {
-    console.log('[useAnxietyMonitor] Received raw data:', data);
+  // Keep the state updater function reference current
+  useEffect(() => {
+    stateUpdateRef.current = setAnxietyState;
+  });
 
-    try {
-      // Handle different data structures that might come from the server
-      let sensorData, analysis;
-      
-      if (data.data) {
-        // If data comes in {data: {sensorData, analysis}} format
-        sensorData = data.data.sensorData;
-        analysis = data.data.analysis;
-      } else if (data.sensorData && data.analysis) {
-        // If data comes in {sensorData, analysis} format
-        sensorData = data.sensorData;
-        analysis = data.analysis;
-      } else {
-        // If data comes in a different format, try to parse it
-        sensorData = data.sensorData || data;
-        analysis = data.analysis || data;
-      }
+  useEffect(() => {
+    if (!userId || !isConnected) return;
 
-      const receivedUserId = sensorData?.userId || data.userId;
+    const namespace = `user_${userId}`;
+    const eventName = `sensorData_${namespace}`;
 
-      if (receivedUserId === userId) {
-        console.log('[useAnxietyMonitor] Processing data for user:', userId, {
-          sensorData,
-          analysis
-        });
+    // Create or get the handler
+    const createHandler = () => (data: any) => {
+      try {
+        if (!data.data?.sensorData || !data.data?.analysis) return;
+        
+        const { sensorData, analysis } = data.data;
+        if (sensorData.userId !== userId) return;
 
-        setAnxietyState({
+        const newState = {
           isAnxious: analysis.isAnxious,
           severity: analysis.severity,
           confidence: analysis.confidence,
-          lastUpdate: new Date(),
+          lastUpdate: new Date(sensorData.timestamp),
           analysis,
-          sensorData
-        });
+          sensorData,
+        };
+
+        // Use the ref to ensure we're using the latest setState function
+        stateUpdateRef.current(newState);
+        latestState.set(userId, newState);
+      } catch (error) {
+        console.error('[useAnxietyMonitor] Error processing sensor data:', error);
       }
-    } catch (error) {
-      console.error('[useAnxietyMonitor] Error processing sensor data:', error, data);
-    }
-  }, [userId]);
+    };
 
-  useEffect(() => {
-    if (!userId) {
-      console.warn('[useAnxietyMonitor] No userId provided');
-      return;
-    }
+    // Increment subscriber count
+    const currentCount = anxietyMonitorSubscribers.get(userId) || 0;
+    anxietyMonitorSubscribers.set(userId, currentCount + 1);
 
-    if (isConnected) {
-      console.log('[useAnxietyMonitor] Setting up event listeners for user:', userId);
-      
-      // Listen for both general and user-specific events
-      websocketManager.on('sensorData', handleSensorData);
-      websocketManager.on('sensorUpdate', handleSensorData);
-      
-      return () => {
-        console.log('[useAnxietyMonitor] Cleaning up event listeners for user:', userId);
-        websocketManager.removeListener('sensorData', handleSensorData);
-        websocketManager.removeListener('sensorUpdate', handleSensorData);
+    let listenerInfo = activeListeners.get(userId);
+
+    if (!listenerInfo) {
+      // Only log for the first subscriber
+      if (currentCount === 0) {
+        activeListeners.delete(userId);
+        latestState.delete(userId);
+        console.log(`[useAnxietyMonitor] Setting up new event listener for user: ${userId}`);
+      }
+
+      listenerInfo = {
+        handler: createHandler(),
+        refCount: 0
       };
+      
+      activeListeners.set(userId, listenerInfo);
+      websocketManager.on(eventName, listenerInfo.handler);
+    } else {
+      if (currentCount === 0) {
+        console.log(`[useAnxietyMonitor] Reusing existing listener for user: ${userId}`);
+      }
+
+      // Update the handler to use the current setState
+      websocketManager.removeListener(eventName, listenerInfo.handler);
+      listenerInfo.handler = createHandler();
+      websocketManager.on(eventName, listenerInfo.handler);
     }
-  }, [userId, handleSensorData, isConnected]);
+
+    listenerInfo.refCount++;
+
+    return () => {
+      // Decrement subscriber count
+      const count = anxietyMonitorSubscribers.get(userId) || 0;
+      if (count > 0) {
+        anxietyMonitorSubscribers.set(userId, count - 1);
+      }
+      if (count <= 1) {
+        anxietyMonitorSubscribers.delete(userId);
+        // Only clean up listener if this is the last subscriber
+        if (listenerInfo) {
+          console.log(`[useAnxietyMonitor] Removing listener for user: ${userId}`);
+          websocketManager.removeListener(eventName, listenerInfo.handler);
+          activeListeners.delete(userId);
+        }
+      }
+    };
+  }, [userId, isConnected]);
 
   return {
     ...anxietyState,

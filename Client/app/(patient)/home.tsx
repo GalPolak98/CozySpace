@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, View, Alert } from "react-native";
+import { ScrollView, View, Alert, AppState } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import ThemedView from "@/components/ThemedView";
@@ -48,28 +48,6 @@ const HomePatient = () => {
   useEffect(() => {
     requestLocationPermission();
   }, []);
-
-  // Initialize WebSocket connection
-  useEffect(() => {
-    const initializeConnection = async () => {
-      try {
-        if (userId && userId !== "null") {
-          await websocketManager.connect(userId);
-        }
-      } catch (error) {
-        console.error("Failed to initialize WebSocket:", error);
-      }
-    };
-
-    initializeConnection();
-
-    return () => {
-      // Temporary cleanup for navigation
-      websocketManager.cleanup(true).catch((error) => {
-        console.error("Error during cleanup:", error);
-      });
-    };
-  }, [userId]);
 
   useEffect(() => {
     if (userDataError) {
@@ -190,11 +168,6 @@ const HomePatient = () => {
           >
             {getGenderedText(t.common.welcome, gender)}, {fullName}
           </ThemedText>
-          {!isConnected && (
-            <ThemedText className="text-sm text-red-500 mt-2" isRTL={isRTL}>
-              {t.common.reconnecting}
-            </ThemedText>
-          )}
         </View>
 
         {/* Menu Items */}

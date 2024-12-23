@@ -6,7 +6,7 @@ import connectToDatabase from './db';
 import { emailService } from './services/emailService';
 import { ParsedQs } from 'qs';
 import routes from './routes';
-import { WebSocketServer } from 'ws';
+import WebSocket ,{ WebSocketServer } from 'ws';
 import { createServer, Server } from 'http';
 import sensorService from './services/sensorService';
 
