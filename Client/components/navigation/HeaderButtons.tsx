@@ -12,6 +12,7 @@ import { authManager } from "@/services/authManager";
 import LanguageToggle from "./LanguageToggle";
 import { sensorService } from "@/services/sensorService";
 import { websocketManager } from "@/services/websocketManager";
+import { activeListeners, latestState } from "@/hooks/useAnxietyMonitor";
 
 export const HeaderRight = () => (
   <View className="flex-row">
@@ -28,31 +29,30 @@ export const HeaderLeft = () => {
   const cleanupServices = async () => {
     try {
       const userId = auth.currentUser?.uid;
-      if (!userId) {
-        console.warn("[HeaderLeft] No user ID found during cleanup");
-        return;
-      }
+      if (!userId) return;
 
       console.log("[HeaderLeft] Starting cleanup for user:", userId);
 
-      // Perform cleanup operations in parallel
-      await Promise.all([
-        sensorService.stopSensorSimulation(userId).catch((error) => {
-          console.error(
-            "[HeaderLeft] Error stopping sensor simulation:",
-            error
-          );
-        }),
-        websocketManager.disconnect(userId).catch((error) => {
-          console.error("[HeaderLeft] Error disconnecting WebSocket:", error);
-        }),
-        authManager.cleanup(),
-        AsyncStorage.multiRemove([
-          "userToken",
-          "userId",
-          "userRole",
-          "lastLoginTime",
-        ]),
+      // Clear static state and latest state
+      activeListeners.delete(userId);
+      latestState.delete(userId);
+
+      // Stop sensor simulation
+      await sensorService.stopSensorSimulation(userId);
+
+      // Disconnect WebSocket and clean up all listeners
+      await websocketManager.disconnect(userId);
+
+      // Full cleanup
+      await websocketManager.cleanup(true);
+      await authManager.cleanup();
+
+      // Clear storage
+      await AsyncStorage.multiRemove([
+        "userToken",
+        "userId",
+        "userRole",
+        "lastLoginTime",
       ]);
     } catch (error) {
       console.error("[HeaderLeft] Service cleanup error:", error);

@@ -16,16 +16,28 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.finalproject.cozyspace"
+      "bundleIdentifier": "com.finalproject.cozyspace",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch",
+          "processing",
+          "bluetooth-central"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "foregroundService": {
+        "type": ["dataSync"]
+      },
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.WAKE_LOCK",
+        "android.permission.FOREGROUND_SERVICE"
       ],
       "package": "com.cozyspace_finalproject.CozySpace"
     },
@@ -48,7 +60,8 @@
       [
         "expo-background-fetch",
         {
-          "startOnBoot": true
+          "startOnBoot": true,
+          "minimumInterval": 900
         }
       ]
     ],

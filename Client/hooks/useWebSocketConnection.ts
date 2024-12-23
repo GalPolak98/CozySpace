@@ -1,81 +1,70 @@
 import { useState, useEffect, useRef } from 'react';
 import { websocketManager } from '../services/websocketManager';
 
+const connectionSubscribers = new Map<string, number>();
+
 export function useWebSocketConnection(userId: string | null) {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const connectionAttempted = useRef(false);
+  const setupCompleteRef = useRef(false);
 
   useEffect(() => {
-    let isMounted = true;
+    if (!userId || setupCompleteRef.current) return;
+
+    const namespace = `user_${userId}`;
     
-    // Only proceed if we have a valid userId
-    if (!userId) {
-      return;
-    }
+    // Increment subscriber count
+    const currentCount = connectionSubscribers.get(userId) || 0;
+    connectionSubscribers.set(userId, currentCount + 1);
 
     const handleConnect = () => {
-      if (isMounted) {
-        setIsConnected(true);
-        setError(null);
+      // Only log for the first subscriber
+      if (connectionSubscribers.get(userId) === 1) {
+        console.log('[useWebSocketConnection] Connected:', userId);
       }
+      setIsConnected(true);
+      setError(null);
     };
 
     const handleDisconnect = () => {
-      if (isMounted) {
-        setIsConnected(false);
+      // Only log for the first subscriber
+      if (connectionSubscribers.get(userId) === 1) {
+        console.log('[useWebSocketConnection] Disconnected:', userId);
       }
+      setIsConnected(false);
     };
 
-    const handleError = (error: Error) => {
-      if (isMounted) {
-        setError(error);
-      }
-    };
+    websocketManager.on(`connected_${namespace}`, handleConnect);
+    websocketManager.on(`disconnected_${namespace}`, handleDisconnect);
 
-    const initializeConnection = async () => {
-      // Prevent multiple connection attempts
-      if (connectionAttempted.current) {
-        return;
-      }
-      
-      try {
-        connectionAttempted.current = true;
-        
-        if (!websocketManager.isConnected(userId)) {
-          console.log(`[useWebSocketConnection] Initializing connection for user: ${userId}`);
-          await websocketManager.connect(userId);
-        } else {
-          setIsConnected(true);
-        }
-      } catch (error) {
-        console.error('[useWebSocketConnection] Initialization error:', error);
-        handleError(error as Error);
-        connectionAttempted.current = false;
-      }
-    };
+    // Only attempt connection if this is the first subscriber
+    if (currentCount === 0 && !websocketManager.isConnected(userId)) {
+      console.log('[useWebSocketConnection] Initiating connection for:', userId);
+      websocketManager.connect(userId).catch(err => {
+        console.error('[useWebSocketConnection] Connection error:', err);
+        setError(err);
+      });
+    } else if (websocketManager.isConnected(userId)) {
+      setIsConnected(true);
+    }
 
-    // Add event listeners with namespaced events
-    const eventNamespace = `user_${userId}`;
-    websocketManager.on(`connected_${eventNamespace}`, handleConnect);
-    websocketManager.on(`disconnected_${eventNamespace}`, handleDisconnect);
-    websocketManager.on(`error_${eventNamespace}`, handleError);
-
-    initializeConnection();
+    setupCompleteRef.current = true;
 
     return () => {
-      isMounted = false;
-      connectionAttempted.current = false;
+      // Cleanup event listeners
+      websocketManager.removeListener(`connected_${namespace}`, handleConnect);
+      websocketManager.removeListener(`disconnected_${namespace}`, handleDisconnect);
       
-      // Clean up event listeners
-      websocketManager.removeListener(`connected_${eventNamespace}`, handleConnect);
-      websocketManager.removeListener(`disconnected_${eventNamespace}`, handleDisconnect);
-      websocketManager.removeListener(`error_${eventNamespace}`, handleError);
+      // Decrement subscriber count
+      const count = connectionSubscribers.get(userId) || 0;
+      if (count > 0) {
+        connectionSubscribers.set(userId, count - 1);
+      }
+      if (count <= 1) {
+        connectionSubscribers.delete(userId);
+      }
     };
   }, [userId]);
 
-  return {
-    isConnected,
-    error
-  };
+  return { isConnected, error };
 }
