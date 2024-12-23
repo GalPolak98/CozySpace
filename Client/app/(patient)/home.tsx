@@ -12,8 +12,8 @@ import * as Location from "expo-location";
 import useAuth from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import Loader from "@/components/Loader";
-import { websocketService } from "@/services/websocketService";
-import { useWebSocket } from "@/hooks/useWebSocket";
+import { websocketManager } from "@/services/websocketManager";
+import { useWebSocketConnection } from "@/hooks/useWebSocketConnection";
 import { AnxietyDataViewer } from "@/components/AnxietyDataViewer";
 
 type RouteType =
@@ -35,7 +35,9 @@ const HomePatient = () => {
   const [locationPermission, setLocationPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const userId = useAuth();
-  const { isConnected, error: wsError, reconnect } = useWebSocket();
+  const { isConnected, error: wsError } = useWebSocketConnection(
+    userId as string
+  );
   const {
     gender,
     fullName,
@@ -47,48 +49,27 @@ const HomePatient = () => {
     requestLocationPermission();
   }, []);
 
+  // Initialize WebSocket connection
   useEffect(() => {
-    const initWebSocket = async () => {
+    const initializeConnection = async () => {
       try {
-        if (userId) {
-          await websocketService.initialize(userId);
+        if (userId && userId !== "null") {
+          await websocketManager.connect(userId);
         }
       } catch (error) {
         console.error("Failed to initialize WebSocket:", error);
       }
     };
 
-    initWebSocket();
-
-    // Setup background task for WebSocket
-    const setupBackgroundTask = async () => {
-      try {
-        await websocketService.setupBackgroundTask();
-      } catch (error) {
-        console.error("Failed to setup background task:", error);
-      }
-    };
-
-    setupBackgroundTask();
+    initializeConnection();
 
     return () => {
-      websocketService.cleanup().catch((error) => {
+      // Temporary cleanup for navigation
+      websocketManager.cleanup(true).catch((error) => {
         console.error("Error during cleanup:", error);
       });
     };
   }, [userId]);
-
-  // Monitor WebSocket connection status
-  useEffect(() => {
-    if (!isConnected && userId) {
-      // Attempt to reconnect if connection is lost
-      const reconnectTimeout = setTimeout(() => {
-        reconnect();
-      }, 5000); // Wait 5 seconds before attempting to reconnect
-
-      return () => clearTimeout(reconnectTimeout);
-    }
-  }, [isConnected, userId, reconnect]);
 
   useEffect(() => {
     if (userDataError) {
@@ -209,6 +190,11 @@ const HomePatient = () => {
           >
             {getGenderedText(t.common.welcome, gender)}, {fullName}
           </ThemedText>
+          {!isConnected && (
+            <ThemedText className="text-sm text-red-500 mt-2" isRTL={isRTL}>
+              {t.common.reconnecting}
+            </ThemedText>
+          )}
         </View>
 
         {/* Menu Items */}
@@ -237,9 +223,12 @@ const HomePatient = () => {
           <RecordingsSection />
         </View>
 
-        <View>
-          <AnxietyDataViewer userId={userId as string} />
-        </View>
+        {/* Anxiety Data Viewer */}
+        {userId && (
+          <View>
+            <AnxietyDataViewer userId={userId} />
+          </View>
+        )}
       </ScrollView>
     </ThemedView>
   );

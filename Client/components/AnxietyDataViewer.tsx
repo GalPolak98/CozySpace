@@ -1,10 +1,8 @@
-// components/AnxietyDataViewer.tsx
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
-import { websocketService } from "@/services/websocketService";
-import type { SensorData, AnxietyAnalysis } from "@/types/sensorTypes";
+import { useAnxietyMonitor } from "@/hooks/useAnxietyMonitor";
 
 interface AnxietyDataViewerProps {
   userId: string;
@@ -15,43 +13,22 @@ export const AnxietyDataViewer: React.FC<AnxietyDataViewerProps> = ({
 }) => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
-  const [sensorData, setSensorData] = useState<SensorData | null>(null);
-  const [analysis, setAnalysis] = useState<AnxietyAnalysis | null>(null);
-  const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
+  const {
+    sensorData,
+    analysis,
+    lastUpdate: lastUpdateTime,
+    isConnected,
+  } = useAnxietyMonitor(userId);
 
-  useEffect(() => {
-    const handleSensorData = (data: {
-      sensorData: SensorData;
-      analysis: AnxietyAnalysis;
-      userId?: string;
-    }) => {
-      console.log("[AnxietyDataViewer] Received sensor data:", data);
-      console.log("[AnxietyDataViewer] Current userId:", userId);
-
-      // Use the userId from sensorData if undefined
-      const receivedUserId = data.userId || data.sensorData.userId;
-
-      console.log("[AnxietyDataViewer] Received UserId:", receivedUserId);
-
-      if (receivedUserId === userId) {
-        console.log("[AnxietyDataViewer] Updating state with sensor data");
-        setSensorData(data.sensorData);
-        setAnalysis(data.analysis);
-        setLastUpdateTime(new Date());
-      } else {
-        console.log("[AnxietyDataViewer] UserId mismatch:", {
-          receivedUserId,
-          currentUserId: userId,
-        });
-      }
-    };
-
-    websocketService.on("sensorData", handleSensorData);
-
-    return () => {
-      websocketService.removeListener("sensorData", handleSensorData);
-    };
-  }, [userId]);
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <Text style={[styles.noDataText, { color: colors.textSecondary }]}>
+          Connecting to sensor data...
+        </Text>
+      </View>
+    );
+  }
 
   if (!sensorData || !analysis) {
     return (

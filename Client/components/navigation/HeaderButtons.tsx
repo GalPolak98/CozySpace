@@ -10,8 +10,8 @@ import { auth } from "@/services/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authManager } from "@/services/authManager";
 import LanguageToggle from "./LanguageToggle";
-import { websocketService } from "@/services/websocketService";
 import { sensorService } from "@/services/sensorService";
+import { websocketManager } from "@/services/websocketManager";
 
 export const HeaderRight = () => (
   <View className="flex-row">
@@ -29,22 +29,37 @@ export const HeaderLeft = () => {
     try {
       // Get current user ID before cleanup
       const userId = auth.currentUser?.uid;
+      console.log("[HeaderLeft] Starting cleanup for user:", userId);
 
-      // Stop any active monitoring/simulation
       if (userId) {
-        await sensorService.stopSensorSimulation(userId);
+        // Stop any active sensor monitoring
+        try {
+          await sensorService.stopSensorSimulation(userId);
+        } catch (error) {
+          console.error(
+            "[HeaderLeft] Error stopping sensor simulation:",
+            error
+          );
+        }
+
+        // Disconnect WebSocket for this specific user
+        try {
+          await websocketManager.disconnect(userId);
+        } catch (error) {
+          console.error("[HeaderLeft] Error disconnecting WebSocket:", error);
+        }
       }
 
-      await websocketService.cleanup();
-
+      // Cleanup auth manager
       await authManager.cleanup();
-      const keysToRemove = ["userToken", "userId", "userRole", "lastLoginTime"];
 
+      // Clear stored data
+      const keysToRemove = ["userToken", "userId", "userRole", "lastLoginTime"];
       await Promise.all(
         keysToRemove.map((key) => AsyncStorage.removeItem(key))
       );
     } catch (error) {
-      console.error("Service cleanup error:", error);
+      console.error("[HeaderLeft] Service cleanup error:", error);
       throw error;
     }
   };
@@ -65,10 +80,9 @@ export const HeaderLeft = () => {
             try {
               await cleanupServices();
               await auth.signOut();
-              await AsyncStorage.removeItem("userToken");
               router.replace("/(auth)/sign-in");
             } catch (error) {
-              console.error("Logout error:", error);
+              console.error("[HeaderLeft] Logout error:", error);
               Alert.alert(t.common.error, t.common.logoutError);
             }
           },

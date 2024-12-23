@@ -14,7 +14,6 @@ import { useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnxietyHandleSimulation } from "@/components/AnxietyHandleSimulation";
-import { websocketService } from "@/services/websocketService";
 
 interface Patient {
   userId: string;
@@ -65,25 +64,6 @@ export default function AdminHomeScreen() {
 
   useEffect(() => {
     fetchPatients();
-
-    const handleSimulationStatus = (data: {
-      userId: string;
-      isActive: boolean;
-    }) => {
-      setMonitoringStates((prev) => ({
-        ...prev,
-        [data.userId]: data.isActive,
-      }));
-    };
-
-    websocketService.on("simulationStatus", handleSimulationStatus);
-
-    return () => {
-      websocketService.removeListener(
-        "simulationStatus",
-        handleSimulationStatus
-      );
-    };
   }, []);
 
   useEffect(() => {
