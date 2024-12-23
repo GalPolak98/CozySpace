@@ -27,37 +27,33 @@ export const HeaderLeft = () => {
 
   const cleanupServices = async () => {
     try {
-      // Get current user ID before cleanup
       const userId = auth.currentUser?.uid;
+      if (!userId) {
+        console.warn("[HeaderLeft] No user ID found during cleanup");
+        return;
+      }
+
       console.log("[HeaderLeft] Starting cleanup for user:", userId);
 
-      if (userId) {
-        // Stop any active sensor monitoring
-        try {
-          await sensorService.stopSensorSimulation(userId);
-        } catch (error) {
+      // Perform cleanup operations in parallel
+      await Promise.all([
+        sensorService.stopSensorSimulation(userId).catch((error) => {
           console.error(
             "[HeaderLeft] Error stopping sensor simulation:",
             error
           );
-        }
-
-        // Disconnect WebSocket for this specific user
-        try {
-          await websocketManager.disconnect(userId);
-        } catch (error) {
+        }),
+        websocketManager.disconnect(userId).catch((error) => {
           console.error("[HeaderLeft] Error disconnecting WebSocket:", error);
-        }
-      }
-
-      // Cleanup auth manager
-      await authManager.cleanup();
-
-      // Clear stored data
-      const keysToRemove = ["userToken", "userId", "userRole", "lastLoginTime"];
-      await Promise.all(
-        keysToRemove.map((key) => AsyncStorage.removeItem(key))
-      );
+        }),
+        authManager.cleanup(),
+        AsyncStorage.multiRemove([
+          "userToken",
+          "userId",
+          "userRole",
+          "lastLoginTime",
+        ]),
+      ]);
     } catch (error) {
       console.error("[HeaderLeft] Service cleanup error:", error);
       throw error;

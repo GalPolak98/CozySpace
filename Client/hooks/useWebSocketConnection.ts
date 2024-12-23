@@ -1,13 +1,18 @@
-// hooks/useWebSocketConnection.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { websocketManager } from '../services/websocketManager';
 
-export function useWebSocketConnection(userId: string) {
+export function useWebSocketConnection(userId: string | null) {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const connectionAttempted = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
+    
+    // Only proceed if we have a valid userId
+    if (!userId) {
+      return;
+    }
 
     const handleConnect = () => {
       if (isMounted) {
@@ -29,13 +34,16 @@ export function useWebSocketConnection(userId: string) {
     };
 
     const initializeConnection = async () => {
+      // Prevent multiple connection attempts
+      if (connectionAttempted.current) {
+        return;
+      }
+      
       try {
-        // Setup background task first
-        await websocketManager.setupBackgroundTask();
-
-        // Check current connection state
+        connectionAttempted.current = true;
+        
         if (!websocketManager.isConnected(userId)) {
-          console.log('[useWebSocketConnection] Initializing connection for user:', userId);
+          console.log(`[useWebSocketConnection] Initializing connection for user: ${userId}`);
           await websocketManager.connect(userId);
         } else {
           setIsConnected(true);
@@ -43,23 +51,26 @@ export function useWebSocketConnection(userId: string) {
       } catch (error) {
         console.error('[useWebSocketConnection] Initialization error:', error);
         handleError(error as Error);
+        connectionAttempted.current = false;
       }
     };
 
-    // Add event listeners
-    websocketManager.on('connected', handleConnect);
-    websocketManager.on('disconnected', handleDisconnect);
-    websocketManager.on('error', handleError);
+    // Add event listeners with namespaced events
+    const eventNamespace = `user_${userId}`;
+    websocketManager.on(`connected_${eventNamespace}`, handleConnect);
+    websocketManager.on(`disconnected_${eventNamespace}`, handleDisconnect);
+    websocketManager.on(`error_${eventNamespace}`, handleError);
 
-    // Initialize connection
     initializeConnection();
 
-    // Cleanup
     return () => {
       isMounted = false;
-      websocketManager.removeListener('connected', handleConnect);
-      websocketManager.removeListener('disconnected', handleDisconnect);
-      websocketManager.removeListener('error', handleError);
+      connectionAttempted.current = false;
+      
+      // Clean up event listeners
+      websocketManager.removeListener(`connected_${eventNamespace}`, handleConnect);
+      websocketManager.removeListener(`disconnected_${eventNamespace}`, handleDisconnect);
+      websocketManager.removeListener(`error_${eventNamespace}`, handleError);
     };
   }, [userId]);
 
