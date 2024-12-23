@@ -21,7 +21,6 @@ class SensorService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      await websocketManager.connect(userId);
       return await response.json();
     } catch (error) {
       console.error('[SensorService] Start error:', error);
