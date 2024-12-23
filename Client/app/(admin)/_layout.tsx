@@ -12,7 +12,6 @@ export default function AdminLayout() {
     <Stack
       screenOptions={{
         headerLeft: HeaderLeft,
-        headerRight: HeaderRight,
         headerStyle: {
           backgroundColor: colors.header,
         },

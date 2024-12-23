@@ -37,9 +37,6 @@ export const HeaderLeft = () => {
       activeListeners.delete(userId);
       latestState.delete(userId);
 
-      // Stop sensor simulation
-      await sensorService.stopSensorSimulation(userId);
-
       // Disconnect WebSocket and clean up all listeners
       await websocketManager.disconnect(userId);
 

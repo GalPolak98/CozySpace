@@ -264,7 +264,7 @@ export default function Index() {
                   router.push("/(auth)/sign-in");
                 }
               }}
-              containerStyles="w-full mb-4"
+              containerStyles={{ width: "100%", marginBottom: 16 }}
               variant="primary"
               textStyles="text-lg"
             />
