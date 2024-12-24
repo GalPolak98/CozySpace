@@ -15,6 +15,7 @@ import Loader from "@/components/Loader";
 import { websocketManager } from "@/services/websocketManager";
 import { useWebSocketConnection } from "@/hooks/useWebSocketConnection";
 import { AnxietyDataViewer } from "@/components/AnxietyDataViewer";
+import { useFeatures } from "@/hooks/useFeatures";
 
 type RouteType =
   | "/chat"
@@ -44,6 +45,7 @@ const HomePatient = () => {
     isLoading: userDataLoading,
     error: userDataError,
   } = useUserData(userId);
+  const { features } = useFeatures();
 
   useEffect(() => {
     requestLocationPermission();
@@ -107,51 +109,70 @@ const HomePatient = () => {
   };
 
   const menuItems: MenuItem[] = [
-    {
-      title: getGenderedText(t.homePatient.talkToAI, gender as string),
-      icon: (
-        <MaterialIcons
-          name="chat"
-          size={24}
-          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
-        />
-      ),
-      route: "/chat",
-    },
-    {
-      title: getGenderedText(t.homePatient.guidedDocumenting, gender as string),
-      icon: (
-        <MaterialIcons
-          name="description"
-          size={24}
-          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
-        />
-      ),
-      route: "/guidedNote",
-    },
-    {
-      title: getGenderedText(t.homePatient.documentNow, gender as string),
-      icon: (
-        <MaterialIcons
-          name="edit"
-          size={24}
-          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
-        />
-      ),
-      route: "/directNote",
-    },
-    {
-      title: getGenderedText(t.breathing.menuTitle, gender as string),
-      icon: (
-        <MaterialIcons
-          name="air"
-          size={24}
-          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
-        />
-      ),
-      route: "/breathingExercises",
-    },
-  ];
+    ...(features?.chat
+      ? [
+          {
+            title: getGenderedText(t.homePatient.talkToAI, gender as string),
+            icon: (
+              <MaterialIcons
+                name="chat"
+                size={24}
+                color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
+              />
+            ),
+            route: "/chat" as RouteType,
+          },
+        ]
+      : []),
+    ...(features?.guidedNote
+      ? [
+          {
+            title: getGenderedText(
+              t.homePatient.guidedDocumenting,
+              gender as string
+            ),
+            icon: (
+              <MaterialIcons
+                name="description"
+                size={24}
+                color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
+              />
+            ),
+            route: "/guidedNote" as RouteType,
+          },
+        ]
+      : []),
+    ...(features?.directNote
+      ? [
+          {
+            title: getGenderedText(t.homePatient.documentNow, gender as string),
+            icon: (
+              <MaterialIcons
+                name="edit"
+                size={24}
+                color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
+              />
+            ),
+            route: "/directNote" as RouteType,
+          },
+        ]
+      : []),
+    ...(features?.breathingExercises
+      ? [
+          {
+            title: getGenderedText(t.breathing.menuTitle, gender as string),
+            icon: (
+              <MaterialIcons
+                name="air"
+                size={24}
+                color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
+              />
+            ),
+            route: "/breathingExercises" as RouteType,
+          },
+        ]
+      : []),
+  ] as MenuItem[];
 
   if (userDataLoading || !gender || !fullName) {
     return <Loader isLoading={true} />;
@@ -192,12 +213,14 @@ const HomePatient = () => {
         </View>
 
         {/* Recordings Section */}
-        <View className="mt-8">
-          <RecordingsSection />
-        </View>
+        {features?.recordings && (
+          <View className="mt-8">
+            <RecordingsSection />
+          </View>
+        )}
 
         {/* Anxiety Data Viewer */}
-        {userId && (
+        {userId && features?.anxietyDataViewer && (
           <View>
             <AnxietyDataViewer userId={userId} />
           </View>
