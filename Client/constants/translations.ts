@@ -38,7 +38,8 @@ export const translations = {
           typeMessage: "Type your message...",
           paste: "Paste",
           copy: 'copy',
-          inputOptions: "Input Options"
+          inputOptions: "Input Options",
+          select: "Select"
         },
         onboarding: {
           welcome: {
@@ -79,7 +80,7 @@ export const translations = {
             anxietyEvents: 'Anxiety Events',
             dateRange: 'Date Range',
             change: 'Edit',
-            weeklyAnxietyLevels: 'Weekly Anxiety Levels',
+            weeklyAnxietyLevels: 'Anxiety Levels',
             selectStartDate: 'Select Start Date',
             selectEndtDate: 'Select End Date'
           },
@@ -461,6 +462,7 @@ export const translations = {
           paste: "הדבק",
           copy: 'העתק',
           inputOptions: "אפשרויות קלט",
+          select: "בחר"
         },
         onboarding: {
           welcome: {
@@ -584,7 +586,7 @@ export const translations = {
             anxietyEvents: 'אירועי חרדה',
             dateRange: 'טווח זמנים',
             change: 'ערוך',
-            weeklyAnxietyLevels: 'רמות חרדה שבועיות',
+            weeklyAnxietyLevels: 'רמות חרדה ',
             selectStartDate: 'בחר תאריך התחלה',
             selectEndtDate: 'בחר תאריך סיום'
           },

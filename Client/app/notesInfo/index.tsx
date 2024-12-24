@@ -1,23 +1,29 @@
-import React, { useEffect , useState} from 'react';
+// NotesScreen.tsx
+
+import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, Alert } from 'react-native';
 import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '@/components/ThemeContext';
-import { NotesList, Note } from './_layout';  // Make sure to export Note interface from _layout.tsx
+import { NotesList, Note } from './_layout';
 import { loadNotes } from '../../utils/notesUtils';  
 import useAuth from '../../hooks/useAuth';
 import NoteModal from '../../components/notes/NoteModal';
 import { useLanguage } from '@/context/LanguageContext';
 
+// Define the interface for props that NotesScreen will accept
+interface NotesScreenProps {
+  patientId: string | null;  // Make patientId optional to handle both cases
+}
 
-export default function NotesScreen() {
+const NotesScreen: React.FC<NotesScreenProps> = ({ patientId }) => {
   const { theme } = useTheme();
   
   const [notes, setNotes] = React.useState<Note[]>([]);
-  const [selectedNote, setSelectedNote] = useState<Note | null>(null);  const [loading, setLoading] = React.useState<boolean>(true);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);  
+  const [loading, setLoading] = React.useState<boolean>(true);
   const userId = useAuth();
-  // const [selectedNote, setSelectedNote] = useState<{ _id: string; content: string; date: string; timestamp: string } | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const { t, isRTL } = useLanguage();
@@ -30,7 +36,12 @@ export default function NotesScreen() {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const fetchedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+        const targetId = patientId || userId;
+        if (!targetId) {
+          throw new Error('No valid user or patient ID');
+        }
+        console.log('Fetching notes for user:', targetId);
+        const fetchedNotes = await loadNotes(targetId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
         setNotes(
           fetchedNotes.map(note => {
             const date = new Date(note.timestamp);
@@ -58,13 +69,12 @@ export default function NotesScreen() {
     }
   }, [userId]);
   
-  
   const handleNotePress = (note: Note) => {
     setSelectedNote(note);
     setEditedNote(note.content);
     setIsModalVisible(true);
   };
-  
+
   const deleteNote = async (noteId: string) => {
     if (!userId || !noteId) return;
 
@@ -123,26 +133,27 @@ export default function NotesScreen() {
   return (
     <ThemedView style={{ flex: 1, padding: 16 }}>
       <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-    <ThemedText style={{ fontSize: 28, fontWeight: 'bold', color: theme === 'dark' ? '#fff' : '#000' }}>
-      {t.information.notes}
-    </ThemedText>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <MaterialIcons 
-          name="notes" 
-          size={20} 
-          color={theme === 'dark' ? '#4A90E2' : '#2196F3'}
-        />
-        <ThemedText style={{ marginLeft: isRTL ? 8 : 0, marginRight: isRTL ? 0 : 8, fontSize: 14, color: theme === 'dark' ? '#999' : '#666' }}>
-          {notes.length} {t.information.notes}
+        <ThemedText style={{ fontSize: 28, fontWeight: 'bold', color: theme === 'dark' ? '#fff' : '#000' }}>
+          {t.information.notes}
         </ThemedText>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons
+            name="notes"
+            size={20}
+            color={theme === 'dark' ? '#4A90E2' : '#2196F3'}
+          />
+          <ThemedText style={{ marginLeft: isRTL ? 8 : 0, marginRight: isRTL ? 0 : 8, fontSize: 14, color: theme === 'dark' ? '#999' : '#666' }}>
+            {notes.length} {t.information.notes}
+          </ThemedText>
+        </View>
       </View>
-    </View>
-
-    <NotesList 
-      notes={notes} 
-      onNotePress={handleNotePress} 
-    />  
-    <NoteModal
+  
+      <NotesList
+        notes={notes}
+        onNotePress={handleNotePress}
+      />
+  
+      <NoteModal
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
         editedNote={editedNote}
@@ -160,7 +171,12 @@ export default function NotesScreen() {
         }}
         deleteNote={deleteNote}
         selectedNote={selectedNote}
+        // Conditionally render delete and save buttons
+        disableEditDelete={!!patientId}  // This will disable buttons when patientId is not null
       />
     </ThemedView>
   );
-}
+  
+};
+
+export default NotesScreen;

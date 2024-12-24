@@ -24,7 +24,7 @@ export class AuthRoutingService {
             return;
           }
 
-          console.log('Fetching user data for:', currentUser.uid);
+          // console.log('Fetching user data for:', currentUser.uid);
           
           try {
             const userData = await userService.getUserById(currentUser.uid);

@@ -11,8 +11,11 @@ import { useLanguage } from '@/context/LanguageContext';
 import { loadNotes, loadGuidedNotes } from '../../utils/notesUtils';  
 import { loadNotifications } from '../../utils/notificationsUtils'; 
 
+interface ReportsScreenProps {
+  patientId: string | null;  // Make patientId optional to handle both cases
+}
 
-const ReportsScreen = () => {
+const ReportsScreen: React.FC<ReportsScreenProps> = ({ patientId }) => {
   const { t,isRTL } = useLanguage();  
 
   const [dateRange, setDateRange] = useState({
@@ -52,10 +55,13 @@ const ReportsScreen = () => {
 
 useEffect(() => {
   const fetchAndFilterNotes = async () => {
-    if (!userId) return;
-
     try {
-      const fetchedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+      const targetId = patientId || userId;
+      if (!targetId) {
+        throw new Error('No valid user or patient ID');
+      }
+      console.log('Fetching notes for user!!!!!!!!!:', targetId);
+      const fetchedNotes = await loadNotes(targetId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
 
       // Filter notes based on dateRange
       const filteredNotes = fetchedNotes.filter((note) => {
@@ -79,10 +85,13 @@ useEffect(() => {
 
 useEffect(() => {
   const fetchGuidedNotes = async () => {
-    if (!userId) return;
 
     try {
-      const fetchedGuidedNotes = await loadGuidedNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+      const targetId = patientId || userId;
+      if (!targetId) {
+        throw new Error('No valid user or patient ID');
+      }
+      const fetchedGuidedNotes = await loadGuidedNotes(targetId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
 
       const filteredNotes = fetchedGuidedNotes.filter((guidedNote) => {
         const noteDate = new Date(guidedNote.timestamp);
@@ -147,10 +156,13 @@ useEffect(() => {
 
   useEffect(() => {
     const fetchNotification = async () => {
-      if (!userId) return;
-  
+
       try {
-        const fetchedNotifications = await loadNotifications(userId, isRTL, t as { common: { error: string }; notifications: { fetchError: string } });
+        const targetId = patientId || userId;
+        if (!targetId) {
+          throw new Error('No valid user or patient ID');
+        }  
+        const fetchedNotifications = await loadNotifications(targetId, isRTL, t as { common: { error: string }; notifications: { fetchError: string } });
   
         console.log(fetchedNotifications); 
   

@@ -10,6 +10,7 @@ export default function TherapistLayout() {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
+  
   return (
     <Tabs
       screenOptions={{
@@ -53,7 +54,7 @@ export default function TherapistLayout() {
         },
       }}
     >
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="home"
         options={{
           title: 'Dashboard',
@@ -104,7 +105,7 @@ export default function TherapistLayout() {
             />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }

@@ -20,6 +20,8 @@ interface NoteModalProps {
   saveNote: () => void;
   deleteNote: (noteId: string) => void;
   selectedNote: Note | null;
+  disableEditDelete: boolean;  // New prop to disable buttons
+
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({
@@ -30,6 +32,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
   saveNote,
   deleteNote,
   selectedNote,
+  disableEditDelete
 }) => {
   const { theme: currentTheme } = useTheme();
   const { t, isRTL, getGenderedText } = useLanguage();
@@ -93,16 +96,15 @@ const NoteModal: React.FC<NoteModalProps> = ({
               textAlign: isRTL ? 'right' : 'left',
             }}
           >
-            {getGenderedText(t.note.editNote, gender as string)}
           </ThemedText>
-
+  
           <ScrollView>
             <NotebookInput
               note={editedNote}
               setNote={setEditedNote}
             />
           </ScrollView>
-
+  
           <View
             style={{
               flexDirection: isRTL ? 'row-reverse' : 'row',
@@ -124,42 +126,49 @@ const NoteModal: React.FC<NoteModalProps> = ({
               <Icon name="close" size={20} color={colors.text} style={{ marginHorizontal: 5 }} />
               <ThemedText>{t.common.cancel}</ThemedText>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={saveNote}
-              style={{
-                flexDirection: isRTL ? 'row-reverse' : 'row',
-                alignItems: 'center',
-                padding: 10,
-                borderRadius: 8,
-                backgroundColor: '#4CAF50',
-              }}
-            >
-              <Icon name="save" size={20} color="#FFFFFF" style={{ marginHorizontal: 5 }} />
-              <ThemedText style={{ color: '#FFFFFF' }}>{t.common.save}</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                if (selectedNote) deleteNote(selectedNote._id);
-                setIsModalVisible(false);
-              }}
-              style={{
-                flexDirection: isRTL ? 'row-reverse' : 'row',
-                alignItems: 'center',
-                padding: 10,
-                borderRadius: 8,
-                backgroundColor: '#FF6347',
-              }}
-            >
-              <Icon name="delete" size={20} color="#FFFFFF" style={{ marginHorizontal: 5 }} />
-              <ThemedText style={{ color: '#FFFFFF' }}>{t.common.delete}</ThemedText>
-            </TouchableOpacity>
+  
+            {/* Conditionally render the Save button */}
+            {!disableEditDelete && (
+              <TouchableOpacity
+                onPress={saveNote}
+                style={{
+                  flexDirection: isRTL ? 'row-reverse' : 'row',
+                  alignItems: 'center',
+                  padding: 10,
+                  borderRadius: 8,
+                  backgroundColor: '#4CAF50',
+                }}
+              >
+                <Icon name="save" size={20} color="#FFFFFF" style={{ marginHorizontal: 5 }} />
+                <ThemedText style={{ color: '#FFFFFF' }}>{t.common.save}</ThemedText>
+              </TouchableOpacity>
+            )}
+  
+            {/* Conditionally render the Delete button */}
+            {!disableEditDelete && (
+              <TouchableOpacity
+                onPress={() => {
+                  if (selectedNote) deleteNote(selectedNote._id);
+                  setIsModalVisible(false);
+                }}
+                style={{
+                  flexDirection: isRTL ? 'row-reverse' : 'row',
+                  alignItems: 'center',
+                  padding: 10,
+                  borderRadius: 8,
+                  backgroundColor: '#FF6347',
+                }}
+              >
+                <Icon name="delete" size={20} color="#FFFFFF" style={{ marginHorizontal: 5 }} />
+                <ThemedText style={{ color: '#FFFFFF' }}>{t.common.delete}</ThemedText>
+              </TouchableOpacity>
+            )}
           </View>
         </ThemedView>
       </View>
     </Modal>
   );
+  
 };
 
 export default NoteModal;

@@ -53,6 +53,19 @@ export class TherapistService {
       throw error;
     }
   }
+
+  async getPatientsForTherapist (userId: string) {
+    console.log('Getting patients for therapist:', userId);
+    const therapist = await TherapistModel.findOne({ userId });
+    if (!therapist) {
+      throw new Error('Patient not found');
+    }
+    return therapist.patients;  
+  }
 }
+
+
+
+
 
 export const therapistService = new TherapistService();
