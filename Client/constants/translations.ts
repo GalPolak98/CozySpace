@@ -39,7 +39,9 @@ export const translations = {
           paste: "Paste",
           copy: 'copy',
           inputOptions: "Input Options",
-          select: "Select"
+          select: "Select",
+          noSharedInfo: "This patient is not sharing any information with you at the moment.",
+          selectPatientMessage: "Select a patient to track their information",
         },
         onboarding: {
           welcome: {
@@ -462,7 +464,9 @@ export const translations = {
           paste: "הדבק",
           copy: 'העתק',
           inputOptions: "אפשרויות קלט",
-          select: "בחר"
+          select: "בחר",
+          noSharedInfo:"המטופל לא משתף כרגע מידע איתך.",
+          selectPatientMessage : "בחר מטופל למעקב במידע שלו",
         },
         onboarding: {
           welcome: {

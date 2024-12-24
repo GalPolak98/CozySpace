@@ -43,7 +43,7 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
   };
 
   return (
-    <ThemedView className="bg-white dark:bg-gray-900 p-3 rounded-lg mb-3 shadow-sm">
+    <ThemedView className="bg-white dark:bg-gray-900  rounded-lg  shadow-sm">
       <ThemedText
         className="font-pbold text-base mb-0.5"
         style={{
@@ -54,7 +54,7 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
       </ThemedText>
       <LineChart
         data={weeklyData}
-        width={screenWidth - 32}
+        width={screenWidth - 20}
         height={280}
         chartConfig={chartConfig}
         bezier
