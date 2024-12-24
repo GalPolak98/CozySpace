@@ -42,7 +42,7 @@ export class AuthRoutingService {
                   break;
                 case 'admin':
                   console.log('Routing admin to home');
-                  router.replace('/(admin)/home');
+                  router.replace('/(admin)/patients');
                   break;
                 default:
                   console.log('Invalid user type, routing to initial settings');
@@ -94,7 +94,7 @@ export class AuthRoutingService {
               router.replace('/(therapist)/home');
               break;
             case 'admin':
-              router.replace('/(admin)/home');
+              router.replace('/(admin)/patients');
               break;
             default:
               router.replace('/(auth)/initialUserSettings');

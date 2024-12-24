@@ -82,11 +82,6 @@ export default function AdminHomeScreen() {
     setFilteredPatients(filtered);
   };
 
-  const handlePatientSelect = (patient: Patient) => {
-    setSelectedPatient(patient);
-    setShowMonitor(true);
-  };
-
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     fetchPatients();
