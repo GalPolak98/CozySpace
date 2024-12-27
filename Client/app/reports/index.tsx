@@ -10,18 +10,18 @@ import useAuth from '../../hooks/useAuth';
 import { useLanguage } from '@/context/LanguageContext';  
 import { loadNotes, loadGuidedNotes } from '../../utils/notesUtils';  
 import { loadNotifications } from '../../utils/notificationsUtils'; 
+import { useLocalSearchParams } from 'expo-router';
 
-interface ReportsScreenProps {
-  patientId: string | null;  // Make patientId optional to handle both cases
-}
 
-const ReportsScreen: React.FC<ReportsScreenProps> = ({ patientId }) => {
+
+const ReportsScreen = () => {
   const { t,isRTL } = useLanguage();  
 
   const [dateRange, setDateRange] = useState({
     startDate: subDays(new Date(), 7),
     endDate: new Date()
   });
+  const { patientId } = useLocalSearchParams<{ patientId: string }>();
 
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [isSelectingStartDate, setIsSelectingStartDate] = useState(true);

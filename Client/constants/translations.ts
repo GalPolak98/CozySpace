@@ -126,6 +126,10 @@ export const translations = {
             guidedDocumenting: 'Guided Documenting',
             documentNow: 'Document Now'
           },
+          homeTherapist: {
+            patientNotes: 'Patient Notes',
+            patientReports: 'Patient Reports',
+          },
           recording: {
             statusRecording: {
               idle: "Idle",
@@ -528,12 +532,17 @@ export const translations = {
             updated: "עודכן בהצלחה",
             saved: "נשמר בהצלחה",
           },
+          homeTherapist: {
+            patientNotes: 'פתקי המטופל',
+            patientReports: 'נתונים סטטיסטיים על המטופל',
+          },
           homePatient: {
             talkToAI: {
               male: 'שוחח עם העוזר האישי שלך',
               female: 'שוחחי עם העוזר האישי שלך',
               default: 'שוחחו עם העוזר האישי שלכם'
             },
+
             guidedDocumenting: {
               male: 'תיעוד מונחה',
               female: 'תיעוד מונחה',

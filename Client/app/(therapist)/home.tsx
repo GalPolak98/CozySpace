@@ -20,8 +20,10 @@ import { useUserData } from "@/hooks/useUserData";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { userService } from "@/services/userService";
 import NotesScreen from '../notesInfo';
-import ReportsScreen from '../(patient)/reports'
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
+import CustomButton from "@/components/CustomButton";
 
 type Patient = {
   _id: string;
@@ -29,7 +31,16 @@ type Patient = {
   userId: string;
 };
 
+type RouteType = "/patientNotes" | "/patientReports";
+
+interface MenuItem {
+  title: string;
+  icon: React.ReactNode;
+  route: RouteType;
+}
+
 const TherapistHomeScreen = () => {
+  const router = useRouter();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const { isRTL, t, getGenderedText } = useLanguage();
@@ -42,14 +53,12 @@ const TherapistHomeScreen = () => {
   const [patientProfile, setPatientProfile] = useState<any>(null);
   const [personalDocumentation, setPersonalDocumentation] = useState<boolean>(false);
   const [anxietyTracking, setAnxietyTracking] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
 
 
   useEffect(() => {
-    if (!userId) {
-      console.error("Cannot fetch therapists: User ID is null.");
-      return;
-    }
+
   
     const fetchTherapists = async () => {
       console.log("Fetching therapists for User ID:", userId);
@@ -83,6 +92,59 @@ const TherapistHomeScreen = () => {
     }
     console.log("Selected patient changed:", selectedPatient);
   }, [selectedPatient]);
+
+  const handleNavigation = async (route: RouteType) => {
+    setIsLoading(true);
+    try {
+
+      switch (route) {
+        case "/patientNotes":
+          router.push({
+            pathname: "../notesInfo",
+            params: { gender, patientId: selectedPatient },
+
+          });
+          break;
+        case "/patientReports":
+          router.push({
+            pathname: "../reports",
+            params: { gender, patientId: selectedPatient }, 
+
+          });
+
+          break;
+      }
+    } catch (error) {
+      Alert.alert(t.errors.error, t.errors.unexpected);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const menuItems: MenuItem[] = [
+    {
+      title: getGenderedText(t.homeTherapist.patientNotes, gender as string),
+      icon: (
+        <MaterialIcons
+          name="note-add"
+          size={24}
+          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
+        />
+      ),
+      route: "/patientNotes",
+    },
+    {
+      title: getGenderedText(t.homeTherapist.patientReports, gender as string),
+      icon: (
+        <MaterialIcons
+          name="report"
+          size={24}
+          color={currentTheme === "light" ? "#000000" : "#FFFFFF"}
+        />
+      ),
+      route: "/patientReports",
+    },
+  ];
 
   const fetchPatientProfile = async (selectedPatientId: string) => {
     console.log('Fetching profile for selected patient:', selectedPatientId);
@@ -208,8 +270,8 @@ const TherapistHomeScreen = () => {
     <View className="px-1 py-1 flex-1">
       {renderWelcomeSection()}
       {renderPickerSection()}
-  
-      {/* Display the "no shared info" message only after selecting a patient */}
+      
+
       {selectedPatient && !anxietyTracking && !personalDocumentation && (
         <View style={{ alignItems: 'center', marginTop: 50 }}>
           <ThemedText style={{ color: colors.text, textAlign: 'center' }}>
@@ -218,17 +280,24 @@ const TherapistHomeScreen = () => {
         </View>
       )}
   
-      {/* Render the patient's information if available */}
       {anxietyTracking && (
         <View>
-          <ReportsScreen patientId={selectedPatient} />
-        </View>
+        <CustomButton
+          title={menuItems[0].title}
+          icon={menuItems[0].icon}
+          handlePress={() => handleNavigation(menuItems[0].route)}
+          />
+      </View>
       )}
   
       {personalDocumentation && (
-        <View style={{ height: 300 }}>
-          <NotesScreen patientId={selectedPatient} />
-        </View>
+      <View>
+      <CustomButton
+        title={menuItems[1].title}
+        icon={menuItems[1].icon}
+        handlePress={() => handleNavigation(menuItems[1].route)}
+      />
+    </View>
       )}
     </View>
   );

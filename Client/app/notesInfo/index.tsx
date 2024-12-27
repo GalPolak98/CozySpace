@@ -11,13 +11,14 @@ import { loadNotes } from '../../utils/notesUtils';
 import useAuth from '../../hooks/useAuth';
 import NoteModal from '../../components/notes/NoteModal';
 import { useLanguage } from '@/context/LanguageContext';
+import { useLocalSearchParams } from 'expo-router';
 
 // Define the interface for props that NotesScreen will accept
-interface NotesScreenProps {
-  patientId: string | null;  // Make patientId optional to handle both cases
-}
+// interface NotesScreenProps {
+//   patientId: string | null;  // Make patientId optional to handle both cases
+// }
 
-const NotesScreen: React.FC<NotesScreenProps> = ({ patientId }) => {
+const NotesScreen = () => {
   const { theme } = useTheme();
   
   const [notes, setNotes] = React.useState<Note[]>([]);
@@ -27,6 +28,7 @@ const NotesScreen: React.FC<NotesScreenProps> = ({ patientId }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const { t, isRTL } = useLanguage();
+  const { patientId } = useLocalSearchParams<{ patientId: string }>();
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -37,9 +39,9 @@ const NotesScreen: React.FC<NotesScreenProps> = ({ patientId }) => {
     const fetchNotes = async () => {
       try {
         const targetId = patientId || userId;
-        if (!targetId) {
-          throw new Error('No valid user or patient ID');
-        }
+        // if (!targetId) {
+        //   throw new Error('No valid user or patient ID');
+        // }
         console.log('Fetching notes for user:', targetId);
         const fetchedNotes = await loadNotes(targetId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
         setNotes(
