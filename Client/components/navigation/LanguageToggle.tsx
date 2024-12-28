@@ -1,13 +1,6 @@
 import React, { useState } from "react";
-import {
-  TouchableOpacity,
-  Modal,
-  Pressable,
-  View,
-  ActivityIndicator,
-} from "react-native";
+import { TouchableOpacity, Modal, Pressable, View } from "react-native";
 import { useLanguage } from "@/context/LanguageContext";
-import { useTranslation } from "react-i18next";
 import ThemedText from "@/components/ThemedText";
 import ThemedView from "@/components/ThemedView";
 import { useTheme } from "@/components/ThemeContext";
@@ -65,7 +58,7 @@ const LanguageToggle = () => {
                   style={{
                     backgroundColor:
                       lang.code === currentLanguage
-                        ? `${colors.primary}20` // 20 is the hex opacity (12.5%)
+                        ? `${colors.primary}20`
                         : currentTheme === "light"
                         ? "#F9FAFB"
                         : "#1F2937",

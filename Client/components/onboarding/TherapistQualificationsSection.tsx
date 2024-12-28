@@ -1,14 +1,21 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import { theme } from '@/styles/Theme';
-import CustomInput from '@/components/CustomInput';
-import { CustomDropdown } from '@/components/CustomDropdown';
-import { TherapistQualificationsProps } from '@/types/onboarding';
-import { EDUCATION_LEVELS, EXPERIENCE_LEVELS, SPECIALIZATIONS, getOptionsForLanguage } from '@/constants/onboarding';
+import React from "react";
+import { View, Text, ScrollView } from "react-native";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import { theme } from "@/styles/Theme";
+import CustomInput from "@/components/CustomInput";
+import { CustomDropdown } from "@/components/CustomDropdown";
+import { TherapistQualificationsProps } from "@/types/onboarding";
+import {
+  EDUCATION_LEVELS,
+  EXPERIENCE_LEVELS,
+  SPECIALIZATIONS,
+  getOptionsForLanguage,
+} from "@/constants/onboarding";
 
-export const TherapistQualificationsSection: React.FC<TherapistQualificationsProps> = ({
+export const TherapistQualificationsSection: React.FC<
+  TherapistQualificationsProps
+> = ({
   educationLevel,
   setEducationLevel,
   experienceLevel,
@@ -18,7 +25,7 @@ export const TherapistQualificationsSection: React.FC<TherapistQualificationsPro
   specialization,
   setSpecialization,
   licenseNumber,
-  setLicenseNumber
+  setLicenseNumber,
 }) => {
   const { theme: currentTheme } = useTheme();
   const { t, isRTL, currentLanguage } = useLanguage();
@@ -45,11 +52,11 @@ export const TherapistQualificationsSection: React.FC<TherapistQualificationsPro
       />
 
       <View className="mb-4">
-        <Text 
-          style={{ 
+        <Text
+          style={{
             color: colors.text,
-            textAlign: isRTL ? 'right' : 'left'
-          }} 
+            textAlign: isRTL ? "right" : "left",
+          }}
           className="font-pmedium mb-2"
         >
           {t.therapistQualifications.workplace}
@@ -73,11 +80,11 @@ export const TherapistQualificationsSection: React.FC<TherapistQualificationsPro
       />
 
       <View>
-        <Text 
-          style={{ 
+        <Text
+          style={{
             color: colors.text,
-            textAlign: isRTL ? 'right' : 'left'
-          }} 
+            textAlign: isRTL ? "right" : "left",
+          }}
           className="font-pmedium mb-2"
         >
           {t.therapistQualifications.licenseNumber}
@@ -93,15 +100,3 @@ export const TherapistQualificationsSection: React.FC<TherapistQualificationsPro
     </ScrollView>
   );
 };
-
-function getLocalizedEducationLevels(currentLanguage: any) {
-  throw new Error('Function not implemented.');
-}
-function getLocalizedExperienceLevels(currentLanguage: any) {
-  throw new Error('Function not implemented.');
-}
-
-function getLocalizedSpecializations(currentLanguage: any) {
-  throw new Error('Function not implemented.');
-}
-

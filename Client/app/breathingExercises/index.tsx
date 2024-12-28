@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Dimensions, StyleSheet, ScrollView } from "react-native";
+import { View, Dimensions, ScrollView } from "react-native";
 import { Audio } from "expo-av";
 import { useLocalSearchParams } from "expo-router";
 import { useLanguage } from "@/context/LanguageContext";
@@ -123,6 +123,16 @@ const BreathingScreen = () => {
       }
     };
   }, [isActive]);
+
+  useEffect(() => {
+    return () => {
+      if (sound) {
+        sound.stopAsync().then(() => {
+          sound.unloadAsync();
+        });
+      }
+    };
+  }, [sound, t]);
 
   const toggleExercise = async () => {
     try {
@@ -259,7 +269,7 @@ const BreathingScreen = () => {
               alignItems: "center",
               marginVertical: 16,
               flex: 1,
-              maxHeight: windowWidth * 0.8, // Prevent circle from being too tall on Android
+              maxHeight: windowWidth * 0.8,
             }}
           >
             <BreathingCircle
@@ -327,7 +337,7 @@ const BreathingScreen = () => {
             />
           </View>
 
-          {/* Modals remain unchanged */}
+          {/* Modals*/}
           <BreathingGuideModal
             visible={isGuideVisible}
             onClose={() => setIsGuideVisible(false)}

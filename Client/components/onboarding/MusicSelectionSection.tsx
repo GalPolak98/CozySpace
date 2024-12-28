@@ -4,7 +4,6 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  Platform,
   ViewStyle,
 } from "react-native";
 import { useTheme } from "@/components/ThemeContext";

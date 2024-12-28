@@ -8,7 +8,6 @@ import { ThemeProvider, useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
 import Loader from "@/components/Loader";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { HeaderRight } from "@/components/navigation/HeaderButtons";
 import MainHeader from "@/components/navigation/MainHeader";
 
 const InitialLayout = () => {

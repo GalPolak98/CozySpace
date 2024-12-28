@@ -1,13 +1,11 @@
-// services/mockDataService.ts
-import { SensorData } from '../models/sensorTypes';
 
 interface MockDataState {
   lastReading: string | null;
   isInAnxietyPattern: boolean;
   anxietyDuration: number;
   normalDuration: number;
-  lastAnxietyEndTime: number;     // Track when last anxiety ended
-  anxietyStartTime: number | null; // Track when current anxiety started
+  lastAnxietyEndTime: number;     
+  anxietyStartTime: number | null; 
   exitingAnxiety: boolean;
 }
 
@@ -70,7 +68,6 @@ class MockDataService {
   private shouldTriggerAnxiety(mockState: MockDataState): boolean {
     const currentTime = Date.now();
 
-    // If in exit phase, stay there
     if (mockState.exitingAnxiety) {
       return false;
     }
@@ -107,7 +104,6 @@ class MockDataService {
     const mockState = this.getOrCreateMockState(userId);
     const currentTime = Date.now();
     
-    // Update state
     mockState.isInAnxietyPattern = this.shouldTriggerAnxiety(mockState);
 
     if (mockState.isInAnxietyPattern) {
@@ -116,7 +112,6 @@ class MockDataService {
     } else if (mockState.exitingAnxiety) {
       const exitDuration = currentTime - (mockState.anxietyStartTime! + this.TIMING.ANXIETY_DURATION);
       if (exitDuration >= this.TIMING.TRANSITION_OUT) {
-        // Exit phase complete
         mockState.exitingAnxiety = false;
         mockState.anxietyStartTime = null;
         mockState.lastAnxietyEndTime = currentTime;

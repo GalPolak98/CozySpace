@@ -1,4 +1,3 @@
-// routes/sensorRoutes.ts
 import express from 'express';
 import { startSimulation, stopSimulation } from '../controllers/sensorController';
 

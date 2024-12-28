@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
 import { HeaderRight } from "@/components/navigation/HeaderButtons";

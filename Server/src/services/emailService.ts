@@ -9,7 +9,6 @@ if (!SENDGRID_API_KEY) {
   throw new Error('SENDGRID_API_KEY is not set in environment variables');
 }
 
-// Initialize SendGrid with API key
 sgMail.setApiKey(SENDGRID_API_KEY);
 
 interface EmergencyNotification {
@@ -28,7 +27,6 @@ export class EmailService {
     this.fromEmail = process.env.FROM_EMAIL || '';
     this.emergencyContactEmail = process.env.EMERGENCY_CONTACT_EMAIL || '';
 
-    // Validate email configuration
     if (!this.fromEmail || !this.emergencyContactEmail) {
       throw new Error('Email configuration is incomplete. Both FROM_EMAIL and EMERGENCY_CONTACT_EMAIL must be set.');
     }
@@ -59,7 +57,6 @@ export class EmailService {
         html: this.generateEmergencyEmailHtml(notification),
       };
 
-      // Debug log the message
       console.log('Sending email with configuration:', {
         to: msg.to,
         from: msg.from,
@@ -77,7 +74,6 @@ export class EmailService {
       return response.statusCode === 202;
     } catch (error:any) {
       if (error.response) {
-        // Log SendGrid specific error details
         console.error('SendGrid API Error:', {
           status: error.response.status,
           body: error.response.body,

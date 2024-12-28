@@ -4,16 +4,14 @@ import {
   Text,
   View,
   TextInput,
-  TouchableOpacity,
   ActivityIndicator,
-  Modal,
   StyleSheet,
   RefreshControl,
 } from "react-native";
 import { useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AnxietyHandleSimulation } from "@/components/AnxietyHandleSimulation";
+import { AnxietyHandleSimulation } from "@/components/sensorData/AnxietyHandleSimulation";
 
 interface Patient {
   userId: string;
@@ -35,11 +33,6 @@ export default function AdminHomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [showMonitor, setShowMonitor] = useState(false);
-  const [monitoringStates, setMonitoringStates] = useState<
-    Record<string, boolean>
-  >({});
 
   const fetchPatients = async () => {
     try {

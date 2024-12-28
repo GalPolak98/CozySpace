@@ -44,7 +44,6 @@ export const saveGuidedNotes: RequestHandler = async (req, res, next) => {
     await userService.saveGuidedNotes(userId, guidedNoteData);
 
     res.status(200).json({ success: true, message: 'Guided note saved successfully.' });
-    // return next();
   } catch (error) {
     return next(error);
   }
@@ -58,7 +57,6 @@ export const addNote: RequestHandler = async (req, res, next) => {
     await userService.addGeneralNotes(userId, noteData);
 
     res.status(200).json({ success: true, message: 'Note added successfully.' });
-    // return next();
   } catch (error) {
     return next(error);
   }
@@ -86,7 +84,6 @@ export const getNotes: RequestHandler = async (req, res, next) => {
   try {
     const { userId } = req.params;
 
-    // Call the userService to get the notes for the user
     const notes = await userService.getNotesForUser(userId);
 
     if (!notes) {
@@ -113,11 +110,9 @@ export const saveRecording: RequestHandler = async (req, res, next) => {
   }
 };
 
-// Delete a note for the user
 export const deleteNote: RequestHandler = async (req, res, next) => {
   try {
     const { userId, noteId } = req.params;
-    // Call the userService to delete the note
     const deletedNote = await userService.deleteNoteForUser(userId, noteId);
 
     if (!deletedNote) {

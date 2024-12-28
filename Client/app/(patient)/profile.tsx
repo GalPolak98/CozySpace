@@ -164,7 +164,6 @@ const ProfileScreen = () => {
         },
       });
 
-      // Refresh user data and profile after successful save
       await Promise.all([refreshUserData(), fetchProfile()]);
       Alert.alert(t.success.updated, t.profile.saveSuccess);
     } catch (error) {

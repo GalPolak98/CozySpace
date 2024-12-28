@@ -10,7 +10,6 @@ import { auth } from "@/services/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authManager } from "@/services/authManager";
 import LanguageToggle from "./LanguageToggle";
-import { sensorService } from "@/services/sensorService";
 import { websocketManager } from "@/services/websocketManager";
 import { activeListeners, latestState } from "@/hooks/useAnxietyMonitor";
 

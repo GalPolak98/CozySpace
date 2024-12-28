@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Animated, Modal, SafeAreaView } from 'react-native';
-import { useTheme } from '@/components/ThemeContext';
-import { theme } from '@/styles/Theme';
-import { Ionicons } from '@expo/vector-icons';
-import { CustomDropdownProps, OptionType } from '@/types/onboarding';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  Animated,
+  Modal,
+  SafeAreaView,
+} from "react-native";
+import { useTheme } from "@/components/ThemeContext";
+import { theme } from "@/styles/Theme";
+import { Ionicons } from "@expo/vector-icons";
+import { CustomDropdownProps } from "@/types/onboarding";
 
 interface ExtendedCustomDropdownProps extends CustomDropdownProps {
   isRTL?: boolean;
@@ -15,51 +23,51 @@ export const CustomDropdown: React.FC<ExtendedCustomDropdownProps> = ({
   onChange,
   placeholder,
   label,
-  isRTL = false
+  isRTL = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
-  const selectedOption = options.find(opt => opt.id === value);
+  const selectedOption = options.find((opt) => opt.id === value);
 
   return (
     <View className="mb-4">
       {label && (
-        <Text 
-          style={{ 
+        <Text
+          style={{
             color: colors.text,
-            textAlign: isRTL ? 'right' : 'left'
-          }} 
+            textAlign: isRTL ? "right" : "left",
+          }}
           className="font-pmedium mb-2"
         >
           {label}
         </Text>
       )}
-      
+
       <TouchableOpacity
         onPress={() => setIsOpen(true)}
         className="p-4 border rounded-lg"
-        style={{ 
+        style={{
           borderColor: colors.border,
           backgroundColor: colors.surface,
-          flexDirection: isRTL ? 'row-reverse' : 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          flexDirection: isRTL ? "row-reverse" : "row",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        <Text 
-          style={{ 
+        <Text
+          style={{
             color: selectedOption ? colors.text : colors.textSecondary,
-            textAlign: isRTL ? 'right' : 'left'
+            textAlign: isRTL ? "right" : "left",
           }}
           className="font-pregular"
         >
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
-        <Ionicons 
-          name={isRTL ? "chevron-down" : "chevron-down"} 
-          size={20} 
+        <Ionicons
+          name={isRTL ? "chevron-down" : "chevron-down"}
+          size={20}
           color={colors.text}
           style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }}
         />
@@ -71,30 +79,30 @@ export const CustomDropdown: React.FC<ExtendedCustomDropdownProps> = ({
         animationType="slide"
         onRequestClose={() => setIsOpen(false)}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           className="flex-1 bg-black/50"
           activeOpacity={1}
           onPress={() => setIsOpen(false)}
         >
           <SafeAreaView className="flex-1 justify-end">
-            <View 
+            <View
               className="bg-white rounded-t-xl max-h-[70%]"
               style={{ backgroundColor: colors.background }}
             >
-              <View 
-                className="p-4 border-b" 
-                style={{ 
+              <View
+                className="p-4 border-b"
+                style={{
                   borderColor: colors.border,
-                  flexDirection: isRTL ? 'row-reverse' : 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
+                  flexDirection: isRTL ? "row-reverse" : "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                <Text 
-                  style={{ 
+                <Text
+                  style={{
                     color: colors.text,
-                    textAlign: isRTL ? 'right' : 'left'
-                  }} 
+                    textAlign: isRTL ? "right" : "left",
+                  }}
                   className="text-lg font-pbold"
                 >
                   {label}
@@ -103,7 +111,7 @@ export const CustomDropdown: React.FC<ExtendedCustomDropdownProps> = ({
                   <Ionicons name="close" size={24} color={colors.text} />
                 </TouchableOpacity>
               </View>
-              
+
               <FlatList
                 data={options}
                 keyExtractor={(item) => item.id}
@@ -116,29 +124,33 @@ export const CustomDropdown: React.FC<ExtendedCustomDropdownProps> = ({
                     className="p-4 border-b"
                     style={{ borderColor: colors.border }}
                   >
-                    <View 
-                      style={{ 
-                        flexDirection: isRTL ? 'row-reverse' : 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
+                    <View
+                      style={{
+                        flexDirection: isRTL ? "row-reverse" : "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                       }}
                     >
-                      <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
-                        <Text 
-                          style={{ 
+                      <View
+                        style={{
+                          alignItems: isRTL ? "flex-end" : "flex-start",
+                        }}
+                      >
+                        <Text
+                          style={{
                             color: colors.text,
-                            textAlign: isRTL ? 'right' : 'left'
-                          }} 
+                            textAlign: isRTL ? "right" : "left",
+                          }}
                           className="font-pmedium"
                         >
                           {item.label}
                         </Text>
                         {item.sublabel && (
-                          <Text 
-                            style={{ 
+                          <Text
+                            style={{
                               color: colors.textSecondary,
-                              textAlign: isRTL ? 'right' : 'left'
-                            }} 
+                              textAlign: isRTL ? "right" : "left",
+                            }}
                             className="font-pregular text-sm mt-1"
                           >
                             {item.sublabel}
@@ -146,9 +158,9 @@ export const CustomDropdown: React.FC<ExtendedCustomDropdownProps> = ({
                         )}
                       </View>
                       {value === item.id && (
-                        <Ionicons 
-                          name="checkmark-circle" 
-                          size={24} 
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={24}
                           color={colors.primary}
                         />
                       )}

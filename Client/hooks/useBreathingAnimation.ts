@@ -125,14 +125,12 @@ export const useBreathingAnimation = (
       (currentPattern === "4-7-8" ? 0 : pattern.holdOut);
     let currentTime = 0;
 
-    // Start with sound
     restartSound();
 
     const updatePhaseAndTime = () => {
       phaseTimerRef.current = setInterval(() => {
         currentTime = (currentTime + 1000) % totalCycleDuration;
 
-        // Check if we're starting a new cycle
         if (currentTime === 0) {
           cycleCountRef.current += 1;
           setTimeout(() => {

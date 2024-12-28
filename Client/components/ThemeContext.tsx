@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useColorScheme } from 'react-native';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useColorScheme } from "react-native";
 
-type ThemeType = 'light' | 'dark';
+type ThemeType = "light" | "dark";
 
 interface ThemeContextType {
   theme: ThemeType;
@@ -11,9 +11,13 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const systemColorScheme = useColorScheme();
-  const [theme, setTheme] = useState<ThemeType>(systemColorScheme as ThemeType || 'light');
+  const [theme, setTheme] = useState<ThemeType>(
+    (systemColorScheme as ThemeType) || "light"
+  );
 
   useEffect(() => {
     loadTheme();
@@ -21,25 +25,24 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const loadTheme = async () => {
     try {
-      const savedTheme = await AsyncStorage.getItem('theme');
+      const savedTheme = await AsyncStorage.getItem("theme");
       if (savedTheme) {
         setTheme(savedTheme as ThemeType);
       } else {
-        // Use system theme if no saved preference
-        setTheme(systemColorScheme as ThemeType || 'light');
+        setTheme((systemColorScheme as ThemeType) || "light");
       }
     } catch (error) {
-      console.error('Error loading theme:', error);
+      console.error("Error loading theme:", error);
     }
   };
 
   const toggleTheme = async () => {
     try {
-      const newTheme = theme === 'light' ? 'dark' : 'light';
-      await AsyncStorage.setItem('theme', newTheme);
+      const newTheme = theme === "light" ? "dark" : "light";
+      await AsyncStorage.setItem("theme", newTheme);
       setTheme(newTheme);
     } catch (error) {
-      console.error('Error saving theme:', error);
+      console.error("Error saving theme:", error);
     }
   };
 
@@ -53,7 +56,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
 };

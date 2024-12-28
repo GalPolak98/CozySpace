@@ -1,6 +1,4 @@
-// services/websocketManager.ts
 import { EventEmitter } from 'events';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { AppState, AppStateStatus } from 'react-native';
 import * as BackgroundFetch from 'expo-background-fetch';
@@ -61,10 +59,8 @@ class WebSocketManager extends EventEmitter {
   private defineBackgroundTask(): void {
     TaskManager.defineTask(WEBSOCKET_TASK, async () => {
       try {
-        // Check connections
         await this.checkConnections();
         
-        // Log background data for each user
         this.wsStates.forEach((state, userId) => {
           this.logBackgroundDataDetails(userId);
         });
@@ -116,7 +112,6 @@ class WebSocketManager extends EventEmitter {
   
       if (nextAppState === 'background') {
         console.log('[CRITICAL] Entering background - forcing connection check');
-        // Force reconnection for all users
         for (const userId of this.wsStates.keys()) {
           try {
             if (!this.isConnected(userId)) {
@@ -128,10 +123,8 @@ class WebSocketManager extends EventEmitter {
           }
         }
       } else if (nextAppState === 'active') {
-        // Restore full connection frequency when app becomes active
         this.wsStates.forEach((state, userId) => {
           if (state.ws?.readyState === WebSocket.OPEN) {
-            // Restore original ping interval
             if (state.pingInterval) {
               clearInterval(state.pingInterval);
             }
@@ -166,7 +159,6 @@ class WebSocketManager extends EventEmitter {
     if (this.backgroundTaskRegistered) return;
 
     try {
-      // Only register the task
       await BackgroundFetch.registerTaskAsync(WEBSOCKET_TASK, {
         minimumInterval: 15 * 60, 
         stopOnTerminate: false,
@@ -217,7 +209,7 @@ class WebSocketManager extends EventEmitter {
       console.log(`[WebSocketManager] Emitting event: ${namespaceEvent}`, data);
       
       this.emit(namespaceEvent, data);
-      this.emit(event, data);  // For backward compatibility
+      this.emit(event, data);  
     } catch (error) {
       console.error('[WebSocketManager] Error in emitWithNamespace:', error);
     }
@@ -229,7 +221,6 @@ class WebSocketManager extends EventEmitter {
       return;
     }
   
-    // If there's already a connection attempt in progress, wait for it
     if (this.connectionPromise) {
       console.log('[WebSocketManager] Connection already in progress, waiting...');
       return this.connectionPromise;
@@ -237,17 +228,14 @@ class WebSocketManager extends EventEmitter {
   
     const state = this.getState(userId);
   
-    // If already connected, just return
     if (state.ws?.readyState === WebSocket.OPEN) {
       console.log(`[WebSocketManager] Already connected for user: ${userId}`);
       this.emitWithNamespace(userId, 'connected');
       return;
     }
   
-    // Create and store the connection promise
     this.connectionPromise = new Promise<void>((resolve, reject) => {
       try {
-        // If already connecting, don't try again
         if (state.isConnecting) {
           console.log(`[WebSocketManager] Connection already in progress for user: ${userId}`);
           resolve();
@@ -268,18 +256,13 @@ class WebSocketManager extends EventEmitter {
           state.lastPingTime = Date.now();
           state.lastPongTime = Date.now();
   
-          // Clean up any existing ping interval
           if (state.pingInterval) {
             clearInterval(state.pingInterval);
           }
   
-          // Setup ping/pong
           this.setupPingPong(userId, state);
-  
-          // Emit connected event
           this.emitWithNamespace(userId, 'connected');
   
-          // Register user
           try {
             ws.send(JSON.stringify({
               type: 'register',
@@ -317,7 +300,7 @@ class WebSocketManager extends EventEmitter {
           state.lastDisconnectTime = Date.now();
           this.connectionPromise = null;
           
-          if (event.code !== 1000) { // Not a normal closure
+          if (event.code !== 1000) { 
             state.reconnectAttempts++;
           }
           
@@ -412,7 +395,6 @@ class WebSocketManager extends EventEmitter {
           break;
         default:
           console.log(`[WebSocketManager] Handling message type: ${data.type}`, data);
-          // For unknown message types, still try to emit the data
           this.emitWithNamespace(userId, data.type, data);
           this.emit(data.type, data);
       }
@@ -426,14 +408,12 @@ class WebSocketManager extends EventEmitter {
       backgroundDataIntervals: []
     };
     
-    // Track intervals between background data
     if (this.appState === 'background') {
       const now = Date.now();
       if (tracker.lastReceivedTimestamp) {
         const interval = now - tracker.lastReceivedTimestamp;
         tracker.backgroundDataIntervals.push(interval);
         
-        // Keep only last 5 intervals
         if (tracker.backgroundDataIntervals.length > 5) {
           tracker.backgroundDataIntervals.shift();
         }
@@ -486,7 +466,6 @@ class WebSocketManager extends EventEmitter {
   public async disconnect(userId: string): Promise<void> {
     console.log(`[WebSocketManager] Disconnecting user: ${userId}`);
     
-    // Clear any pending connection attempt
     this.connectionPromise = null;
     
     const state = this.wsStates.get(userId);
@@ -503,7 +482,6 @@ class WebSocketManager extends EventEmitter {
       state.isConnecting = false;
       state.isReconnecting = false;
       
-      // Clean up all listeners for this user
       this.removeAllUserListeners(userId);
     }
   }
@@ -529,14 +507,12 @@ class WebSocketManager extends EventEmitter {
     if (!isTemporary) {
       console.log('[WebSocketManager] Performing full cleanup');
       
-      // Close all connections first
       const disconnectPromises = Array.from(this.wsStates.keys()).map(userId => 
         this.disconnect(userId)
       );
       
       await Promise.all(disconnectPromises);
   
-      // Unregister background task
       if (this.backgroundTaskRegistered) {
         try {
           await BackgroundFetch.unregisterTaskAsync(WEBSOCKET_TASK);
@@ -546,7 +522,6 @@ class WebSocketManager extends EventEmitter {
         }
       }
   
-      // Clear all states and event listeners
       this.wsStates.clear();
       this.removeAllListeners();
     }

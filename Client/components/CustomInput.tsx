@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { Pressable, TextInput, View, KeyboardTypeOptions, I18nManager } from "react-native";
+import { Pressable, TextInput, View, KeyboardTypeOptions } from "react-native";
 import { useTheme } from "./ThemeContext";
 import { theme } from "../styles/Theme";
 import ThemedText from "./ThemedText";

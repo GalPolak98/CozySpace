@@ -1,11 +1,11 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import { theme } from '@/styles/Theme';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Tabs } from "expo-router";
+import React from "react";
+import { TabBarIcon } from "@/components/navigation/TabBarIcon";
+import { HeaderLeft, HeaderRight } from "@/components/navigation/HeaderButtons";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import { theme } from "@/styles/Theme";
+import { Platform } from "react-native";
 
 export default function TabLayout() {
   const { theme: currentTheme } = useTheme();
@@ -15,21 +15,21 @@ export default function TabLayout() {
   interface Tab {
     name: string;
     title: string;
-    iconName: 'home' | 'code-slash'; 
-   }
-   
-   const tabs: Tab[] = [
+    iconName: "home" | "code-slash";
+  }
+
+  const tabs: Tab[] = [
     {
-      name: 'home',
+      name: "home",
       title: t.tabsPatient.home,
-      iconName: 'home',
+      iconName: "home",
     },
     {
-      name: 'profile', 
+      name: "profile",
       title: t.tabsPatient.profile,
-      iconName: 'code-slash',
-    }
-   ];
+      iconName: "code-slash",
+    },
+  ];
 
   const orderedTabs = isRTL ? [...tabs].reverse() : tabs;
 
@@ -45,20 +45,20 @@ export default function TabLayout() {
         },
         headerTintColor: colors.text,
         headerTitleStyle: {
-          fontFamily: 'Poppins-SemiBold',
+          fontFamily: "Poppins-SemiBold",
           fontSize: 17,
           color: colors.text,
-          textAlign: isRTL ? 'right' : 'left',
+          textAlign: isRTL ? "right" : "left",
         },
         tabBarStyle: {
           backgroundColor: colors.bottomBar,
           borderTopColor: colors.border,
-          height: Platform.OS === 'ios' ? 88 : 68,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+          height: Platform.OS === "ios" ? 88 : 68,
+          paddingBottom: Platform.OS === "ios" ? 28 : 8,
           paddingTop: 8,
           ...Platform.select({
             ios: {
-              shadowColor: '#000',
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: -1 },
               shadowOpacity: 0.1,
               shadowRadius: 1,
@@ -71,13 +71,13 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarLabelStyle: {
-          fontFamily: 'Poppins-Medium',
+          fontFamily: "Poppins-Medium",
           fontSize: 12,
-          textAlign: isRTL ? 'right' : 'left',
+          textAlign: isRTL ? "right" : "left",
         },
       }}
     >
-      {orderedTabs.map(tab => (
+      {orderedTabs.map((tab) => (
         <Tabs.Screen
           key={tab.name}
           name={tab.name}
@@ -85,9 +85,9 @@ export default function TabLayout() {
             title: tab.title,
             headerTitle: "",
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon 
-              name={focused ? tab.iconName : `${tab.iconName}-outline`}
-              color={color}
+              <TabBarIcon
+                name={focused ? tab.iconName : `${tab.iconName}-outline`}
+                color={color}
                 size={24}
               />
             ),

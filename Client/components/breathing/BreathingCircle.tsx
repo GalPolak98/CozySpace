@@ -1,5 +1,5 @@
 import React from "react";
-import { Animated, StyleSheet } from "react-native";
+import { Animated } from "react-native";
 import ThemedText from "@/components/ThemedText";
 import { useTheme } from "../ThemeContext";
 import { theme } from "@/styles/Theme";

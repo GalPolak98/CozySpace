@@ -5,7 +5,6 @@ export interface BreathingPhase {
   duration: number;
 }
 
-// Define specific phase structures for each pattern
 interface BoxBreathingPhases {
   inhale: BreathingPhase;
   holdIn: BreathingPhase;

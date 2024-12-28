@@ -1,4 +1,4 @@
-import { TherapistModel, ITherapist } from '../models/Therapist';
+import { TherapistModel } from '../models/Therapist';
 
 export class TherapistService {
   async getAllActiveTherapists() {

@@ -1,6 +1,6 @@
-import { PatientModel, IPatient } from '../models/Patient';
-import { UserModel, IUser } from '../models/User';
-import { TherapistModel, ITherapist } from '../models/Therapist';
+import { PatientModel } from '../models/Patient';
+import { UserModel } from '../models/User';
+import { TherapistModel } from '../models/Therapist';
 import mongoose from 'mongoose';
 
 class UserService {
@@ -175,7 +175,7 @@ async getNotesForUser(userId: string) {
   if (!patient) {
     throw new Error('Patient not found');
   }
-  return patient.notes;  // Assuming 'notes' is an array field in PatientModel
+  return patient.notes;  
 }
 
 
@@ -189,15 +189,13 @@ async updateNoteForUser(userId: string, noteId: string, noteData: any) {
       throw new Error('Patient not found');
     }
 
-    // Find the note by its ID
     const note = patient.notes.find(n => n._id.toString() === noteId);
     if (!note) {
       throw new Error('Note not found');
     }
 
-    // Update the note's content
     note.content = noteData.content || note.content;
-    note.timestamp = noteData.timestamp || note.timestamp; // update timestamp if provided
+    note.timestamp = noteData.timestamp || note.timestamp; 
 
     await patient.save({ session });
 
@@ -234,7 +232,6 @@ async saveRecording(userId: string, recordingData: any) {
   }
 }
 
-// Delete a note for a user
 async deleteNoteForUser(userId: string, noteId: string) {
   const session = await PatientModel.startSession();
   session.startTransaction();
@@ -245,18 +242,16 @@ async deleteNoteForUser(userId: string, noteId: string) {
       throw new Error('Patient not found');
     }
 
-    // Find the note based on noteId (_id)
     const noteIndex = patient.notes.findIndex(note => note._id.toString() === noteId);
     if (noteIndex === -1) {
       throw new Error('Note not found');
     }
 
-    // Remove the note from the array
     const deletedNote = patient.notes.splice(noteIndex, 1);
     await patient.save({ session });
 
     await session.commitTransaction();
-    return deletedNote[0]; // Return the deleted note
+    return deletedNote[0]; 
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -406,5 +401,4 @@ async getAllPatients() {
 }
 }
 
-// Create and export a single instance
 export const userService = new UserService();

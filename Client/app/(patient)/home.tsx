@@ -12,9 +12,8 @@ import * as Location from "expo-location";
 import useAuth from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import Loader from "@/components/Loader";
-import { websocketManager } from "@/services/websocketManager";
 import { useWebSocketConnection } from "@/hooks/useWebSocketConnection";
-import { AnxietyDataViewer } from "@/components/AnxietyDataViewer";
+import { AnxietyDataViewer } from "@/components/sensorData/AnxietyDataViewer";
 import { useFeatures } from "@/hooks/useFeatures";
 
 type RouteType =

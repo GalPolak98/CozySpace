@@ -1,12 +1,9 @@
 import axios from 'axios';
 import { Gender, Language} from '@/types/chat';
-import { userService } from './userService';
 import * as Location from 'expo-location';
 import { SYSTEM_PROMPT, INITIAL_MESSAGE_PROMPT, getGenderAwarePrompt } from '@/constants/prompts';
 import { INITIAL_MESSAGES } from '@/constants/messages';
 import { EMERGENCY_TERMS, RESPONSE_BANK } from '@/constants/responseBank';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useUserData } from '@/hooks/useUserData';
 
 interface ChatResponse {
   text: string;

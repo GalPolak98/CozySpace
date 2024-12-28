@@ -1,4 +1,3 @@
-// services/sensorService.ts
 import { SensorConfig, SensorData, AnxietyAnalysis } from '@/types/sensorTypes';
 import { websocketManager } from './websocketManager';
 
@@ -57,14 +56,12 @@ class SensorService {
   ): () => void {
     console.log('[SensorService] Adding sensor data listener for user:', userId);
 
-    // Use the websocketManager for data subscription
     websocketManager.on('sensorData', (data) => {
       if (data.userId === userId || data.sensorData.userId === userId) {
         callback(data);
       }
     });
 
-    // Return cleanup function
     return () => {
       console.log('[SensorService] Removing sensor data listener for user:', userId);
       websocketManager.removeAllListeners('sensorData');

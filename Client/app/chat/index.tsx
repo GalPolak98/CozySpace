@@ -5,7 +5,6 @@ import {
   Platform,
   KeyboardAvoidingView,
   Keyboard,
-  ActivityIndicator,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { createChatService } from "@/services/chatService";
@@ -20,7 +19,6 @@ import { useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
 import { useLanguage } from "@/context/LanguageContext";
 import useAuth from "@/hooks/useAuth";
-import { useLocalSearchParams } from "expo-router";
 import { useUserData } from "@/hooks/useUserData";
 
 const ChatScreen = () => {

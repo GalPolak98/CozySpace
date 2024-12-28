@@ -1,4 +1,3 @@
-// Define message types
 interface Message {
   id: string;
   text: string;

@@ -1,4 +1,3 @@
-// CustomButton.tsx
 import React, { ReactNode } from "react";
 import {
   ActivityIndicator,
@@ -38,13 +37,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
-  // Adjust icon position based on RTL
-  const effectiveIconPosition = isRTL
-    ? iconPosition === "left"
-      ? "right"
-      : "left"
-    : iconPosition;
-
   const getButtonStyles = () => {
     let baseStyles = {
       minHeight: 48,
@@ -69,7 +61,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
           borderColor: colors.primary,
         };
         break;
-      default: // primary
+      default:
         variantStyles = {
           backgroundColor: colors.primary,
         };
@@ -102,7 +94,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         return colors.primary;
       case "secondary":
         return colors.text;
-      default: // primary
+      default:
         return currentTheme === "light" ? "#000000" : "#FFFFFF";
     }
   };
@@ -121,7 +113,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   const renderContent = () => {
     const elements = [];
 
-    // Add icon based on effective position
     if (icon && !isRTL) {
       elements.push(
         <View key="icon-left" style={{ marginRight: 8 }}>
@@ -130,14 +121,12 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       );
     }
 
-    // Add text
     elements.push(
       <ThemedText key="text" style={getTextStyles()} isRTL={isRTL}>
         {title}
       </ThemedText>
     );
 
-    // Add icon based on effective position
     if (icon && isRTL) {
       elements.push(
         <View key="icon-right" style={{ marginLeft: 8 }}>
@@ -146,7 +135,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       );
     }
 
-    // Add loader if loading
     if (isLoading) {
       elements.push(
         <ActivityIndicator

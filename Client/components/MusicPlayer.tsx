@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ViewStyle,
-  Platform,
 } from "react-native";
 import { Audio } from "expo-av";
 import { useTheme } from "@/components/ThemeContext";
@@ -65,7 +64,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     }
   };
 
-  // Initialize audio
   useEffect(() => {
     const initAudio = async () => {
       await Audio.setAudioModeAsync({
@@ -82,14 +80,12 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     };
   }, []);
 
-  // Handle tab changes
   useEffect(() => {
     if (!pathname.includes("profile")) {
       stopSound();
     }
   }, [pathname]);
 
-  // Handle category changes
   useEffect(() => {
     stopSound();
   }, [selectedCategory]);
@@ -109,7 +105,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
         onTrackSelect?.(trackItem.id);
       }
 
-      // Stop current sound if playing
       await stopSound();
 
       // If we're clicking the same track that was playing, just stop it

@@ -1,11 +1,10 @@
 import React from "react";
-import { View, ScrollView, Platform } from "react-native";
+import { View, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/components/ThemeContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { theme } from "@/styles/Theme";
 import CustomButton from "@/components/CustomButton";
-import { Ionicons } from "@expo/vector-icons";
 
 interface OnboardingContainerProps {
   children: React.ReactNode;

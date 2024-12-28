@@ -74,7 +74,6 @@ export default function Index() {
 
     const checkAuth = async () => {
       try {
-        // Check AsyncStorage first to avoid unnecessary auth checks
         const existingToken = await AsyncStorage.getItem("userToken");
 
         if (!isSubscribed) return;
@@ -191,6 +190,7 @@ export default function Index() {
         >
           {t.onboarding[item.titleKey].title}
         </ThemedText>
+        <ThemedText>isRTL = {isRTL ? "true" : "false"}</ThemedText>
         <ThemedText
           variant="secondary"
           className="text-lg font-pregular text-center px-8 leading-7"

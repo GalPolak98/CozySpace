@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
-import { FeatureOption } from './FeatureOption';
-import { MusicSelectionSection } from './MusicSelectionSection';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import { theme } from '@/styles/Theme';
+import React from "react";
+import { View, Text } from "react-native";
+import { FeatureOption } from "./FeatureOption";
+import { MusicSelectionSection } from "./MusicSelectionSection";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import { theme } from "@/styles/Theme";
 
 interface PatientCustomizationStepProps {
   useSmartJewelry: boolean;
@@ -15,11 +15,13 @@ interface PatientCustomizationStepProps {
   setPlayMusic: (value: boolean) => void;
   selectedMusic: string | null;
   setSelectedMusic: (value: string) => void;
-  selectedTrack: string | null; 
-  setSelectedTrack: (value: string | null) => void; 
+  selectedTrack: string | null;
+  setSelectedTrack: (value: string | null) => void;
 }
 
-export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> = ({
+export const PatientCustomizationStep: React.FC<
+  PatientCustomizationStepProps
+> = ({
   useSmartJewelry,
   setUseSmartJewelry,
   enableVibrations,
@@ -39,11 +41,11 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
     <View className="space-y-6">
       {/* Smart Jewelry Section */}
       <View className="bg-surface p-4 space-y-4">
-        <Text 
-          style={{ 
+        <Text
+          style={{
             color: colors.text,
-            textAlign: isRTL ? 'right' : 'left' 
-          }} 
+            textAlign: isRTL ? "right" : "left",
+          }}
           className="text-lg font-pbold"
         >
           {t.customization.smartJewelryTitle}
@@ -54,13 +56,12 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
           description={t.customization.jewelryDescription}
           isEnabled={useSmartJewelry}
           onToggle={() => {
-            if (useSmartJewelry === true) 
-            {
-              setEnableVibrations(false)
+            if (useSmartJewelry === true) {
+              setEnableVibrations(false);
             }
-            setUseSmartJewelry(!useSmartJewelry)
+            setUseSmartJewelry(!useSmartJewelry);
           }}
-          iconName={useSmartJewelry ? 'bluetooth' : 'bluetooth-outline'}
+          iconName={useSmartJewelry ? "bluetooth" : "bluetooth-outline"}
           isRTL={isRTL}
         />
 
@@ -70,7 +71,7 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
             description={t.customization.vibrationDescription}
             isEnabled={enableVibrations}
             onToggle={() => setEnableVibrations(!enableVibrations)}
-            iconName={enableVibrations ? 'pulse' : 'pulse-outline'}
+            iconName={enableVibrations ? "pulse" : "pulse-outline"}
             isRTL={isRTL}
           />
         )}
@@ -78,11 +79,11 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
 
       {/* Music Therapy Section */}
       <View className="bg-surface p-4 space-y-4">
-        <Text 
-          style={{ 
+        <Text
+          style={{
             color: colors.text,
-            textAlign: isRTL ? 'right' : 'left' 
-          }} 
+            textAlign: isRTL ? "right" : "left",
+          }}
           className="text-lg font-pbold"
         >
           {t.customization.musicTherapyTitle}
@@ -95,11 +96,11 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
           onToggle={() => {
             setPlayMusic(!playMusic);
             if (!playMusic) {
-              setSelectedMusic('');
+              setSelectedMusic("");
               setSelectedTrack(null);
             }
           }}
-          iconName={playMusic ? 'musical-notes' : 'musical-notes-outline'}
+          iconName={playMusic ? "musical-notes" : "musical-notes-outline"}
           isRTL={isRTL}
         />
 
@@ -107,7 +108,7 @@ export const PatientCustomizationStep: React.FC<PatientCustomizationStepProps> =
           <View className="space-y-4 mt-4">
             <MusicSelectionSection
               selectedMusic={selectedMusic}
-              setSelectedMusic={category => {
+              setSelectedMusic={(category) => {
                 setSelectedMusic(category);
               }}
               selectedTrack={selectedTrack}

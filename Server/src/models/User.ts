@@ -1,4 +1,3 @@
-// models/User.ts
 import mongoose from 'mongoose';
 import { TherapistModel } from './Therapist';
 import { PatientModel } from './Patient';
@@ -15,21 +14,18 @@ const UserSchema = new mongoose.Schema({
 
 export const UserModel = mongoose.model<IUser>('User', UserSchema);
 
-// Updated UserService
 export class UserService {
   async registerUser(userData: any) {
     const session = await UserModel.startSession();
     session.startTransaction();
 
     try {
-      // Create base user with only userId and userType
       const user = new UserModel({
         userId: userData.userId,
         userType: userData.userType
       });
       await user.save({ session });
 
-      // Create type-specific profile
       if (userData.userType === 'patient') {
         const patient = new PatientModel({
           userId: userData.userId,

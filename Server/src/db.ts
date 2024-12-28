@@ -9,7 +9,6 @@ const clientOptions = { serverApi: { version: ServerApiVersion.v1, strict: true,
 
 async function connectToDatabase() {
   try {
-    // const uri = `mongodb+srv://galpolak:${process.env.MONGO_PASSWORD}@anxietyprojectdb.2gqxl.mongodb.net/?retryWrites=true&w=majority&appName=AnxietyProjectDB`;    
     const uri = `mongodb+srv://galpolak:${process.env.MONGO_PASSWORD}@anxietyprojectdb.2gqxl.mongodb.net/AnxiEase?retryWrites=true&w=majority&appName=AnxietyProjectDB`;
 
     await mongoose.connect(uri, clientOptions);
@@ -21,7 +20,7 @@ async function connectToDatabase() {
     }
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
-    throw error; // Rethrow the error so the server can handle it
+    throw error; 
   }
 }
 

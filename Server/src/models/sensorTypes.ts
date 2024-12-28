@@ -1,4 +1,3 @@
-// types/sensorTypes.ts
 import { WebSocket } from 'ws';
 
 export interface SensorData {

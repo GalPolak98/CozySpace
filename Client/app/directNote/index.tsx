@@ -1,28 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import useAuth from '../../hooks/useAuth';
-import NoteCard from '../../components/notes/NoteCard';
-import NoteModal from '../../components/notes/NoteModal';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import ThemedText from '@/components/ThemedText';
-import NotebookInput from '../../components/notes/NoteInput';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { theme } from '@/styles/Theme';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { useUserData } from '@/hooks/useUserData';
+import React, { useState, useEffect } from "react";
+import { View, Alert, StyleSheet, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import useAuth from "../../hooks/useAuth";
+import NoteCard from "../../components/notes/NoteCard";
+import NoteModal from "../../components/notes/NoteModal";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import ThemedText from "@/components/ThemedText";
+import NotebookInput from "../../components/notes/NoteInput";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { theme } from "@/styles/Theme";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useUserData } from "@/hooks/useUserData";
 
 const NotesSection: React.FC = () => {
-  const [note, setNote] = useState<string>('');
-  const [notes, setNotes] = useState<{ _id: string; content: string; timestamp: string }[]>([]);
-  const [selectedNote, setSelectedNote] = useState<{ _id: string; content: string; timestamp: string } | null>(null);
+  const [note, setNote] = useState<string>("");
+  const [notes, setNotes] = useState<
+    { _id: string; content: string; timestamp: string }[]
+  >([]);
+  const [selectedNote, setSelectedNote] = useState<{
+    _id: string;
+    content: string;
+    timestamp: string;
+  } | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editedNote, setEditedNote] = useState('');
+  const [editedNote, setEditedNote] = useState("");
   const userId = useAuth();
-  const { 
-    gender,  
-  } = useUserData(userId);
+  const { gender } = useUserData(userId);
   const { t, isRTL, getGenderedText } = useLanguage();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
@@ -31,12 +35,12 @@ const NotesSection: React.FC = () => {
 
   const getCurrentDateTime = () => {
     const now = new Date();
-    return now.toLocaleString(isRTL ? 'he-IL' : 'en-US');
+    return now.toLocaleString(isRTL ? "he-IL" : "en-US");
   };
 
   useEffect(() => {
     const loadDraftNote = async () => {
-      const savedDraft = await AsyncStorage.getItem('draftNote');
+      const savedDraft = await AsyncStorage.getItem("draftNote");
       if (savedDraft) {
         setNote(savedDraft);
       }
@@ -45,18 +49,16 @@ const NotesSection: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    AsyncStorage.setItem('draftNote', note);
+    AsyncStorage.setItem("draftNote", note);
   }, [note]);
 
   const parseTimestamp = (timestamp: string): number => {
     if (isRTL) {
-      // Hebrew date format parsing
-      const [datePart, timePart] = timestamp.split(', ');
-      const [day, month, year] = datePart.split('.').map(Number);
-      const [hours, minutes, seconds] = timePart.split(':').map(Number);
+      const [datePart, timePart] = timestamp.split(", ");
+      const [day, month, year] = datePart.split(".").map(Number);
+      const [hours, minutes, seconds] = timePart.split(":").map(Number);
       return new Date(year, month - 1, day, hours, minutes, seconds).getTime();
     } else {
-      // English date format parsing
       return new Date(timestamp).getTime();
     }
   };
@@ -64,22 +66,27 @@ const NotesSection: React.FC = () => {
   const loadNotes = async () => {
     if (!userId) return;
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/latest`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to fetch notes');
+      if (!response.ok) throw new Error("Failed to fetch notes");
 
       const fetchedNotes = (await response.json()).notes;
 
       const sortedNotes = Array.isArray(fetchedNotes)
-        ? fetchedNotes.sort((a, b) => parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp))
+        ? fetchedNotes.sort(
+            (a, b) => parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp)
+          )
         : [fetchedNotes];
 
       setNotes(sortedNotes);
     } catch (error) {
-      console.error('Failed to fetch notes', error);
+      console.error("Failed to fetch notes", error);
       Alert.alert(t.common.error, t.note.fetchError);
     }
   };
@@ -89,7 +96,7 @@ const NotesSection: React.FC = () => {
   }, [userId]);
 
   const addNote = async () => {
-    if (note.trim() === '') return;
+    if (note.trim() === "") return;
 
     const newNote = {
       userId,
@@ -97,22 +104,25 @@ const NotesSection: React.FC = () => {
       timestamp: getCurrentDateTime(),
     };
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/addNotes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newNote),
-      });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/addNotes`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newNote),
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to save note');
+      if (!response.ok) throw new Error("Failed to save note");
 
       const savedNote = await response.json();
-      setNotes(prevNotes => [savedNote, ...prevNotes]);
-      setNote('');
-      await AsyncStorage.removeItem('draftNote');
+      setNotes((prevNotes) => [savedNote, ...prevNotes]);
+      setNote("");
+      await AsyncStorage.removeItem("draftNote");
       loadNotes();
       Alert.alert(t.common.success, t.note.saveSuccess);
     } catch (error) {
-      console.error('Failed to save note', error);
+      console.error("Failed to save note", error);
       Alert.alert(t.common.error, t.note.saveError);
     }
   };
@@ -121,96 +131,113 @@ const NotesSection: React.FC = () => {
     if (!userId || !noteId) return;
 
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to delete note');
+      if (!response.ok) throw new Error("Failed to delete note");
 
       loadNotes();
       Alert.alert(t.common.success, t.note.deleteSuccess);
     } catch (error) {
-      console.error('Error deleting note:', error);
+      console.error("Error deleting note:", error);
       Alert.alert(t.common.error, t.note.deleteError);
     }
   };
 
-  const updateNote = async (updatedNote: { _id: string; content: string; timestamp: string }) => {
+  const updateNote = async (updatedNote: {
+    _id: string;
+    content: string;
+    timestamp: string;
+  }) => {
     if (!updatedNote._id) return;
 
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedNote),
-      });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedNote),
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to update note');
+      if (!response.ok) throw new Error("Failed to update note");
 
       const savedNote = await response.json();
-      setNotes(prevNotes =>
-        prevNotes.map(note => (note._id === updatedNote._id ? savedNote : note))
+      setNotes((prevNotes) =>
+        prevNotes.map((note) =>
+          note._id === updatedNote._id ? savedNote : note
+        )
       );
-      setEditedNote('');
+      setEditedNote("");
       loadNotes();
       Alert.alert(t.common.success, t.note.updateSuccess);
     } catch (error) {
-      console.error('Failed to update note', error);
+      console.error("Failed to update note", error);
       Alert.alert(t.common.error, t.note.updateError);
     }
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9' }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: currentTheme === "dark" ? "#333" : "#F9F9F9" },
+      ]}
+    >
       <KeyboardAwareScrollView
-      keyboardOpeningTime={0}
-      keyboardShouldPersistTaps="handled"
-      scrollToOverflowEnabled={true}
-      enableOnAndroid={true}
-      enableAutomaticScroll={true}>
-        <View style={[styles.header, { width: '100%' }]}>
+        keyboardOpeningTime={0}
+        keyboardShouldPersistTaps="handled"
+        scrollToOverflowEnabled={true}
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+      >
+        <View style={[styles.header, { width: "100%" }]}>
           {notes.length > 0 && (
-            <NoteCard 
-              note={notes[0]} 
-              setSelectedNote={setSelectedNote} 
-              setEditedNote={setEditedNote} 
+            <NoteCard
+              note={notes[0]}
+              setSelectedNote={setSelectedNote}
+              setEditedNote={setEditedNote}
               setIsModalVisible={setIsModalVisible}
             />
           )}
-        </View>        
+        </View>
 
-        <View 
+        <View
           style={[
-            styles.inputContainer, 
+            styles.inputContainer,
             {
-              backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9',
-              paddingBottom: isKeyboardVisible ? 10 : insets.bottom
-            }
+              backgroundColor: currentTheme === "dark" ? "#333" : "#F9F9F9",
+              paddingBottom: isKeyboardVisible ? 10 : insets.bottom,
+            },
           ]}
         >
-        
-        <View style={{ width: '100%' }}>
-          <NotebookInput note={note} setNote={setNote} />
+          <View style={{ width: "100%" }}>
+            <NotebookInput note={note} setNote={setNote} />
+          </View>
+
+          <View style={[styles.addNoteButton, { width: "100%" }]}>
+            <TouchableOpacity
+              onPress={addNote}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: colors.primary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                },
+              ]}
+            >
+              <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
+                {getGenderedText(t.note.addNote, gender as string)}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
         </View>
-        
-        <View style={[styles.addNoteButton, { width: '100%' }]}>
-          <TouchableOpacity 
-            onPress={addNote} 
-            style={[
-              styles.button, 
-              { 
-                backgroundColor: colors.primary,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }
-            ]}
-          >
-            <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
-              {getGenderedText(t.note.addNote, gender as string)}
-            </ThemedText>
-          </TouchableOpacity>
-        </View>
-      </View>
       </KeyboardAwareScrollView>
 
       <NoteModal
@@ -250,7 +277,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   inputContainer: {
-    position: 'relative',
+    position: "relative",
     left: 0,
     right: 0,
     padding: 20,
@@ -262,15 +289,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
-export default NotesSection; 
+export default NotesSection;

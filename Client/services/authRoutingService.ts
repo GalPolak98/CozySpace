@@ -1,4 +1,3 @@
-// services/authRoutingService.ts
 import { router } from 'expo-router';
 import { auth } from '@/services/firebaseConfig';
 import { userService } from '@/services/userService';
@@ -67,7 +66,6 @@ export class AuthRoutingService {
         }
       })();
 
-      // Set the active navigation promise
       authManager.setActiveNavigation(navigationPromise);
       await navigationPromise;
 

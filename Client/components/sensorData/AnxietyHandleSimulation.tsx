@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   ActivityIndicator,
 } from "react-native";
 import { useTheme } from "@/components/ThemeContext";
@@ -172,8 +171,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   button: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 6,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",

@@ -36,7 +36,10 @@ export default function FeaturesScreen() {
     { key: "guidedNote", label: "Guided Note" },
     { key: "directNote", label: "Direct Note" },
     { key: "breathingExercises", label: "Breathing Exercises" },
-    { key: "anxietyDataViewer", label: "Anxiety Data Viewer" },
+    {
+      key: "anxietyDataViewer",
+      label: "Data From Sensors (Development only) ",
+    },
     { key: "recordings", label: "Voice Recordings" },
   ];
   useEffect(() => {

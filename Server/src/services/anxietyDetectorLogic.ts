@@ -115,7 +115,6 @@ export class AnxietyDetector {
       ) * 100).toFixed(1) + '%'
     });
 
-    // Store this reading for next time
     userState.lastReading = sensorData;
 
     const confidence = this.calculateConfidence(
@@ -264,7 +263,6 @@ export class AnxietyDetector {
       }
     }
 
-    // Add information about consecutive readings
     if (isCurrentlyAnxious) {
       triggers.push(`Anxiety pattern detected for ${consecutiveReadings} consecutive reading${consecutiveReadings > 1 ? 's' : ''}`);
     }

@@ -1,4 +1,3 @@
-// hooks/useFeatures.ts
 import { useState, useEffect } from 'react';
 import { featuresService } from '@/services/featuresService';
 import { IFeatures } from '@/types/features';

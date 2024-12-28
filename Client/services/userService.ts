@@ -12,7 +12,6 @@ class UserService {
       });
       clearTimeout(id);
       
-      // If response is not ok, throw error with more details
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);

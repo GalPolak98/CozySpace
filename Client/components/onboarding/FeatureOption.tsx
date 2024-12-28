@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Platform,
-  ViewStyle,
-} from "react-native";
+import { View, Text, TouchableOpacity, ViewStyle } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/components/ThemeContext";
 import { useLanguage } from "@/context/LanguageContext";

@@ -174,7 +174,6 @@ const initializeWebSocket = () => {
   });
 };
 
-// Cleanup function
 const cleanup = async () => {
   console.log('Starting server cleanup...');
 
@@ -211,7 +210,6 @@ const cleanup = async () => {
   console.log('Cleanup completed');
 };
 
-// Graceful shutdown handler
 const gracefulShutdown = async () => {
   console.log('Received shutdown signal');
   try {
@@ -227,7 +225,6 @@ const gracefulShutdown = async () => {
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
-// Connect to the database
 connectToDatabase()
   .then(() => {
     // Start the server only after successfully connecting to the database

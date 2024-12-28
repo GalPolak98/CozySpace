@@ -1,4 +1,3 @@
-// controllers/sensorController.ts
 import { RequestHandler } from 'express';
 import sensorService from '../services/sensorService';
 import { SensorConfig } from '../models/sensorTypes';
