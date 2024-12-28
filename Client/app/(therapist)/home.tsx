@@ -71,7 +71,6 @@ const TherapistHomeScreen = () => {
             "Content-Type": "application/json",
           },
         });
-        if (!response.ok) throw new Error(`Server returned ${response.status}`);
         const data = await response.json();
         setPatients(data.patients || []);
       } catch (err) {
@@ -173,40 +172,44 @@ const TherapistHomeScreen = () => {
   };
 
   const renderWelcomeSection = () => (
-    <View className="items-center mb-2" style={{ marginTop: 20 }}> 
-      <View className="bg-blue-100 rounded-full p-6 mb-4">
-        <Icon name="doctor" size={30} color={colors.primary} />
+    <View className="px-2 py-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl mx-4 mb-4">
+      <View className="items-center">
+        <View >
+          <MaterialIcons name="psychology" size={40} color={colors.primary} />
+        </View>
+        <ThemedText
+          className="font-psemibold text-2xl text-center"
+          isRTL={isRTL}
+          style={{ color: colors.text }}
+        >
+          {getGenderedText(t.common.welcome, gender as string)}
+        </ThemedText>
+        <ThemedText
+          className="font-pbold text-3xl text-center mt-1"
+          style={{ color: colors.primary }}
+        >
+          {fullName}
+        </ThemedText>
       </View>
-      <ThemedText
-        className="font-psemibold text-3xl text-center"
-        isRTL={isRTL}
-        style={{ color: colors.text }}
-      >
-        {getGenderedText(t.common.welcome, gender as string)},
-      </ThemedText>
-      <ThemedText
-        className="font-pbold text-3xl text-center text-blue-600 mt-2"
-        style={{ color: colors.primary }}
-      >
-        {fullName}
-      </ThemedText>
     </View>
   );
 
   const renderPickerSection = () => (
-    <View>
-    <ThemedText
-      style={[
-        styles.selectedText,
-        { color: colors.text },
-        isRTL && { textAlign: 'right' } // Adjust text alignment for RTL
-      ]}
-    >
-      {t.common.selectPatientMessage}
-    </ThemedText>
+    <View style={styles.pickerSection}>
+      <View style={styles.labelContainer}>
+        <ThemedText
+          style={[
+            styles.labelText,
+            { color: colors.text },
+            isRTL && { textAlign: 'right' }
+          ]}
+        >
+          {t.common.selectPatientMessage}
+        </ThemedText>
+      </View>
       <Pressable
         onPress={() => setModalVisible(true)}
-        style={[styles.pickerContainer, { borderColor: colors.border, backgroundColor: colors.background }]}
+        style={[styles.pickerContainer, { backgroundColor: colors.background }]}
       >
         <View style={styles.pickerButton}>
           <ThemedText style={[styles.selectedText, { color: colors.text }]}>
@@ -214,7 +217,7 @@ const TherapistHomeScreen = () => {
           </ThemedText>
           <Ionicons 
             name="chevron-down" 
-            size={16} 
+            size={20} 
             color={colors.primary}
           />
         </View>
@@ -232,7 +235,10 @@ const TherapistHomeScreen = () => {
               <ThemedText style={[styles.modalTitle, { color: colors.text }]}>
                 {t.common.select}
               </ThemedText>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <TouchableOpacity 
+                onPress={() => setModalVisible(false)}
+                style={styles.closeButton}
+              >
                 <ThemedText style={{ color: colors.primary }}>
                   {t.common.close}
                 </ThemedText>
@@ -244,7 +250,12 @@ const TherapistHomeScreen = () => {
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={styles.optionItem}
+                  style={[
+                    styles.patientOption,
+                    {
+                      backgroundColor: selectedPatient === item.userId ? `${colors.primary}15` : 'transparent'
+                    }
+                  ]}
                   onPress={() => {
                     setSelectedPatient(item.userId);
                     setModalVisible(false);
@@ -252,8 +263,7 @@ const TherapistHomeScreen = () => {
                 >
                   <ThemedText style={[
                     styles.optionText,
-                    { color: colors.text },
-                    selectedPatient === item.userId && { color: colors.primary }
+                    { color: selectedPatient === item.userId ? colors.primary : colors.text }
                   ]}>
                     {item.fullName}
                   </ThemedText>
@@ -266,78 +276,144 @@ const TherapistHomeScreen = () => {
     </View>
   );
 
-  const renderItem = () => (
-    <View className="px-1 py-1 flex-1">
-      {renderWelcomeSection()}
-      {renderPickerSection()}
-      
-
+  const renderActionButtons = () => (
+    <View style={styles.actionContainer}>
       {selectedPatient && !anxietyTracking && !personalDocumentation && (
-        <View style={{ alignItems: 'center', marginTop: 50 }}>
-          <ThemedText style={{ color: colors.text, textAlign: 'center' }}>
+        <View style={[
+          styles.noInfoContainer,
+          { backgroundColor: currentTheme === 'light' ? '#f9fafb' : '#1f2937' }
+        ]}>
+          <MaterialIcons 
+            name="info-outline" 
+            size={32} 
+            color={currentTheme === 'light' ? colors.text : '#9ca3af'} 
+          />
+          <ThemedText style={[styles.noInfoText, { color: colors.text }]}>
             {t.common.noSharedInfo}
           </ThemedText>
         </View>
       )}
-  
+
       {anxietyTracking && (
-        <View>
-        <CustomButton
-          title={menuItems[0].title}
-          icon={menuItems[0].icon}
-          handlePress={() => handleNavigation(menuItems[0].route)}
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            title={menuItems[0].title}
+            handlePress={() => handleNavigation(menuItems[0].route)}
           />
-      </View>
+        </View>
       )}
-  
+
       {personalDocumentation && (
-      <View>
-      <CustomButton
-        title={menuItems[1].title}
-        icon={menuItems[1].icon}
-        handlePress={() => handleNavigation(menuItems[1].route)}
-      />
-    </View>
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            title={menuItems[1].title}
+            handlePress={() => handleNavigation(menuItems[1].route)}
+          />
+        </View>
       )}
     </View>
   );
-  
 
   if (loading) {
     return (
-      <ThemedView className="flex-1 justify-center items-center">
+      <ThemedView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <ThemedText className="mt-4">{t.common.loading}</ThemedText>
+        <ThemedText style={styles.loadingText}>{t.common.loading}</ThemedText>
       </ThemedView>
     );
   }
 
   return (
-    <ThemedView className="flex-1">
+    <ThemedView style={styles.container}>
       <FlatList
         data={[1]}
-        renderItem={renderItem}
+        renderItem={() => (
+          <View style={styles.content}>
+            {renderWelcomeSection()}
+            {renderPickerSection()}
+            {renderActionButtons()}
+          </View>
+        )}
         keyExtractor={() => 'main'}
-        ListFooterComponent={() => <View style={{ paddingBottom: 10 }} />}
+        ListFooterComponent={() => <View style={styles.footer} />}
       />
     </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingTop: 16,
+  },
+  welcomeContainer: {
+    marginHorizontal: 16,
+    marginBottom: 32,
+    borderRadius: 24,
+    backgroundColor: '#EBF4FF',
+    padding: 24,
+  },
+  welcomeContent: {
+    alignItems: 'center',
+  },
+  iconContainer: {
+    backgroundColor: 'white',
+    borderRadius: 50,
+    padding: 24,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  welcomeText: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 24,
+    textAlign: 'center',
+  },
+  nameText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 28,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  pickerSection: {
+    paddingHorizontal: 16,
+  },
+  labelContainer: {
+    marginBottom: 16,
+  },
+  labelText: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Medium',
+  },
   pickerContainer: {
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
+    borderColor: '#e2e8f0',
     overflow: "hidden",
     marginBottom: 5,
-    backgroundColor: '#f8fafc',
-    position: 'relative',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  picker: {
-    height: 30,
-    width: "100%",
-    paddingHorizontal: 16,
-    fontSize: 16,
+  pickerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
   },
   centeredView: {
     flex: 1,
@@ -345,49 +421,80 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: -2
     },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowRadius: 8,
     elevation: 5,
-    maxHeight: '30%',
+    maxHeight: '50%',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontFamily: 'Poppins-SemiBold',
   },
-  optionItem: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  closeButton: {
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  patientOption: {
+    borderRadius: 12,
+    marginBottom: 8,
+    padding: 16,
   },
   optionText: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: 'Poppins-Regular',
   },
   selectedText: {
     fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-    padding: 15,
+    fontFamily: 'Poppins-Medium',
+    padding: 16,
   },
-  pickerButton: {
-    flexDirection: 'row',
+  actionContainer: {
+    paddingHorizontal: 16,
+    marginTop: 32,
+  },
+  noInfoContainer: {
+    backgroundColor: '#f9fafb',
+    padding: 24,
+    borderRadius: 16,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 5,
-    paddingVertical: 5,
+  },
+  noInfoText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 16,
+    fontFamily: 'Poppins-Regular',
+  },
+  buttonContainer: {
+    marginBottom: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+  },
+  footer: {
+    paddingBottom: 20,
   },
 });
 

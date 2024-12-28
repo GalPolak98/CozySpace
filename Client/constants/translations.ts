@@ -470,7 +470,7 @@ export const translations = {
           inputOptions: "אפשרויות קלט",
           select: "בחר",
           noSharedInfo:"המטופל לא משתף כרגע מידע איתך.",
-          selectPatientMessage : "בחר מטופל למעקב במידע שלו",
+          selectPatientMessage : "בחר מטופל למעקב אחר המידע שלו",
         },
         onboarding: {
           welcome: {

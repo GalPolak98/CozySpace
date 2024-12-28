@@ -57,9 +57,7 @@ useEffect(() => {
   const fetchAndFilterNotes = async () => {
     try {
       const targetId = patientId || userId;
-      if (!targetId) {
-        throw new Error('No valid user or patient ID');
-      }
+
       console.log('Fetching notes for user!!!!!!!!!:', targetId);
       const fetchedNotes = await loadNotes(targetId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
 
@@ -88,9 +86,7 @@ useEffect(() => {
 
     try {
       const targetId = patientId || userId;
-      if (!targetId) {
-        throw new Error('No valid user or patient ID');
-      }
+
       const fetchedGuidedNotes = await loadGuidedNotes(targetId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
 
       const filteredNotes = fetchedGuidedNotes.filter((guidedNote) => {
@@ -159,9 +155,7 @@ useEffect(() => {
 
       try {
         const targetId = patientId || userId;
-        if (!targetId) {
-          throw new Error('No valid user or patient ID');
-        }  
+
         const fetchedNotifications = await loadNotifications(targetId, isRTL, t as { common: { error: string }; notifications: { fetchError: string } });
   
         console.log(fetchedNotifications); 
