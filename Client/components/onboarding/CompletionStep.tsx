@@ -1,14 +1,14 @@
-import React from 'react';
-import { View } from 'react-native';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import { theme } from '@/styles/Theme';
-import { Ionicons } from '@expo/vector-icons';
-import ThemedText from '@/components/ThemedText';
-import ThemedView from '@/components/ThemedView';
+import React from "react";
+import { View } from "react-native";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import { theme } from "@/styles/Theme";
+import { Ionicons } from "@expo/vector-icons";
+import ThemedText from "@/components/ThemedText";
+import ThemedView from "@/components/ThemedView";
 
 interface CompletionStepProps {
-  userType: 'patient' | 'therapist';
+  userType: "patient" | "therapist";
 }
 
 export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
@@ -17,14 +17,14 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
   const colors = theme[currentTheme];
 
   const getContent = () => {
-    if (userType === 'therapist') {
+    if (userType === "therapist") {
       return {
         features: [
           t.therapistFeatures.patientTracking,
           t.therapistFeatures.secureCommunication,
           t.therapistFeatures.dashboard,
-          t.therapistFeatures.patientTools
-        ]
+          t.therapistFeatures.patientTools,
+        ],
       };
     }
     return {
@@ -32,8 +32,8 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
         t.patientFeatures.anxietyTracking,
         t.patientFeatures.smartJewelry,
         t.patientFeatures.musicTherapy,
-        t.patientFeatures.professionalSupport
-      ]
+        t.patientFeatures.professionalSupport,
+      ],
     };
   };
 
@@ -43,31 +43,31 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
     <View className="flex-1 items-center px-4">
       <View className="items-center space-y-8 w-full max-w-md">
         <View className="py-2">
-          <Ionicons 
-            name="checkmark-circle" 
-            size={100} 
-            color={colors.primary}
-          />
+          <Ionicons name="checkmark-circle" size={100} color={colors.primary} />
         </View>
-        
+
         <View className="space-y-6 w-full">
           <View className="space-y-4">
-            <ThemedText 
+            <ThemedText
               variant="primary"
               className="text-2xl font-pbold text-center"
             >
-              {userType === 'therapist' ? t.completion.therapistTitle : t.completion.patientTitle}
+              {userType === "therapist"
+                ? t.completion.therapistTitle
+                : t.completion.patientTitle}
             </ThemedText>
-            
-            <ThemedText 
+
+            <ThemedText
               variant="secondary"
               className="text-base font-pregular px-4 text-center mb-6"
             >
-              {userType === 'therapist' ? t.completion.therapistMessage : t.completion.patientMessage}
+              {userType === "therapist"
+                ? t.completion.therapistMessage
+                : t.completion.patientMessage}
             </ThemedText>
           </View>
 
-          <ThemedView 
+          <ThemedView
             variant="surface"
             className="rounded-xl p-6 space-y-4"
             style={{
@@ -78,32 +78,39 @@ export const CompletionStep: React.FC<CompletionStepProps> = ({ userType }) => {
               elevation: 3,
             }}
           >
-            <ThemedText 
+            <ThemedText
               variant="primary"
               className="font-pbold text-lg mb-2"
               isRTL={isRTL}
             >
               {t.completion.availableFeatures}
             </ThemedText>
-            
+
             <View className="space-y-4">
               {content.features.map((feature, index) => (
-                <View 
-                  key={index} 
+                <View
+                  key={index}
                   className="flex-row items-center space-x-3"
-                  style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
+                  style={{
+                    flexDirection: isRTL ? "row-reverse" : "row",
+                    marginBottom: 4,
+                  }}
                 >
-                  <View 
+                  <View
                     className="rounded-full p-1"
-                    style={{ backgroundColor: `${colors.primary}20` }}
+                    style={{
+                      backgroundColor: `${colors.primary}20`,
+                      marginRight: isRTL ? 0 : 6,
+                      marginLeft: isRTL ? 6 : 0,
+                    }}
                   >
-                    <Ionicons 
-                      name="checkmark-circle" 
-                      size={24} 
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={24}
                       color={colors.primary}
                     />
                   </View>
-                  <ThemedText 
+                  <ThemedText
                     variant="primary"
                     className="font-pmedium flex-1"
                     isRTL={isRTL}

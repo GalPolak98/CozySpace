@@ -109,7 +109,7 @@ const InitialLayout = () => {
         <Stack.Screen
           name="index"
           options={{
-            headerTitle: "CozySpace",
+            headerTitle: "Cozy Space",
             headerTitleStyle: {
               fontFamily: "Poppins-SemiBold",
               color: colors.text,

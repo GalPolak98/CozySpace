@@ -7,6 +7,7 @@ import {
   ViewToken,
   Image,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import { router } from "expo-router";
 import CustomButton from "@/components/CustomButton";
@@ -37,25 +38,25 @@ const onboardingData: OnboardingItem[] = [
     id: "1",
     titleKey: "welcome",
     descriptionKey: "welcome",
-    image: require("@/assets/images/welcome.png"),
+    image: require("@/assets/images/CozySpaceWelcome.png"),
   },
   {
     id: "2",
     titleKey: "support",
     descriptionKey: "support",
-    image: require("@/assets/images/support.png"),
+    image: require("@/assets/images/RealTimeSupport.png"),
   },
   {
     id: "3",
     titleKey: "track",
     descriptionKey: "track",
-    image: require("@/assets/images/track.png"),
+    image: require("@/assets/images/TrackYourJourney.png"),
   },
   {
     id: "4",
     titleKey: "connect",
     descriptionKey: "connect",
-    image: require("@/assets/images/connect.png"),
+    image: require("@/assets/images/ConnectAngShare.png"),
   },
 ];
 
@@ -179,7 +180,11 @@ export default function Index() {
   };
 
   const renderItem = ({ item }: { item: OnboardingItem }) => (
-    <View style={[styles.slide, { width }]}>
+    <ScrollView
+      style={[styles.slide, { width }]}
+      contentContainerStyle={styles.slideContent}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.imageContainer}>
         <Image source={item.image} style={styles.image} resizeMode="contain" />
       </View>
@@ -190,7 +195,6 @@ export default function Index() {
         >
           {t.onboarding[item.titleKey].title}
         </ThemedText>
-        <ThemedText>isRTL = {isRTL ? "true" : "false"}</ThemedText>
         <ThemedText
           variant="secondary"
           className="text-lg font-pregular text-center px-8 leading-7"
@@ -199,7 +203,7 @@ export default function Index() {
           {t.onboarding[item.titleKey].description}
         </ThemedText>
       </View>
-    </View>
+    </ScrollView>
   );
 
   if (isCheckingAuth) {
@@ -208,7 +212,7 @@ export default function Index() {
 
   return (
     <ThemedView className="flex-1">
-      <View className="flex-1">
+      <View style={styles.container}>
         <FlatList
           data={onboardingData}
           renderItem={renderItem}
@@ -225,7 +229,6 @@ export default function Index() {
           viewabilityConfig={viewConfig}
           ref={slidesRef}
           scrollEventThrottle={32}
-          className="flex-1"
           inverted={isRTL}
         />
 
@@ -246,7 +249,7 @@ export default function Index() {
                   router.push("/(auth)/sign-in");
                 }
               }}
-              containerStyles={{ width: "100%", marginBottom: 16 }}
+              containerStyles={{ width: "100%", marginBottom: 6 }}
               variant="primary"
               textStyles="text-lg"
             />
@@ -268,15 +271,21 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   slide: {
     flex: 1,
-    alignItems: "center",
+  },
+  slideContent: {
+    flexGrow: 1,
     justifyContent: "center",
   },
   imageContainer: {
     width: width * 0.8,
     height: height * 0.4,
-    marginBottom: 40,
+    alignSelf: "center",
+    marginBottom: 10,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -285,14 +294,14 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   textContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     marginBottom: 20,
   },
   paginatorContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 24,
   },
   dot: {
     height: 8,
@@ -300,7 +309,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   bottomContainer: {
-    paddingBottom: height * 0.08,
+    paddingBottom: height * 0.05,
+    backgroundColor: "transparent",
   },
   buttonContainer: {
     paddingHorizontal: 24,

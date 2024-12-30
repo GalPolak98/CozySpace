@@ -42,7 +42,7 @@ export const translations = {
         },
         onboarding: {
           welcome: {
-            title: 'Welcome to CozySpace',
+            title: 'Welcome to Cozy Space',
             description: 'Your personal companion for finding peace and comfort in daily life.',
           },
           support: {
@@ -153,7 +153,7 @@ export const translations = {
 
 
           roleSelection: {
-            title: 'How would you like to use CozySpace?',
+            title: 'How would you like to use Cozy Space?',
             patientTitle: "I'm Seeking Help",
             patientDescription: 'Get personalized support, track your health data and connect with your therapist',
             therapistTitle: "I'm a Therapist",
@@ -183,7 +183,7 @@ export const translations = {
           customization: {
             smartJewelryTitle: 'Smart Jewelry Integration',
             enableJewelry: 'Enable Smart Jewelry',
-            jewelryDescription: 'Connect your CozySpace smart jewelry',
+            jewelryDescription: 'Connect your Cozy Space smart jewelry',
             vibrationAlerts: 'Anxiety Alert Vibrations',
             vibrationDescription: 'Activate gentle vibration when sensors detect anxiety',
             musicTherapyTitle: 'Music Therapy',
@@ -213,9 +213,9 @@ export const translations = {
           },
 
           completion: {
-            therapistTitle: "Welcome to CozySpace Professional",
+            therapistTitle: "Welcome to Cozy Space Professional",
             therapistMessage: "Your professional profile has been set up successfully. You can now start helping patients manage their anxiety effectively.",
-            patientTitle: "Welcome to CozySpace",
+            patientTitle: "Welcome to Cozy Space",
             patientMessage: "Your profile has been set up successfully. You're ready to start managing your health optimally with professional support.",            availableFeatures: "Available Features"
           },
           therapistFeatures: {
@@ -250,7 +250,7 @@ export const translations = {
             customizeExperience: "Customize Your Experience",
             setupTools: "Set up your stress and anxiety management tools",
             allSet: "You're All Set!",
-            welcomeProfessional: "Welcome to the CozySpace professional network",
+            welcomeProfessional: "Welcome to the Cozy Space professional network",
             startManaging: "Let's start managing your health together"
           },
 
@@ -433,7 +433,7 @@ export const translations = {
         },
         onboarding: {
           welcome: {
-            title: 'ברוכים הבאים ל CozySpace',
+            title: 'ברוכים הבאים ל Cozy Space',
             description: 'המלווה האישי שלך למציאת שלווה ונוחות בחיי היומיום.',
           },
           support: {
@@ -575,7 +575,7 @@ export const translations = {
 
 
           roleSelection: {
-            title: 'כיצד תרצה להשתמש ב CozySpace?',
+            title: 'כיצד תרצה להשתמש ב Cozy Space?',
             patientTitle: 'אני מחפש עזרה',
             
             patientDescription: 'קבל/י תמיכה מותאמת אישית, עקוב/י אחר נתוני הבריאות שלך והתחבר/י למטפל המקצועי שלך',
@@ -606,7 +606,7 @@ export const translations = {
           customization: {
             smartJewelryTitle: 'שילוב תכשיטים חכמים',
             enableJewelry: 'הפעל/י תכשיט חכם',
-            jewelryDescription: 'התחבר/י לתכשיטים החכמים של CozySpace',
+            jewelryDescription: 'התחבר/י לתכשיטים החכמים של Cozy Space',
             vibrationAlerts: 'התראות רטט לחרדה',
             vibrationDescription: 'הפעל/י רטט עדין בעת זיהוי חרדה ע"י החיישנים',
             musicTherapyTitle: 'תרפיה במוזיקה',
@@ -636,9 +636,9 @@ export const translations = {
           },
 
           completion: {
-            therapistTitle: "ברוכים הבאים ל-CozySpace Professional",
+            therapistTitle: "ברוכים הבאים ל-Cozy Space Professional",
             therapistMessage: "הפרופיל המקצועי שלך הוגדר בהצלחה. כעת תוכל/י להתחיל לעזור למטופלים לנהל את החרדה שלהם ביעילות.",
-            patientTitle: "ברוכים הבאים ל-CozySpace",
+            patientTitle: "ברוכים הבאים ל-Cozy Space",
             patientMessage: "הפרופיל שלך הוגדר בהצלחה. אתה מוכן להתחיל לנהל את הבריאות שלך בצורה הטובה ביותר עם תמיכה מקצועית.",
             availableFeatures: "תכונות זמינות"
           },
@@ -673,7 +673,7 @@ export const translations = {
             customizeExperience: "התאם/י אישית את החוויה שלך",
             setupTools: "הגדר/י את כלי ניהול מצבי הלחץ והחרדה שלך",
             allSet: "הכל מוכן!",
-            welcomeProfessional: "ברוכים הבאים לרשת המקצועית של CozySpace",
+            welcomeProfessional: "ברוכים הבאים לרשת המקצועית של Cozy Space",
             startManaging: "בוא/י נתחיל לנהל את הבריאות שלך יחד"
           },
           chat: {

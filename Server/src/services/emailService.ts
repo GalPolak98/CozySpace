@@ -50,7 +50,7 @@ export class EmailService {
         to: this.emergencyContactEmail,
         from: {
           email: this.fromEmail,
-          name: 'CozySpace Emergency Alert'
+          name: 'Cozy Space Emergency Alert'
         },
         subject: 'URGENT: Crisis Alert - Immediate Attention Required',
         text: this.generateEmergencyEmailText(notification),

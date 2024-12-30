@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "CozySpace",
+    "name": "Cozy Space",
     "slug": "AnxiEase",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     ],
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/CozySpaceIcon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -27,7 +27,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/CozySpaceIcon.png",
         "backgroundColor": "#ffffff"
       },
       "foregroundService": {

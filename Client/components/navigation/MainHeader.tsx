@@ -28,7 +28,7 @@ const MainHeader = () => {
 
         <ThemedView style={styles.titleContainer}>
           <ThemedText style={[styles.title, { color: colors.text }]}>
-            CozySpace
+            Cozy Space
           </ThemedText>
         </ThemedView>
 
