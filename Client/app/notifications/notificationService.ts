@@ -23,8 +23,9 @@ export async function saveNotificationToServer(notification: Notifications.Notif
       favoriteRelaxationMethod: data?.favoriteRelaxationMethod || '',
     };
 
+    console.log("!!!",userId)
     // Send the notification data to the backend API to save it in the database
-    const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/users/${userId}/notifications`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/notifications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,6 +34,7 @@ export async function saveNotificationToServer(notification: Notifications.Notif
       body: JSON.stringify(notificationData),
     });
 
+    console.log("!!!",response)
     const responseBody = await response.text();
     if (!response.ok) {
       throw new Error(`Failed to save notification to the server: ${responseBody}`);
@@ -59,7 +61,7 @@ export async function updateNotificationTapStatus(notificationId: string, tapped
     const encodedNotificationId = encodeURIComponent(notificationId); 
 
     const updateData = { tapped };
-    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/users/${userId}/notifications/${encodedNotificationId}`;
+    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/notifications/${encodedNotificationId}`;
     
 
     const response = await fetch(url, {

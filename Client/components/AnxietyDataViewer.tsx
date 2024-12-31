@@ -27,6 +27,7 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
     isConnected,
   } = useAnxietyMonitor(userId);
 
+  
   useEffect(() => {
     return () => {
       const namespace = `user_${userId}`;
@@ -44,6 +45,8 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
     }
 
     if (!sensorData || !analysis) {
+      console.log(sensorData, "sensor data!");
+      console.log(analysis, "analysis!");
       return (
         <Text style={[styles.noDataText, { color: colors.textSecondary }]}>
           Waiting for sensor data...

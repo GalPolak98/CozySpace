@@ -234,6 +234,31 @@ async saveRecording(userId: string, recordingData: any) {
   }
 }
 
+async getNotificationsForUser(userId: string) {
+  const patient = await PatientModel.findOne({ userId });
+  if (!patient) {
+    throw new Error('Patient not found');
+  }
+  return patient.notifications;  
+}
+
+
+async getRecordingsForUser(userId: string) {
+  const patient = await PatientModel.findOne({ userId });
+  if (!patient) {
+    throw new Error('Patient not found');
+  }
+  return patient.recordings;  
+}
+
+async getGuidedNotesForUser(userId: string) {
+  const patient = await PatientModel.findOne({ userId });
+  if (!patient) {
+    throw new Error('Patient not found');
+  }
+  return patient.guidedNotes;  
+}
+
 async saveNotification(userId: string, notificationData: any) {
   const session = await PatientModel.startSession();
   session.startTransaction();

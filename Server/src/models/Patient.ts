@@ -58,6 +58,17 @@ export interface IPatient extends IBaseModel {
         timestamp: string;
       }
     ];
+    notifications: [  
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true }, 
+        expoNotificationId: string;  
+
+        notificationTimestamp: Date;
+        tapped: boolean;
+        anxietyDuration: number;  
+        favoriteRelaxationMethod: string;
+      }
+    ];
     breathingSessions: IBreathingSession[];
   }
   
@@ -110,6 +121,17 @@ export interface IPatient extends IBaseModel {
       {
         uri: { type: String, required: true },
         timestamp: { type: String, required: true },
+      }
+    ],
+    notifications: [
+      {
+        _id: { type: Schema.Types.ObjectId, auto: true },  
+        expoNotificationId: { type: String, required: true },  
+
+        notificationTimestamp: { type: Date, required: false },
+        tapped: { type: Boolean, required: false },
+        anxietyDuration: { type: Number, required: false },
+        favoriteRelaxationMethod: { type: String, required: false },
       }
     ],
     breathingSessions: [{

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { websocketManager } from '@/services/websocketManager';
 import type { AnxietyAnalysis, SensorData } from '@/types/sensorTypes';
 import { useWebSocketConnection } from './useWebSocketConnection';
+import { sendPushNotification  } from '@/services/pushNotificationService'; // Import the new service
 
 interface AnxietyState {
   isAnxious: boolean;
@@ -23,6 +24,8 @@ export const activeListeners = new Map<string, ListenerInfo>();
 export const latestState = new Map<string, AnxietyState>();
 
 const anxietyMonitorSubscribers = new Map<string, number>();
+const expoPushToken = 'ExponentPushToken[0jtkRIA3sJ-heKfKPghNff]'; 
+
 
 export const useAnxietyMonitor = (userId: string) => {
   const [anxietyState, setAnxietyState] = useState<AnxietyState>(() => 
@@ -38,7 +41,6 @@ export const useAnxietyMonitor = (userId: string) => {
 
   const { isConnected } = useWebSocketConnection(userId);
   const stateUpdateRef = useRef(setAnxietyState);
-
   // Keep the state updater function reference current
   useEffect(() => {
     stateUpdateRef.current = setAnxietyState;
@@ -46,7 +48,6 @@ export const useAnxietyMonitor = (userId: string) => {
 
   useEffect(() => {
     if (!userId || !isConnected) return;
-
     const namespace = `user_${userId}`;
     const eventName = `sensorData_${namespace}`;
 
@@ -54,7 +55,6 @@ export const useAnxietyMonitor = (userId: string) => {
     const createHandler = () => (data: any) => {
       try {
         if (!data.data?.sensorData || !data.data?.analysis) return;
-        
         const { sensorData, analysis } = data.data;
         if (sensorData.userId !== userId) return;
 
@@ -66,10 +66,13 @@ export const useAnxietyMonitor = (userId: string) => {
           analysis,
           sensorData,
         };
-
+        console.log(newState, "new state");
         // Use the ref to ensure we're using the latest setState function
         stateUpdateRef.current(newState);
         latestState.set(userId, newState);
+        if (analysis.isAnxious) {
+          sendPushNotification(expoPushToken ,userId);
+        }
       } catch (error) {
         console.error('[useAnxietyMonitor] Error processing sensor data:', error);
       }
