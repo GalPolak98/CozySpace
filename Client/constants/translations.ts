@@ -84,7 +84,9 @@ export const translations = {
             change: 'Edit',
             weeklyAnxietyLevels: 'Anxiety Levels',
             selectStartDate: 'Select Start Date',
-            selectEndtDate: 'Select End Date'
+            selectEndtDate: 'Select End Date',
+            breathingSessions: 'Breathing Sessions',
+            averageBreathingSessionDuration: 'Average Breathing Session Duration',
           },
           information:{
             recordings: 'Recordings',
@@ -601,7 +603,9 @@ export const translations = {
             change: 'ערוך',
             weeklyAnxietyLevels: 'רמות חרדה ',
             selectStartDate: 'בחר תאריך התחלה',
-            selectEndtDate: 'בחר תאריך סיום'
+            selectEndtDate: 'בחר תאריך סיום',
+            breathingSessions: 'סשני נשימה',
+            averageBreathingSessionDuration: 'משך סשן נשימה ממוצע'
           },
           note: {
             placeholder: {

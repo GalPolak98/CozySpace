@@ -29,7 +29,6 @@ const parseTimestamp = (timestamp: string, isRTL: boolean): number => {
       // Hebrew date format parsing: DD.MM.YYYY, HH:mm:ss
       const [datePart, timePart] = timestamp.split(', ');
       if (!datePart || !timePart) {
-        console.warn('Invalid RTL timestamp format:', timestamp);
         return 0;
       }
 
@@ -85,7 +84,7 @@ export const loadNotes = async (
 
     return sortedNotes;
   } catch (error) {
-    console.error('Failed to fetch notes!!', error);
+    // console.error('Failed to fetch notes!!', error);
     Alert.alert(t.common.error, t.note.fetchError);
     return [];
   }
@@ -110,7 +109,7 @@ export const loadGuidedNotes = async (
       console.log(fetchedNotes)
       return fetchedNotes;
     } catch (error) {
-      console.error('Failed to fetch notes', error);
+      // console.error('Failed to fetch notes', error);
       Alert.alert(t.common.error, t.note.fetchError);
       return [];
     }

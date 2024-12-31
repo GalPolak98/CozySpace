@@ -11,6 +11,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { loadNotes, loadGuidedNotes } from '../../utils/notesUtils';  
 import { loadNotifications } from '../../utils/notificationsUtils'; 
 import { useLocalSearchParams } from 'expo-router';
+import { userService } from "@/services/userService";
 
 
 
@@ -31,14 +32,16 @@ const ReportsScreen = () => {
   const [averageAnxietyIntensity, setAverageAnxietyIntensity] = useState<number>(0); 
   const [weeklyData, setWeeklyData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
   const userId = useAuth();
-
+  const [breathingSessionCount, setBreathingSessionCount] = useState<number>(0);
+  const [averageBreathingSessionDuration, setAverageBreathingSessionDuration] = useState<number>(0);
+  
   const generateDayLabels = (startDate: Date, endDate: Date) => {
     const days = eachDayOfInterval({ start: startDate, end: endDate });
     return days.map(day => format(day, 'EEE'));
   };
 
   const dayLabels = generateDayLabels(dateRange.startDate, dateRange.endDate);
-  console.log('startDate', dateRange.startDate , 'endDate', dateRange.endDate);
+  // console.log('startDate', dateRange.startDate , 'endDate', dateRange.endDate);
 
   const markedDates = useMemo(() => {
     const marked: { [key: string]: { selected: boolean; selectedColor: string; selectedTextColor: string } } = {};
@@ -53,14 +56,16 @@ const ReportsScreen = () => {
     return marked;
   }, [dateRange]);
 
+
+  
 useEffect(() => {
   const fetchAndFilterNotes = async () => {
     try {
       const targetId = patientId || userId;
 
-      console.log('Fetching notes for user!!!!!!!!!:', targetId);
+      // console.log('Fetching notes for user!!!!!!!!!:', targetId);
       const fetchedNotes = await loadNotes(targetId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
-
+      // console.log('Fetched Notes:', fetchedNotes);
       // Filter notes based on dateRange
       const filteredNotes = fetchedNotes.filter((note) => {
         const noteDate = new Date(note.timestamp); // Parse the note's timestamp
@@ -71,7 +76,7 @@ useEffect(() => {
       });
 
           setNotesCount(filteredNotes.length); // Set count of filtered notes
-          console.log('Filtered Notes Count:', filteredNotes.length);
+          // console.log('Filtered Notes Count:', filteredNotes.length);
         } catch (error) {
           console.error('Failed to filter notes', error);
         }
@@ -135,7 +140,7 @@ useEffect(() => {
         });
 
         setWeeklyData(weeklyData);
-        console.log("Weekly Data after aggregation:", weeklyData);
+        // console.log("Weekly Data after aggregation:", weeklyData);
       } else {
         // Reset data if no notes match
         console.log("No notes match the date range");
@@ -155,10 +160,8 @@ useEffect(() => {
 
       try {
         const targetId = patientId || userId;
-
         const fetchedNotifications = await loadNotifications(targetId, isRTL, t as { common: { error: string }; notifications: { fetchError: string } });
   
-        console.log(fetchedNotifications); 
   
         if (Array.isArray(fetchedNotifications)) {
           const notificationsCount = fetchedNotifications.length;
@@ -167,12 +170,12 @@ useEffect(() => {
   
           if (notificationsCount > 0) {
             const totalAnxietyDuration = fetchedNotifications.reduce((sum, notification) => {
-              return sum + notification.anxietyDuration; // Assuming anxietyDuration is in each notification
+              return sum + notification.anxietyDuration; 
             }, 0);
             const averageEpisodeDuration = totalAnxietyDuration / notificationsCount;
-            setAverageEpisodeDuration(averageEpisodeDuration); // Set average duration
+            setAverageEpisodeDuration(averageEpisodeDuration);
           } else {
-            setAverageEpisodeDuration(0); // If no notifications, set to 0
+            setAverageEpisodeDuration(0); 
           }
         } else {
           console.error('Fetched notifications is not an array:', fetchedNotifications);
@@ -180,7 +183,7 @@ useEffect(() => {
           setAverageEpisodeDuration(0); // If no valid notifications, set average duration to 0
         }
       } catch (error) {
-        console.error('Failed to filter notifications', error);
+        console.error('Failed to filter notifications:', error);
         setNotifications(0); // On error, set count to 0
         setAverageEpisodeDuration(0); // On error, set average duration to 0
       }
@@ -190,7 +193,44 @@ useEffect(() => {
     fetchNotification();
   }, [dateRange, userId]); // Add isRTL and t to dependencies if they are used in loadNotifications
   
+  useEffect(() => {
+    const fetchBreathingSessions = async () => {
+      try {
+        const targetId = patientId || userId;
+        if (!targetId) {
+        // console.log("targetid:",targetId);
+        return; // Early exit if no valid ID is available
+      }
+        // Fetch the breathing session data
+        const response = await userService.getBreathingSession(targetId);
+        // console.log(response, "response!!!!!!!!!");
+
+        // Calculate the total number of sessions
+        setBreathingSessionCount(response.length);
   
+        // console.log(response.length, "response len!!!!!!!!!");
+
+
+        if (response.length > 0) {
+          const totalBreathingSession = response.reduce(
+            (sum: number, session: { durationSec: number }) => sum + session.durationSec,
+            0
+          );
+          const avgBreathingSession = totalBreathingSession / response.length;
+          setAverageBreathingSessionDuration(avgBreathingSession);
+        } else {
+          // Reset data if no notes match
+          console.log("No breathung sessions match the date range!");
+          setAverageBreathingSessionDuration(0);
+        }
+        
+      } catch (error) {
+        // console.log('Failed to fetch breathing sessions', error);
+      }
+    };
+  
+    fetchBreathingSessions();
+  }, [dateRange, userId]);
 
   const handleDayPress = (day: { dateString: string }) => {
     const selectedDate = new Date(day.dateString);
@@ -253,6 +293,18 @@ useEffect(() => {
             />
           </View>
 
+          <View className="flex-row justify-between mt-2">
+          <StatCard
+            title={t.reports.breathingSessions} 
+            value={breathingSessionCount.toString()}
+            icon="airplay" 
+          />
+          <StatCard
+            title={t.reports.averageBreathingSessionDuration} 
+            value={averageBreathingSessionDuration.toFixed(1)} 
+            icon="clock"
+          />
+          </View>
           <Chart weeklyData={{
             labels: dayLabels,  // Dynamically generated labels
             datasets: [{
@@ -269,7 +321,7 @@ useEffect(() => {
         isSelectingStartDate={isSelectingStartDate}
         handleDayPress={handleDayPress}
         setVisible={setDatePickerVisible}
-        markedDates={markedDates} // Pass markedDates to highlight the selected range
+        markedDates={markedDates} 
 
       />
     </ThemedView>

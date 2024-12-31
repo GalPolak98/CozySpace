@@ -26,15 +26,9 @@ export const loadNotifications = async (
 
     const data = await response.json();
 
-    // Check if 'notifications' is present and is an array
-    const fetchedNotifications = Array.isArray(data.notifications) ? data.notifications : [];
-
-    console.log('Fetched Notifications:', fetchedNotifications);
-
-    // Return the notifications or an empty array if there are no notifications
-    return fetchedNotifications;
+    return data.notification;
   } catch (error) {
-    console.error('Failed to fetch notifications:', error);
+    // console.error('Failed to fetch notifications:', error);
     Alert.alert(t.common.error, 'There was an issue fetching notifications.');
     return [];
   }

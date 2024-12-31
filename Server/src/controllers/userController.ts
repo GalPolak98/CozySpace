@@ -111,7 +111,7 @@ export const getNotification: RequestHandler = async (req, res, next) => {
       res.status(404).json({ error: 'No notifications found for this user' });
       return;
     }
-
+    console.log(notification, 'Notification');
     res.status(200).json({ success: true, notification });
   } catch (error) {
     return next(error);

@@ -1,6 +1,6 @@
 // src/services/notificationService.ts
 
-const notificationCooldown = 10 * 60 * 1000; // 10 minutes in milliseconds
+const notificationCooldown = 1 * 60 * 1000; // 10 minutes in milliseconds
 const lastNotificationTime = new Map<string, number>(); // Track the last notification sent time for each user
 
 export async function sendPushNotification(expoPushToken: string, userId: string) {

@@ -172,6 +172,40 @@ class UserService {
       throw new Error(`Failed to save breathing session: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
+
+  async getBreathingSession(userId: string) {
+    try {
+      const response = await this.fetchWithTimeout(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/breathingSessions`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+  
+      // Check if the response is an instance of Response
+      if (response && response.json) {
+        const data = await response.json();
+
+  
+        const fetchedBreathingSessions = Array.isArray(data.sessions) ? data.sessions : [];
+  
+  
+        return fetchedBreathingSessions;
+      } else {
+        console.error('Response does not have json method:', response);
+        throw new Error('Invalid response format: missing json method');
+      }
+  
+    } catch (error) {
+      throw new Error(`Failed to get breathing sessions: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+  
+  
 }
 
 export const userService = new UserService();
