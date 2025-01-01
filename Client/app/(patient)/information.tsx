@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Alert, Animated } from "react-native";
+import React, { useState } from "react";
+import { View, Alert } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import ThemedView from "@/components/ThemedView";
@@ -21,10 +21,6 @@ const InformationPatient = () => {
   const { isRTL, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const fadeAnim = new Animated.Value(0);
-  const slideAnim = new Animated.Value(50);
-
-
 
   const handleNavigation = async (route: RouteType) => {
     setIsLoading(true);
@@ -72,69 +68,39 @@ const InformationPatient = () => {
   return (
     <ThemedView className="flex-1">
       <View className="px-4 py-6">
-        
-        <ThemedText className="text-2xl font-bold mb-4">
+        <ThemedText
+          className={`text-2xl font-bold mb-4 ${isRTL ? "text-right" : "text-left"}`}
+        >
           {t.information.patientInformation}
-        </ThemedText>
-        <ThemedText className="text-base mb-6 opacity-80">
-        {t.information.patientInformationDescription}
         </ThemedText>
 
         <View className="space-y-4">
-          {menuItems.map((item, index) => {
-            // Staggering animation for each item using a delay
-            const itemFadeAnim = new Animated.Value(0);
-            const itemSlideAnim = new Animated.Value(50);
-            useEffect(() => {
-              Animated.sequence([
-                Animated.delay(index * 100), // Delay for each item (100ms delay per item)
-                Animated.timing(itemFadeAnim, {
-                  toValue: 1,
-                  duration: 800,
-                  useNativeDriver: true,
-                }),
-                Animated.timing(itemSlideAnim, {
-                  toValue: 0,
-                  duration: 800,
-                  useNativeDriver: true,
-                }),
-              ]).start();
-            }, [index]);
-
-            return (
-              <Animated.View
-                key={index}
-                style={{
-                  opacity: itemFadeAnim,
-                  transform: [{ translateY: itemSlideAnim }],
-                }}
-              >
-                <CustomButton
-                  title={`${item.title}`}
-                  handlePress={() => handleNavigation(item.route)}
-                  icon={item.icon}
-                  iconPosition={isRTL ? "right" : "left"}
-                  variant="primary"
-                  isLoading={isLoading}
-                  isRTL={isRTL}
-                  containerStyles={{
-                    paddingHorizontal: 24,
-                    paddingVertical: 16,
-                    marginBottom: 16,
-                    borderRadius: 12,
-                    shadowColor: "#000",
-                    shadowOffset: {
-                      width: 0,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 3,
-                    elevation: 3,
-                  }}
-                />
-              </Animated.View>
-            );
-          })}
+          {menuItems.map((item, index) => (
+            <CustomButton
+              key={index}
+              title={`${item.title}`}
+              handlePress={() => handleNavigation(item.route)}
+              icon={item.icon}
+              iconPosition={isRTL ? "right" : "left"}
+              variant="primary"
+              isLoading={isLoading}
+              isRTL={isRTL}
+              containerStyles={{
+                paddingHorizontal: 24,
+                paddingVertical: 16,
+                marginBottom: 16,
+                borderRadius: 12,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 3,
+                elevation: 3,
+              }}
+            />
+          ))}
         </View>
       </View>
     </ThemedView>

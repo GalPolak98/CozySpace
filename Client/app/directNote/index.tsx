@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, ScrollView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useAuth from '../../hooks/useAuth';
-import NoteCard from '../../components/notes/NoteCard';
-import NoteModal from '../../components/notes/NoteModal';
 import { useTheme } from '@/components/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import ThemedText from '@/components/ThemedText';
@@ -12,6 +10,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { theme } from '@/styles/Theme';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { loadNotes } from '../../utils/notesUtils';
+import { useUserData } from "@/hooks/useUserData";
 
 const NotesSection: React.FC = () => {
   const [note, setNote] = useState<string>('');
@@ -20,11 +19,12 @@ const NotesSection: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedNote, setEditedNote] = useState('');
   const userId = useAuth();
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL ,getGenderedText} = useLanguage();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const insets = useSafeAreaInsets();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const { gender, fullName } = useUserData(userId);
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -90,53 +90,6 @@ const NotesSection: React.FC = () => {
     }
   };
 
-  // const deleteNote = async (noteId: string) => {
-  //   if (!userId || !noteId) return;
-
-  //   try {
-  //     const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${noteId}`, {
-  //       method: 'DELETE',
-  //     });
-
-  //     if (!response.ok) throw new Error('Failed to delete note');
-
-  //     const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
-
-  //     setNotes(updatedNotes);
-  //     Alert.alert(t.common.success, t.note.deleteSuccess);
-  //   } catch (error) {
-  //     console.error('Error deleting note:', error);
-  //     Alert.alert(t.common.error, t.note.deleteError);
-  //   }
-  // };
-
-  // const updateNote = async (updatedNote: { _id: string; content: string; timestamp: string }) => {
-  //   if (!updatedNote._id) return;
-
-  //   try {
-  //     const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/${updatedNote._id}`, {
-  //       method: 'PUT',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify(updatedNote),
-  //     });
-
-  //     if (!response.ok) throw new Error('Failed to update note');
-
-  //     const savedNote = await response.json();
-  //     setNotes(prevNotes =>
-  //       prevNotes.map(note => (note._id === updatedNote._id ? savedNote : note))
-  //     );
-  //     setEditedNote('');
-  //     const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
-
-  //     setNotes(updatedNotes);
-  //     Alert.alert(t.common.success, t.note.updateSuccess);
-  //   } catch (error) {
-  //     console.error('Failed to update note', error);
-  //     Alert.alert(t.common.error, t.note.updateError);
-  //   }
-  // };
-
   return (
     <View style={[styles.container, { backgroundColor: currentTheme === 'dark' ? '#333' : '#F9F9F9' }]}>
       <KeyboardAwareScrollView
@@ -162,47 +115,26 @@ const NotesSection: React.FC = () => {
         </View>
         
         <View style={[styles.addNoteButton, { width: '100%' }]}>
-          <TouchableOpacity 
-            onPress={addNote} 
-            style={[
-              styles.button, 
-              { 
-                backgroundColor: colors.primary,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }
-            ]}
-          >
-          <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
-            {typeof t.note.addNote === 'string' ? t.note.addNote : t.note.addNote.default}
-          </ThemedText>
-
-          </TouchableOpacity>
-        </View>
+  <TouchableOpacity 
+    onPress={addNote} 
+    style={[
+      styles.button, 
+      { 
+        backgroundColor: colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row', // Add this to align icon and text horizontally
+        gap: 8, // Add space between icon and text
+      }
+    ]}
+  >
+    <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
+      {getGenderedText(t.note.addNote, gender as string)}
+    </ThemedText>
+    </TouchableOpacity>
+  </View>
       </View>
       </KeyboardAwareScrollView>
-
-      {/* <NoteModal
-        isModalVisible={isModalVisible}
-        setIsModalVisible={setIsModalVisible}
-        editedNote={editedNote}
-        setEditedNote={setEditedNote}
-        saveNote={() => {
-          if (selectedNote) {
-            const updatedNote = {
-              ...selectedNote,
-              content: editedNote,
-              timestamp: getCurrentDateTime(),
-            };
-            updateNote(updatedNote);
-          } else {
-            addNote();
-          }
-          setIsModalVisible(false);
-        }}
-        deleteNote={deleteNote}
-        selectedNote={selectedNote}
-      /> */}
     </View>
   );
 };

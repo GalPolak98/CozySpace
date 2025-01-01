@@ -36,8 +36,8 @@ const NotebookInput: React.FC<NotebookInputProps> = ({ note, setNote }) => {
   const LINE_HEIGHT = Platform.select({ ios: 30, android: 35 });
   const PADDING_TOP = 10;
   const PADDING_HORIZONTAL = 20;
-  const MIN_HEIGHT = Dimensions.get('window').height * 0.5;
-  const MAX_HEIGHT = Dimensions.get('window').height * 0.5;
+  const MIN_HEIGHT = Dimensions.get('window').height *0.7;
+  const MAX_HEIGHT = Dimensions.get('window').height *0.7;
   
   const numberOfLines = Math.max(
     Math.ceil((contentHeight + PADDING_TOP) / (LINE_HEIGHT || 30)),
