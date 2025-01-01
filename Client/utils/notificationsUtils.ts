@@ -29,7 +29,7 @@ export const loadNotifications = async (
     return data.notification;
   } catch (error) {
     // console.error('Failed to fetch notifications:', error);
-    Alert.alert(t.common.error, 'There was an issue fetching notifications.');
+    // Alert.alert(t.common.error, 'There was an issue fetching notifications.');
     return [];
   }
 };

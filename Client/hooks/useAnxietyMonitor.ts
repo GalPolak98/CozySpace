@@ -69,10 +69,8 @@ export const useAnxietyMonitor = (userId: string) => {
         // Use the ref to ensure we're using the latest setState function
         stateUpdateRef.current(newState);
         latestState.set(userId, newState);
-        console.log("push token", process.env.EXPO_PUBLIC_PUSH_TOKEN );
 
         if (analysis.isAnxious && process.env.EXPO_PUBLIC_PUSH_TOKEN ) {
-          console.log("push token", process.env.EXPO_PUBLIC_PUSH_TOKEN );
           sendPushNotification(process.env.EXPO_PUBLIC_PUSH_TOKEN , userId);
         }
       } catch (error) {

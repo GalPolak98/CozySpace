@@ -58,9 +58,8 @@ const TherapistHomeScreen = () => {
 
 
   useEffect(() => {
-
-  
     const fetchTherapists = async () => {
+      if (!userId) return; // Prevent fetching with invalid userId
       console.log("Fetching therapists for User ID:", userId);
       try {
         const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/api/therapists/${userId}/patients`;
@@ -81,7 +80,8 @@ const TherapistHomeScreen = () => {
     };
   
     fetchTherapists();
-  }, [userId, t]);
+  }, [userId]);
+  
   
   
 
@@ -157,14 +157,11 @@ const TherapistHomeScreen = () => {
       setPatientProfile(profile);
 
       const dataSharing = profile.therapistInfo?.dataSharing;
-      console.log('Data sharing:', dataSharing);
       setPersonalDocumentation(dataSharing?.personalDocumentation || false);
       setAnxietyTracking(dataSharing?.anxietyTracking || false);
 
-      console.log('Fetched dataSharing:', dataSharing);
-
     } catch (error) {
-      Alert.alert(t.errors.error, t.errors.loadError);
+      // Alert.alert(t.errors.error, t.errors.loadError);
       console.error("Error fetching selected patient profile:", error);
     } finally {
       setLoading(false);
@@ -204,8 +201,8 @@ const TherapistHomeScreen = () => {
             isRTL && { textAlign: 'right' }
           ]}
         >
-          {t.common.selectPatientMessage}
-        </ThemedText>
+        {getGenderedText(t.common.selectPatientMessage, gender as string)}
+      </ThemedText>
       </View>
       <Pressable
         onPress={() => setModalVisible(true)}

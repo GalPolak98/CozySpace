@@ -23,7 +23,6 @@ export async function saveNotificationToServer(notification: Notifications.Notif
       favoriteRelaxationMethod: data?.favoriteRelaxationMethod || '',
     };
 
-    console.log("!!!",userId)
     // Send the notification data to the backend API to save it in the database
     const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/notifications`, {
       method: "POST",
@@ -34,12 +33,11 @@ export async function saveNotificationToServer(notification: Notifications.Notif
       body: JSON.stringify(notificationData),
     });
 
-    console.log("!!!",response)
     const responseBody = await response.text();
     if (!response.ok) {
       throw new Error(`Failed to save notification to the server: ${responseBody}`);
     }
-    console.log("Notification saved successfully!!!!!!!!!!!!");
+    console.log("Notification saved successfully!");
 
   } catch (error) {
     console.error("Error saving notification:", error);

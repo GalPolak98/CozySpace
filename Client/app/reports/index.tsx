@@ -12,11 +12,12 @@ import { loadNotes, loadGuidedNotes } from '../../utils/notesUtils';
 import { loadNotifications } from '../../utils/notificationsUtils'; 
 import { useLocalSearchParams } from 'expo-router';
 import { userService } from "@/services/userService";
+import { useUserData } from '@/hooks/useUserData';
 
 
 
 const ReportsScreen = () => {
-  const { t,isRTL } = useLanguage();  
+  const { t,isRTL,getGenderedText } = useLanguage();  
 
   const [dateRange, setDateRange] = useState({
     startDate: subDays(new Date(), 7),
@@ -32,15 +33,23 @@ const ReportsScreen = () => {
   const [averageAnxietyIntensity, setAverageAnxietyIntensity] = useState<number>(0); 
   const [weeklyData, setWeeklyData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
   const userId = useAuth();
+  const { 
+    gender,  
+  } = useUserData(userId);
   const [breathingSessionCount, setBreathingSessionCount] = useState<number>(0);
   const [averageBreathingSessionDuration, setAverageBreathingSessionDuration] = useState<number>(0);
   
   const generateDayLabels = (startDate: Date, endDate: Date) => {
     const days = eachDayOfInterval({ start: startDate, end: endDate });
-    return days.map(day => format(day, 'EEE'));
+    return days.map(day => {
+      const dayName = format(day, 'EEE'); // Get the abbreviated day name (e.g., Mon, Tue, etc.)
+      return t.reports.days[dayName] || dayName; // Use the translation if available, fallback to the original day name
+    });
   };
+  
 
   const dayLabels = generateDayLabels(dateRange.startDate, dateRange.endDate);
+ 
   // console.log('startDate', dateRange.startDate , 'endDate', dateRange.endDate);
 
   const markedDates = useMemo(() => {
@@ -191,24 +200,20 @@ useEffect(() => {
   
     // Fetch notifications whenever dateRange or userId changes
     fetchNotification();
-  }, [dateRange, userId]); // Add isRTL and t to dependencies if they are used in loadNotifications
+  }, [dateRange, userId]); 
   
   useEffect(() => {
     const fetchBreathingSessions = async () => {
       try {
         const targetId = patientId || userId;
         if (!targetId) {
-        // console.log("targetid:",targetId);
-        return; // Early exit if no valid ID is available
+        return; 
       }
-        // Fetch the breathing session data
         const response = await userService.getBreathingSession(targetId);
-        // console.log(response, "response!!!!!!!!!");
 
         // Calculate the total number of sessions
         setBreathingSessionCount(response.length);
   
-        // console.log(response.length, "response len!!!!!!!!!");
 
 
         if (response.length > 0) {
@@ -269,6 +274,7 @@ useEffect(() => {
 
           <View className="flex-row justify-between mt-6">
             <StatCard
+            
               title={t.reports.averageAnxietyIntensity} 
               value={averageAnxietyIntensity.toFixed(1)} 
               icon="activity"
@@ -306,7 +312,7 @@ useEffect(() => {
           />
           </View>
           <Chart weeklyData={{
-            labels: dayLabels,  // Dynamically generated labels
+            labels: dayLabels,  
             datasets: [{
               data: weeklyData,  
               color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,

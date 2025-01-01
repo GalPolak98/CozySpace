@@ -38,7 +38,6 @@ export default function RecordingsInfoScreen() {
           await FileSystem.makeDirectoryAsync(recordingsDirectory, { intermediates: true });
         }
 
-        console.log('exists');
         const files = await FileSystem.readDirectoryAsync(recordingsDirectory);
         const audioFiles = files.filter((file) => file.endsWith('.caf'));
         setRecordings(audioFiles);

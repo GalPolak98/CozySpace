@@ -87,6 +87,15 @@ export const translations = {
             selectEndtDate: 'Select End Date',
             breathingSessions: 'Breathing Sessions',
             averageBreathingSessionDuration: 'Average Breathing Session Duration',
+            days:{
+              Mon: 'Mon',
+              Tue: 'Tue',
+              Wed: 'Wed',
+              Thu: 'Thu',
+              Fri: 'Fri',
+              Sat: 'Sat',
+              Sun: 'Sun',
+            }
           },
           information:{
             recordings: 'Recordings',
@@ -472,7 +481,11 @@ export const translations = {
           inputOptions: "אפשרויות קלט",
           select: "בחר",
           noSharedInfo:"המטופל לא משתף כרגע מידע איתך.",
-          selectPatientMessage : "בחר מטופל למעקב אחר המידע שלו",
+          selectPatientMessage :{
+            male: 'בחר מטופל למעקב אחר המידע שלו',
+            female: 'בחרי מטופל למעקב אחר המידע שלו',
+            default: 'בחרו מטופל למעקב אחר המידע שלו'
+          }
         },
         onboarding: {
           welcome: {
@@ -605,7 +618,16 @@ export const translations = {
             selectStartDate: 'בחר תאריך התחלה',
             selectEndtDate: 'בחר תאריך סיום',
             breathingSessions: 'סשני נשימה',
-            averageBreathingSessionDuration: 'משך סשן נשימה ממוצע'
+            averageBreathingSessionDuration: 'משך סשן נשימה ממוצע',
+            days:{
+              Mon: 'יום ב',
+              Tue: 'יום ג',
+              Wed: 'יום ד',
+              Thu: 'יום ה',
+              Fri: 'יום ו',
+              Sat: 'יום ש',
+              Sun: 'יום א',
+            }
           },
           note: {
             placeholder: {
