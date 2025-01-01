@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { websocketManager } from '@/services/websocketManager';
 import type { AnxietyAnalysis, SensorData } from '@/types/sensorTypes';
 import { useWebSocketConnection } from './useWebSocketConnection';
-import { sendPushNotification  } from '@/services/pushNotificationService'; // Import the new service
+import { sendPushNotification  } from '@/services/pushNotificationService'; 
 
 interface AnxietyState {
   isAnxious: boolean;
@@ -24,7 +24,6 @@ export const activeListeners = new Map<string, ListenerInfo>();
 export const latestState = new Map<string, AnxietyState>();
 
 const anxietyMonitorSubscribers = new Map<string, number>();
-const expoPushToken = 'ExponentPushToken[0jtkRIA3sJ-heKfKPghNff]'; 
 
 
 export const useAnxietyMonitor = (userId: string) => {
@@ -70,8 +69,11 @@ export const useAnxietyMonitor = (userId: string) => {
         // Use the ref to ensure we're using the latest setState function
         stateUpdateRef.current(newState);
         latestState.set(userId, newState);
-        if (analysis.isAnxious) {
-          sendPushNotification(expoPushToken ,userId);
+        console.log("push token", process.env.EXPO_PUBLIC_PUSH_TOKEN );
+
+        if (analysis.isAnxious && process.env.EXPO_PUBLIC_PUSH_TOKEN ) {
+          console.log("push token", process.env.EXPO_PUBLIC_PUSH_TOKEN );
+          sendPushNotification(process.env.EXPO_PUBLIC_PUSH_TOKEN , userId);
         }
       } catch (error) {
         console.error('[useAnxietyMonitor] Error processing sensor data:', error);
