@@ -1,27 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  FlatList,
-  Dimensions,
-  Animated,
-  ViewToken,
-  Image,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
-import { router } from "expo-router";
-import CustomButton from "@/components/CustomButton";
-import ThemedView from "@/components/ThemedView";
-import ThemedText from "@/components/ThemedText";
-import { useTheme } from "@/components/ThemeContext";
-import { useLanguage } from "@/context/LanguageContext";
-import { theme } from "@/styles/Theme";
-import { auth } from "@/services/firebaseConfig";
-import { onAuthStateChanged } from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Loader from "@/components/Loader";
-import { AuthRoutingService } from "@/services/authRoutingService";
-import { translations } from "@/constants/translations";
+import React, { useState, useRef, useEffect } from 'react';
+import { View, FlatList, Dimensions, Animated, ViewToken, Image, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import CustomButton from '@/components/CustomButton';
+import ThemedView from '@/components/ThemedView';
+import ThemedText from '@/components/ThemedText';
+import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
+import { theme } from '@/styles/Theme';
+import { auth } from '@/services/firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loader from '@/components/Loader';
+import { AuthRoutingService } from '@/services/authRoutingService';
+import { translations } from '@/constants/translations';
+import { useNotification } from '@/context/NotificationContext';
+import * as FileSystem from 'expo-file-system';
 
 const { width, height } = Dimensions.get("window");
 
@@ -69,12 +62,25 @@ export default function Index() {
   const { isRTL, t } = useLanguage();
 
   const colors = theme[currentTheme];
+  const { notification, expoPushToken, error } = useNotification();
+  const viewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (viewableItems[0]) {
+      setCurrentIndex(Number(viewableItems[0].index));
+    }
+  }).current;
+  const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
+
+
+  
+  // Authentication check effect
   useEffect(() => {
+
     let isSubscribed = true;
 
     const checkAuth = async () => {
       try {
+        // Check AsyncStorage first to avoid unnecessary auth checks
         const existingToken = await AsyncStorage.getItem("userToken");
 
         if (!isSubscribed) return;
@@ -120,15 +126,27 @@ export default function Index() {
     checkAuth();
   }, []);
 
-  const viewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      if (viewableItems[0]) {
-        setCurrentIndex(Number(viewableItems[0].index));
+  // Push notification token effect
+  useEffect(() => {
+    const sendPushTokenToServer = async () => {
+      if (!expoPushToken) return;
+      
+      try {
+        await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/save-push-token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: expoPushToken }),
+        });
+      } catch (error) {
+        console.error('Error sending push token:', error);
       }
-    }
-  ).current;
+    };
+  
+    sendPushTokenToServer();
+  }, [expoPushToken]);
 
-  const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
   const scrollTo = (index: number) => {
     slidesRef.current?.scrollToIndex({ index });
@@ -249,7 +267,7 @@ export default function Index() {
                   router.push("/(auth)/sign-in");
                 }
               }}
-              containerStyles={{ width: "100%", marginBottom: 6 }}
+              containerStyles={{ width: "100%", marginBottom: 16 }}
               variant="primary"
               textStyles="text-lg"
             />
@@ -271,14 +289,9 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   slide: {
     flex: 1,
-  },
-  slideContent: {
-    flexGrow: 1,
+    alignItems: "center",
     justifyContent: "center",
   },
   imageContainer: {

@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Alert, ScrollView, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import AnxietySlider from "../../components/notes/AnxietySlider";
-import TextInputField from "../../components/notes/TextInputField";
-import SubmitButton from "../../components/notes/SubmitButton";
-import useAuth from "../../hooks/useAuth";
-import { useTheme } from "@/components/ThemeContext";
-import { useLanguage } from "@/context/LanguageContext";
+import React, { useState, useEffect } from 'react';
+import { Alert, ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AnxietySlider from '../../components/notes/AnxietySlider';
+import TextInputField from '../../components/notes/TextInputField';
+import SubmitButton from '../../components/notes/SubmitButton';
+import useAuth from '../../hooks/useAuth';
+import { useTheme } from '@/components/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
+import { useUserData } from "@/hooks/useUserData";
 
 const DirectedNoteScreen: React.FC = () => {
   const [anxietyRating, setAnxietyRating] = useState(5);
@@ -18,7 +19,8 @@ const DirectedNoteScreen: React.FC = () => {
   const [selfTalk, setSelfTalk] = useState("");
   const userId = useAuth();
   const { theme: currentTheme } = useTheme();
-  const { t } = useLanguage();
+  const { t, isRTL, getGenderedText } = useLanguage();
+  const { gender, fullName } = useUserData(userId);
 
   const handleSubmit = async () => {
     if (!userId) {
@@ -133,36 +135,12 @@ const DirectedNoteScreen: React.FC = () => {
       />
 
       {[
-        {
-          label: t.directedNote.describeExperience,
-          value: description,
-          onChange: setDescription,
-        },
-        {
-          label: t.directedNote.describeTrigger,
-          value: trigger,
-          onChange: setTrigger,
-        },
-        {
-          label: t.directedNote.copingStrategies,
-          value: copingStrategies,
-          onChange: setCopingStrategies,
-        },
-        {
-          label: t.directedNote.physicalSensations,
-          value: physicalSymptoms,
-          onChange: setPhysicalSymptoms,
-        },
-        {
-          label: t.directedNote.emotionalState,
-          value: emotionalState,
-          onChange: setEmotionalState,
-        },
-        {
-          label: t.directedNote.currentThoughts,
-          value: selfTalk,
-          onChange: setSelfTalk,
-        },
+        { label: getGenderedText(t.directedNote.describeExperience, gender as string), value: description, onChange: setDescription },
+        { label: getGenderedText(t.directedNote.describeTrigger, gender as string), value: trigger, onChange: setTrigger },
+        { label: getGenderedText(t.directedNote.copingStrategies, gender as string), value: copingStrategies, onChange: setCopingStrategies },
+        { label: getGenderedText(t.directedNote.physicalSensations, gender as string), value: physicalSymptoms, onChange: setPhysicalSymptoms },
+        { label: getGenderedText(t.directedNote.emotionalState, gender as string), value: emotionalState, onChange: setEmotionalState },
+        { label: getGenderedText(t.directedNote.currentThoughts, gender as string), value: selfTalk, onChange: setSelfTalk },
       ].map((field, index) => (
         <TextInputField
           key={index}
@@ -180,8 +158,8 @@ const DirectedNoteScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 20,
-  },
+    padding: 15,
+  }
 });
 
 export default DirectedNoteScreen;

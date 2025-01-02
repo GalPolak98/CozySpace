@@ -9,7 +9,6 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-google-services.json
 /ios
 /android
 # macOS
@@ -22,5 +21,3 @@ expo-env.d.ts
 # @end expo-cli
 
 env.ts
-.env
-android

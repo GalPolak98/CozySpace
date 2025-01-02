@@ -5,10 +5,31 @@ import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
+import { Stack } from "expo-router";
+import MainHeader from "@/components/navigation/MainHeader";
+import { useLanguage } from '@/context/LanguageContext';
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 
 export default function TherapistLayout() {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
+  const { t, isRTL } = useLanguage();
+
+  interface Tab {
+    name: string;
+    title: string;
+    iconName: 'home'; 
+   }
+   
+   const tabs: Tab[] = [
+    {
+      name: 'home',
+      title: t.tabsPatient.home,
+      iconName: 'home',
+    }
+   ];
+
+  const orderedTabs = isRTL ? [...tabs].reverse() : tabs;
 
   return (
     <Tabs
@@ -25,11 +46,11 @@ export default function TherapistLayout() {
           fontFamily: 'Poppins-SemiBold',
           fontSize: 17,
           color: colors.text,
+          textAlign: isRTL ? 'right' : 'left',
         },
         tabBarStyle: {
           backgroundColor: colors.bottomBar,
           borderTopColor: colors.border,
-          borderTopWidth: 1,
           height: Platform.OS === 'ios' ? 88 : 68,
           paddingBottom: Platform.OS === 'ios' ? 28 : 8,
           paddingTop: 8,
@@ -50,61 +71,28 @@ export default function TherapistLayout() {
         tabBarLabelStyle: {
           fontFamily: 'Poppins-Medium',
           fontSize: 12,
+          textAlign: isRTL ? 'right' : 'left',
         },
       }}
     >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons 
-              name={focused ? 'home' : 'home-outline'} 
-              size={size} 
-              color={color} 
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="patients"
-        options={{
-          title: 'Patients',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons 
-              name={focused ? 'people' : 'people-outline'} 
-              size={size} 
-              color={color} 
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="messages"
-        options={{
-          title: 'Messages',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons 
-              name={focused ? 'chatbubbles' : 'chatbubbles-outline'} 
-              size={size} 
-              color={color} 
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons 
-              name={focused ? 'settings' : 'settings-outline'} 
-              size={size} 
-              color={color} 
-            />
-          ),
-        }}
-      />
+      {orderedTabs.map(tab => (
+              <Tabs.Screen
+                key={tab.name}
+                name={tab.name}
+                options={{
+                  title: tab.title,
+                  headerTitle: "",
+                  tabBarIcon: ({ color, focused }) => (
+                    <TabBarIcon 
+                    name={focused ? tab.iconName : `${tab.iconName}-outline`}
+                    color={color}
+                      size={24}
+                    />
+                  ),
+                }}
+              />
+            ))}
     </Tabs>
+    
   );
 }

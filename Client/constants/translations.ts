@@ -38,7 +38,10 @@ export const translations = {
           typeMessage: "Type your message...",
           paste: "Paste",
           copy: 'copy',
-          inputOptions: "Input Options"
+          inputOptions: "Input Options",
+          select: "Select",
+          noSharedInfo: "This patient is not sharing any information with you at the moment.",
+          selectPatientMessage: "Select a patient to track their information",
         },
         onboarding: {
           welcome: {
@@ -72,6 +75,34 @@ export const translations = {
             termsNotice: 'By continuing, you agree to our Terms of Service and Privacy Policy',
             authError: "Authentication error. Please try signing in again.",
           },
+          reports: {
+            averageAnxietyIntensity: 'Average Anxiety Intensity',
+            averageEpisodeDuration: 'Average Episode Duration',
+            notesCreated: 'Notes Created',
+            anxietyEvents: 'Anxiety Events',
+            dateRange: 'Date Range',
+            change: 'Edit',
+            weeklyAnxietyLevels: 'Anxiety Levels',
+            selectStartDate: 'Select Start Date',
+            selectEndtDate: 'Select End Date',
+            breathingSessions: 'Breathing Sessions',
+            averageBreathingSessionDuration: 'Average Breathing Session Duration',
+            days:{
+              Mon: 'Mon',
+              Tue: 'Tue',
+              Wed: 'Wed',
+              Thu: 'Thu',
+              Fri: 'Fri',
+              Sat: 'Sat',
+              Sun: 'Sun',
+            }
+          },
+          information:{
+            recordings: 'Recordings',
+            notes: 'Notes',
+            patientInformation: 'Patient Information',
+            description: 'Access and manage your medical information'
+          },
           errors: {
             invalidEmail: 'Please enter a valid email address',
             userDisabled: 'This account has been disabled',
@@ -91,7 +122,8 @@ export const translations = {
             passwordsNoMatch: 'Passwords do not match',
             authFailed: 'Failed to complete authentication',
             error: "Error",
-            loadError: "Failed to load data"
+            loadError: "Failed to load data",
+            playingRecording: 'Failed to play recording',
           },
 
           success: {
@@ -105,17 +137,33 @@ export const translations = {
             guidedDocumenting: 'Guided Documenting',
             documentNow: 'Document Now'
           },
+          homeTherapist: {
+            patientNotes: 'Patient Notes',
+            patientReports: 'Patient Reports',
+          },
           recording: {
+            statusRecording: {
+              idle: "Idle",
+              recording: "Recording",
+              stopped: "Stopped",
+            },
             startRecording: 'Start recording for documentation',
             stopRecording: 'Stop recording for documentation',
             alreadyInProgress: 'A recording is already in progress.',
             startError: 'Failed to start recording.',
             saveError: 'Failed to save recording. Please try again.',
             saveSuccess: 'Recording saved successfully!',
+            recordedOn: 'Recorded on',
+            at: 'At',
+            status: 'Status',
+            noRecordingsMessage: "No recordings available!"
+
           },
           tabsPatient: {
             home: 'Home',
-            profile: 'Profile'
+            profile: 'Profile',
+            reports: 'Reports',
+            information: 'Information',
           },
           note: {
             placeholder: 'Write your thoughts here...',
@@ -130,6 +178,7 @@ export const translations = {
             deleteError: 'Failed to delete note. Please try again.',
             updateSuccess: 'Note updated successfully!',
             updateError: 'Failed to update note. Please try again.',
+            noNotesMessage: "No notes available!",
           },
           directedNote: {
             notAuthenticated: 'User is not authenticated.',
@@ -430,6 +479,13 @@ export const translations = {
           paste: "הדבק",
           copy: 'העתק',
           inputOptions: "אפשרויות קלט",
+          select: "בחר",
+          noSharedInfo:"המטופל לא משתף כרגע מידע איתך.",
+          selectPatientMessage :{
+            male: 'בחר מטופל למעקב אחר המידע שלו',
+            female: 'בחרי מטופל למעקב אחר המידע שלו',
+            default: 'בחרו מטופל למעקב אחר המידע שלו'
+          }
         },
         onboarding: {
           welcome: {
@@ -482,7 +538,8 @@ export const translations = {
             passwordsNoMatch: 'הסיסמאות אינן תואמות',
             authFailed: 'ההתחברות נכשלה',
             error: "שגיאה",
-            loadError: "טעינת הנתונים נכשלה"
+            loadError: "טעינת הנתונים נכשלה",
+            playingRecording: 'נכשל בניגון ההקלטה',
           },
 
           success: {
@@ -490,12 +547,17 @@ export const translations = {
             updated: "עודכן בהצלחה",
             saved: "נשמר בהצלחה",
           },
+          homeTherapist: {
+            patientNotes: 'פתקי המטופל',
+            patientReports: 'נתונים סטטיסטיים על המטופל',
+          },
           homePatient: {
             talkToAI: {
               male: 'שוחח עם העוזר האישי שלך',
               female: 'שוחחי עם העוזר האישי שלך',
               default: 'שוחחו עם העוזר האישי שלכם'
             },
+
             guidedDocumenting: {
               male: 'תיעוד מונחה',
               female: 'תיעוד מונחה',
@@ -508,6 +570,11 @@ export const translations = {
             }
           },
           recording: {
+            statusRecording: {
+              idle: "התחל",
+              recording: "מקליט",
+              stopped: "עצר",
+            },
             startRecording: {
               male: 'התחל הקלטה לתיעוד',
               female: 'התחילי הקלטה לתיעוד',
@@ -522,10 +589,45 @@ export const translations = {
             startError: 'נכשל בהתחלת ההקלטה.',
             saveError: 'נכשל בשמירת ההקלטה. אנא נסה שוב.',
             saveSuccess: 'ההקלטה נשמרה בהצלחה!',
+            recordedOn: 'הוקלט בתאריך',
+            at: 'בשעה',
+            status: 'סטטוס',
+            noRecordingsMessage:"אין הקלטות זמינות!"
+
           },
           tabsPatient: {
             home: 'בית',
-            profile: 'פרופיל'
+            profile: 'פרופיל',
+            reports: 'דוחות',
+            information: 'מידע'
+          },
+          information:{
+            recordings: 'הקלטות',
+            notes: 'פתקים',
+            patientInformation: 'מידע על המטופל',
+            description: 'גש למידע הרפואי שלך ונהל אותו'
+          },
+          reports: {
+            averageAnxietyIntensity: 'עוצמת חרדה ממוצעת',
+            averageEpisodeDuration: 'משך פרק ממוצע',
+            notesCreated: 'כמות פתקים',
+            anxietyEvents: 'אירועי חרדה',
+            dateRange: 'טווח זמנים',
+            change: 'ערוך',
+            weeklyAnxietyLevels: 'רמות חרדה ',
+            selectStartDate: 'בחר תאריך התחלה',
+            selectEndtDate: 'בחר תאריך סיום',
+            breathingSessions: 'סשני נשימה',
+            averageBreathingSessionDuration: 'משך סשן נשימה ממוצע',
+            days:{
+              Mon: 'יום ב',
+              Tue: 'יום ג',
+              Wed: 'יום ד',
+              Thu: 'יום ה',
+              Fri: 'יום ו',
+              Sat: 'יום ש',
+              Sun: 'יום א',
+            }
           },
           note: {
             placeholder: {
@@ -552,18 +654,39 @@ export const translations = {
             deleteError: 'נכשל במחיקת הפתק. אנא נסה שוב.',
             updateSuccess: 'הפתק עודכן בהצלחה!',
             updateError: 'נכשל בעדכון הפתק. אנא נסה שוב.',
+            noNotesMessage: "אין פתקים זמינים!"
           },
           directedNote: {
             notAuthenticated: 'המשתמש אינו מחובר.',
             submitSuccess: 'התשובות שלך נשלחו בהצלחה.',
             submitFailed: 'משהו השתבש. אנא נסה שוב.',
             connectionError: 'לא ניתן לשלוח את ההערה כרגע. אנא בדוק את החיבור שלך.',
-            describeExperience: 'תאר את החוויה הנוכחית שלך עם חרדה',
+            describeExperience:{
+              male: 'תאר את החוויה הנוכחית שלך עם חרדה',
+              female: 'תארי את החוויה הנוכחית שלך עם חרדה',
+              default: 'תארו את החוויה הנוכחית שלכם עם חרדה'
+            },
             describeTrigger: 'מה יכול היה לגרום להתקף החרדה הזה?',
-            copingStrategies: 'האם אתה משתמש באסטרטגיות התמודדות כלשהן?',
-            physicalSensations: 'תאר תחושות גופניות שאתה מרגיש',
-            emotionalState: 'כיצד היית מתאר את מצבך הרגשי?',
-            currentThoughts: 'אילו מחשבות עוברות לך בראש כרגע?',
+            copingStrategies:{
+              male: 'האם אתה משתמש באסטרטגיות התמודדות כלשהן?',
+              female: 'האם את משתמשת באסטרטגיות התמודדות כלשהן?',
+              default: 'האם אתם משתמשים באסטרטגיות התמודדות כלשהן?'
+            },
+            physicalSensations:{
+              male: 'תאר תחושות גופניות שאתה מרגיש',
+              female: 'תארי תחושות גופניות שאת מרגישה',
+              default: 'תארו תחושות גופניות שאתם מרגישים'
+            },
+            emotionalState:{
+              male: 'כיצד היית מתאר את מצבך הרגשי?',
+              female:'כיצד היית מתארת את מצבך הרגשי?',
+              default: 'כיצד הייתם מתארים את מצבכם הרגשי?',
+            },
+            currentThoughts:{
+              male: 'אילו מחשבות עוברות לך בראש כרגע?',
+              female:'אילו מחשבות עוברות לך בראש כרגע?',
+              default: 'אילו מחשבות עוברות לכם בראש כרגע?',
+            },
           },
           anxiety: {
             ratingQuestion: 'כיצד היית מדרג את רמת החרדה הנוכחית שלך?',

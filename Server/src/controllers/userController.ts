@@ -97,6 +97,60 @@ export const getNotes: RequestHandler = async (req, res, next) => {
   }
 };
 
+
+export const getNotification: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    // Call the userService to get the notes for the user
+    const notification = await userService.getNotificationsForUser(userId);
+    if (!notification) {
+      res.status(404).json({ error: 'No notifications found for this user' });
+      return;
+    }
+    console.log(notification, 'Notification');
+    res.status(200).json({ success: true, notification });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getGuidedNotes: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    // Call the userService to get the notes for the user
+    const notes = await userService.getGuidedNotesForUser(userId);
+
+    if (!notes) {
+      res.status(404).json({ error: 'No notes found for this user' });
+      return;
+    }
+
+    res.status(200).json({ success: true, notes });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getRecordings: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    // Call the userService to get the notes for the user
+    const record = await userService.getRecordingsForUser(userId);
+
+    if (!record) {
+      res.status(404).json({ error: 'No records found for this user' });
+      return;
+    }
+
+    res.status(200).json({ success: true, record });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const saveRecording: RequestHandler = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -125,6 +179,33 @@ export const deleteNote: RequestHandler = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const saveNotification: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const notificationData = req.body;
+
+    const result = await userService.saveNotification(userId, notificationData);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateNotificationTappedStatus: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    let { expoNotificationId } = req.params;
+    const { tapped } = req.body;
+
+
+    await userService.updateNotificationTappedStatus(userId, expoNotificationId, tapped);
+    res.status(200).json({ success: true, message: 'Notification updated successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 export const updateUserPreferences: RequestHandler = async (req, res, next) => {
   try {

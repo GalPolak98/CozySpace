@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { websocketManager } from '@/services/websocketManager';
 import type { AnxietyAnalysis, SensorData } from '@/types/sensorTypes';
 import { useWebSocketConnection } from './useWebSocketConnection';
+import { sendPushNotification  } from '@/services/pushNotificationService'; 
 
 interface AnxietyState {
   isAnxious: boolean;
@@ -18,8 +19,12 @@ export interface ListenerInfo {
 }
 
 export const activeListeners = new Map<string, ListenerInfo>();
+
+// Static variable to store the latest state
 export const latestState = new Map<string, AnxietyState>();
+
 const anxietyMonitorSubscribers = new Map<string, number>();
+
 
 export const useAnxietyMonitor = (userId: string) => {
   const [anxietyState, setAnxietyState] = useState<AnxietyState>(() => 
@@ -35,21 +40,20 @@ export const useAnxietyMonitor = (userId: string) => {
 
   const { isConnected } = useWebSocketConnection(userId);
   const stateUpdateRef = useRef(setAnxietyState);
-
+  // Keep the state updater function reference current
   useEffect(() => {
     stateUpdateRef.current = setAnxietyState;
   });
 
   useEffect(() => {
     if (!userId || !isConnected) return;
-
     const namespace = `user_${userId}`;
     const eventName = `sensorData_${namespace}`;
 
+    // Create or get the handler
     const createHandler = () => (data: any) => {
       try {
         if (!data.data?.sensorData || !data.data?.analysis) return;
-        
         const { sensorData, analysis } = data.data;
         if (sensorData.userId !== userId) return;
 
@@ -61,20 +65,27 @@ export const useAnxietyMonitor = (userId: string) => {
           analysis,
           sensorData,
         };
-
+        console.log(newState, "new state");
+        // Use the ref to ensure we're using the latest setState function
         stateUpdateRef.current(newState);
         latestState.set(userId, newState);
+
+        if (analysis.isAnxious && process.env.EXPO_PUBLIC_PUSH_TOKEN ) {
+          sendPushNotification(process.env.EXPO_PUBLIC_PUSH_TOKEN , userId);
+        }
       } catch (error) {
         console.error('[useAnxietyMonitor] Error processing sensor data:', error);
       }
     };
 
+    // Increment subscriber count
     const currentCount = anxietyMonitorSubscribers.get(userId) || 0;
     anxietyMonitorSubscribers.set(userId, currentCount + 1);
 
     let listenerInfo = activeListeners.get(userId);
 
     if (!listenerInfo) {
+      // Only log for the first subscriber
       if (currentCount === 0) {
         activeListeners.delete(userId);
         latestState.delete(userId);
@@ -93,6 +104,7 @@ export const useAnxietyMonitor = (userId: string) => {
         console.log(`[useAnxietyMonitor] Reusing existing listener for user: ${userId}`);
       }
 
+      // Update the handler to use the current setState
       websocketManager.removeListener(eventName, listenerInfo.handler);
       listenerInfo.handler = createHandler();
       websocketManager.on(eventName, listenerInfo.handler);
@@ -101,12 +113,14 @@ export const useAnxietyMonitor = (userId: string) => {
     listenerInfo.refCount++;
 
     return () => {
+      // Decrement subscriber count
       const count = anxietyMonitorSubscribers.get(userId) || 0;
       if (count > 0) {
         anxietyMonitorSubscribers.set(userId, count - 1);
       }
       if (count <= 1) {
         anxietyMonitorSubscribers.delete(userId);
+        // Only clean up listener if this is the last subscriber
         if (listenerInfo) {
           console.log(`[useAnxietyMonitor] Removing listener for user: ${userId}`);
           websocketManager.removeListener(eventName, listenerInfo.handler);

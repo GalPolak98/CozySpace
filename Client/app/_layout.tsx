@@ -4,17 +4,28 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { StatusBar, View } from "react-native";
 import React from "react";
-import { ThemeProvider, useTheme } from "@/components/ThemeContext";
-import { theme } from "@/styles/Theme";
-import Loader from "@/components/Loader";
+import { ThemeProvider, useTheme } from '@/components/ThemeContext';
+import { theme } from '@/styles/Theme';
+import Loader from '@/components/Loader';
+import { NotificationProvider } from "@/context/NotificationContext";
+import * as Notifications from "expo-notifications"
 import { LanguageProvider } from "@/context/LanguageContext";
 import MainHeader from "@/components/navigation/MainHeader";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false
+  })
+});
 
 const InitialLayout = () => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
   return (
+    <NotificationProvider>
     <>
       <StatusBar
         barStyle={currentTheme === "light" ? "dark-content" : "light-content"}
@@ -118,6 +129,7 @@ const InitialLayout = () => {
         />
       </Stack>
     </>
+    </NotificationProvider>
   );
 };
 

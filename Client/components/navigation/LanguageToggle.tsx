@@ -55,6 +55,7 @@ const LanguageToggle = () => {
                 <TouchableOpacity
                   key={lang.code}
                   onPress={() => handleLanguageSelect(lang.code)}
+                  
                   style={{
                     backgroundColor:
                       lang.code === currentLanguage

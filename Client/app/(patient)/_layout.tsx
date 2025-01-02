@@ -15,10 +15,10 @@ export default function TabLayout() {
   interface Tab {
     name: string;
     title: string;
-    iconName: "home" | "code-slash";
-  }
-
-  const tabs: Tab[] = [
+    iconName: 'home' | 'code-slash' | 'analytics' | 'information'; // Only include valid icon names
+   }
+   
+   const tabs: Tab[] = [
     {
       name: "home",
       title: t.tabsPatient.home,
@@ -27,9 +27,19 @@ export default function TabLayout() {
     {
       name: "profile",
       title: t.tabsPatient.profile,
-      iconName: "code-slash",
+      iconName: 'code-slash',
     },
-  ];
+    {
+      name: 'reports', 
+      title: t.tabsPatient.reports,  
+      iconName: 'analytics', 
+    },
+    {
+      name: 'information', 
+      title: t.tabsPatient.information,  
+      iconName: 'information', 
+    }
+   ];
 
   const orderedTabs = isRTL ? [...tabs].reverse() : tabs;
 
@@ -95,5 +105,6 @@ export default function TabLayout() {
         />
       ))}
     </Tabs>
+    
   );
 }

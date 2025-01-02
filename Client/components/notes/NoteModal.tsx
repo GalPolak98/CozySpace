@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard, Modal, Platform, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, Modal, Platform, TouchableOpacity, View, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ThemedView from '@/components/ThemedView';
 import ThemedText from '@/components/ThemedText';
@@ -9,6 +9,8 @@ import { theme } from '@/styles/Theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUserData } from '@/hooks/useUserData';
 import useAuth from '@/hooks/useAuth';
+import { Note } from '../../app/notesInfo/_layout';
+import NotebookInput from './NoteInput'; 
 
 interface NoteModalProps {
   isModalVisible: boolean;
@@ -17,7 +19,9 @@ interface NoteModalProps {
   setEditedNote: (content: string) => void;
   saveNote: () => void;
   deleteNote: (noteId: string) => void;
-  selectedNote: { _id: string; content: string; timestamp: string } | null;
+  selectedNote: Note | null;
+  disableEditDelete: boolean;  // New prop to disable buttons
+
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({
@@ -28,17 +32,16 @@ const NoteModal: React.FC<NoteModalProps> = ({
   saveNote,
   deleteNote,
   selectedNote,
+  disableEditDelete
 }) => {
   const { theme: currentTheme } = useTheme();
-  const { t, isRTL, getGenderedText} = useLanguage();
+  const { t, isRTL, getGenderedText } = useLanguage();
   const colors = currentTheme === 'dark' ? theme.dark : theme.light;
   const insets = useSafeAreaInsets();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const userId = useAuth();
-  const {
-    gender,
-  } = useUserData(userId);
-  
+  const { gender } = useUserData(userId);
+
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
@@ -54,7 +57,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
       keyboardWillHide.remove();
     };
   }, []);
-  
+
   return (
     <Modal
       animationType="fade"
@@ -75,53 +78,40 @@ const NoteModal: React.FC<NoteModalProps> = ({
           style={{
             borderRadius: 15,
             width: '85%',
-            padding: 25,
+            padding: 15,
             backgroundColor: colors.surface,
             elevation: 5,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.25,
             shadowRadius: 4,
-            marginBottom: isKeyboardVisible ? 30 : 0 
+            marginBottom: isKeyboardVisible ? 30 : 0,
           }}
         >
-          <ThemedText 
-            style={{ 
-              fontSize: 18, 
-              fontWeight: 'bold', 
+          <ThemedText
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
               marginBottom: 10,
-              textAlign: isRTL ? 'right' : 'left'
+              textAlign: isRTL ? 'right' : 'left',
             }}
           >
-            {getGenderedText(t.note.editNote, gender as string)}
           </ThemedText>
-
-          <TextInput
-            value={editedNote}
-            onChangeText={setEditedNote}
+  
+          <ScrollView>
+            <NotebookInput
+              note={editedNote}
+              setNote={setEditedNote}
+            />
+          </ScrollView>
+  
+          <View
             style={{
-              height: 100,
-              borderWidth: 1,
-              borderColor: colors.textSecondary,
-              borderRadius: 8,
-              padding: 12,
-              fontSize: 16,
-              color: colors.text,
-              backgroundColor: colors.background,
-              textAlignVertical: 'top',
-              textAlign: isRTL ? 'right' : 'left',
-              writingDirection: isRTL ? 'rtl' : 'ltr',
+              flexDirection: isRTL ? 'row-reverse' : 'row',
+              justifyContent: 'space-between',
+              marginTop: 10,
             }}
-            placeholder={getGenderedText(t.note.placeholder, gender as string)}
-            placeholderTextColor={colors.textSecondary}
-            multiline={true}
-          />
-
-          <View style={{ 
-            flexDirection: isRTL ? 'row-reverse' : 'row', 
-            justifyContent: 'space-between', 
-            marginTop: 20 
-          }}>
+          >
             <TouchableOpacity
               onPress={() => setIsModalVisible(false)}
               style={{
@@ -136,42 +126,49 @@ const NoteModal: React.FC<NoteModalProps> = ({
               <Icon name="close" size={20} color={colors.text} style={{ marginHorizontal: 5 }} />
               <ThemedText>{t.common.cancel}</ThemedText>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={saveNote}
-              style={{
-                flexDirection: isRTL ? 'row-reverse' : 'row',
-                alignItems: 'center',
-                padding: 10,
-                borderRadius: 8,
-                backgroundColor: '#4CAF50',
-              }}
-            >
-              <Icon name="save" size={20} color="#FFFFFF" style={{ marginHorizontal: 5 }} />
-              <ThemedText style={{ color: '#FFFFFF' }}>{t.common.save}</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                if (selectedNote) deleteNote(selectedNote._id);
-                setIsModalVisible(false);
-              }}
-              style={{
-                flexDirection: isRTL ? 'row-reverse' : 'row',
-                alignItems: 'center',
-                padding: 10,
-                borderRadius: 8,
-                backgroundColor: '#FF6347',
-              }}
-            >
-              <Icon name="delete" size={20} color="#FFFFFF" style={{ marginHorizontal: 5 }} />
-              <ThemedText style={{ color: '#FFFFFF' }}>{t.common.delete}</ThemedText>
-            </TouchableOpacity>
+  
+            {/* Conditionally render the Save button */}
+            {!disableEditDelete && (
+              <TouchableOpacity
+                onPress={saveNote}
+                style={{
+                  flexDirection: isRTL ? 'row-reverse' : 'row',
+                  alignItems: 'center',
+                  padding: 10,
+                  borderRadius: 8,
+                  backgroundColor: '#4CAF50',
+                }}
+              >
+                <Icon name="save" size={20} color="#FFFFFF" style={{ marginHorizontal: 5 }} />
+                <ThemedText style={{ color: '#FFFFFF' }}>{t.common.save}</ThemedText>
+              </TouchableOpacity>
+            )}
+  
+            {/* Conditionally render the Delete button */}
+            {!disableEditDelete && (
+              <TouchableOpacity
+                onPress={() => {
+                  if (selectedNote) deleteNote(selectedNote._id);
+                  setIsModalVisible(false);
+                }}
+                style={{
+                  flexDirection: isRTL ? 'row-reverse' : 'row',
+                  alignItems: 'center',
+                  padding: 10,
+                  borderRadius: 8,
+                  backgroundColor: '#FF6347',
+                }}
+              >
+                <Icon name="delete" size={20} color="#FFFFFF" style={{ marginHorizontal: 5 }} />
+                <ThemedText style={{ color: '#FFFFFF' }}>{t.common.delete}</ThemedText>
+              </TouchableOpacity>
+            )}
           </View>
         </ThemedView>
       </View>
     </Modal>
   );
+  
 };
 
 export default NoteModal;

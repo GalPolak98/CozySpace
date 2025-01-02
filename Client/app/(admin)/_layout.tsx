@@ -1,8 +1,9 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { HeaderLeft } from "@/components/navigation/HeaderButtons";
+import { HeaderLeft, HeaderRight } from "@/components/navigation/HeaderButtons";
 import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { theme } from "@/styles/Theme";
 import { Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
