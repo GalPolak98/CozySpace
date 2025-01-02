@@ -1,8 +1,8 @@
 import * as Notifications from "expo-notifications";
-import { AuthService } from '../../services/authService';  // Import your AuthService
+import { AuthService } from '../../services/authService'; 
 
 // Save notification initially with tapped as false
-export async function saveNotificationToServer(notification: Notifications.Notification, tapped: boolean = false) {
+export default async function saveNotificationToServer(notification: Notifications.Notification, tapped: boolean = false) {
   try {
     const userId = await AuthService.getCurrentUserId();
     const userToken = await AuthService.getAuthToken();

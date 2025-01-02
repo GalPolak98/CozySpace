@@ -1,5 +1,3 @@
-// src/services/notificationService.ts
-
 const notificationCooldown = 1 * 60 * 1000; 
 const lastNotificationTime = new Map<string, number>(); 
 

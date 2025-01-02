@@ -39,8 +39,7 @@
         "android.permission.WAKE_LOCK",
         "android.permission.FOREGROUND_SERVICE"
       ],
-      "package": "com.cozyspace_finalproject.CozySpace",
-      "supportsRtl": false
+      "package": "com.cozyspace_finalproject.CozySpace"
     },
     "web": {
       "bundler": "metro",
