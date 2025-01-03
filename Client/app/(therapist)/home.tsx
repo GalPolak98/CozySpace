@@ -11,16 +11,13 @@ import {
   TouchableOpacity,
   Pressable 
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import ThemedView from "@/components/ThemedView";
 import ThemedText from "@/components/ThemedText";
 import { useLanguage } from "@/context/LanguageContext";
 import useAuth from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { userService } from "@/services/userService";
-import NotesScreen from '../notesInfo';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import CustomButton from "@/components/CustomButton";
@@ -169,109 +166,206 @@ const TherapistHomeScreen = () => {
   };
 
   const renderWelcomeSection = () => (
-    <View className="px-2 py-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl mx-4 mb-4">
+    <View className="px-4 py-6 bg-gradient-to-br from-blue-50 to-blue-200 rounded-3xl mx-4 mb-2">
       <View className="items-center">
-        <View >
-          <MaterialIcons name="psychology" size={40} color={colors.primary} />
+        {/* Icon with Background */}
+        <View className="bg-blue-100 rounded-full p-4 mb-4">
+          <FontAwesome5 name="user-md" size={40} color={colors.primary} />
         </View>
+  
+        {/* Welcome Text */}
         <ThemedText
-          className="font-psemibold text-2xl text-center"
+          className="font-psemibold text-xl text-center"
           isRTL={isRTL}
           style={{ color: colors.text }}
         >
           {getGenderedText(t.common.welcome, gender as string)}
         </ThemedText>
+  
+        {/* Therapist's Name */}
         <ThemedText
-          className="font-pbold text-3xl text-center mt-1"
+          className="font-pbold text-2xl text-center mt-2"
           style={{ color: colors.primary }}
         >
           {fullName}
         </ThemedText>
+  
+        <View className="w-12 h-1 rounded-full bg-gray-300 dark:bg-gray-600 mt-4 mb-2" />
       </View>
     </View>
   );
+  
+  
 
   const renderPickerSection = () => (
-    <View style={styles.pickerSection}>
-      <View style={styles.labelContainer}>
-        <ThemedText
-          style={[
-            styles.labelText,
-            { color: colors.text },
-            isRTL && { textAlign: 'right' }
-          ]}
-        >
+    <View
+    style={[
+      styles.pickerSection,
+      {
+        paddingVertical: 5,
+        paddingHorizontal: 16,
+        borderRadius: 16,
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 8,
+      },
+    ]}
+  >
+    {/* Label Section */}
+    <View
+      style={[
+        styles.labelContainer,
+        {
+          marginBottom: 8,
+          flexDirection: isRTL ? 'row-reverse' : 'row',
+          alignItems: 'center',
+        },
+      ]}
+    >
+      <FontAwesome5
+        name="user-friends"
+        size={16}
+        color={colors.primary}
+        style={{
+          marginRight: isRTL ? 0 : 8,
+          marginLeft: isRTL ? 8 : 0,
+        }}
+      />
+      <ThemedText
+        style={[
+          styles.labelText,
+          {
+            color: colors.text,
+            fontWeight: 'bold',
+            fontSize: 14,
+          },
+          isRTL && { textAlign: 'right' },
+        ]}
+      >
         {getGenderedText(t.common.selectPatientMessage, gender as string)}
       </ThemedText>
-      </View>
-      <Pressable
-        onPress={() => setModalVisible(true)}
-        style={[styles.pickerContainer, { backgroundColor: colors.background }]}
-      >
-        <View style={styles.pickerButton}>
-          <ThemedText style={[styles.selectedText, { color: colors.text }]}>
-            {selectedPatient ? patients.find(p => p.userId === selectedPatient)?.fullName : t.common.select}
-          </ThemedText>
-          <Ionicons 
-            name="chevron-down" 
-            size={20} 
-            color={colors.primary}
-          />
-        </View>
-      </Pressable>
+    </View>
 
+    {/* Picker Section */}
+    <Pressable
+      onPress={() => setModalVisible(true)}
+      style={[
+        styles.pickerContainer,
+        {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: colors.background,
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: colors.border,
+        },
+        
+      ]}
+    >
+      <ThemedText
+        style={[
+          styles.selectedText,
+          {
+            color: colors.text,
+            flex: 1,
+            fontSize: 16,
+            fontWeight: selectedPatient ? 'bold' : 'normal',
+          },
+          isRTL && { textAlign: 'right' },
+
+
+
+
+          
+        ]}
+      >
+        {selectedPatient
+          ? patients.find((p) => p.userId === selectedPatient)?.fullName
+          : t.common.select}
+      </ThemedText>
+      <Ionicons name="chevron-down" size={20} color={colors.text} />
+    </Pressable>
+  
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.centeredView}>
-          <View style={[styles.modalView, { backgroundColor: colors.background }]}>
-            <View style={styles.modalHeader}>
-              <ThemedText style={[styles.modalTitle, { color: colors.text }]}>
+        <View className="flex-1 justify-end">
+          {/* Overlay to close modal */}
+          <Pressable
+            className="flex-1 bg-black/30"
+            onPress={() => setModalVisible(false)}
+          />
+          {/* Modal Content */}
+          <ThemedView variant="surface" className="rounded-t-3xl">
+            {/* Header */}
+            <View className="items-center py-4 border-b border-gray-200 dark:border-gray-700">
+              <View className="w-12 h-1 rounded-full bg-gray-300 dark:bg-gray-600 mb-2" />
+              <ThemedText variant="primary" className="text-xl font-pbold">
                 {t.common.select}
               </ThemedText>
-              <TouchableOpacity 
-                onPress={() => setModalVisible(false)}
-                style={styles.closeButton}
-              >
-                <ThemedText style={{ color: colors.primary }}>
-                  {t.common.close}
-                </ThemedText>
-              </TouchableOpacity>
             </View>
-            
+
+            {/* Patient List */}
             <FlatList
               data={patients}
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={[
-                    styles.patientOption,
-                    {
-                      backgroundColor: selectedPatient === item.userId ? `${colors.primary}15` : 'transparent'
-                    }
-                  ]}
                   onPress={() => {
                     setSelectedPatient(item.userId);
                     setModalVisible(false);
                   }}
+                  style={{
+                    backgroundColor:
+                      selectedPatient === item.userId
+                        ? `${colors.primary}20`
+                        : currentTheme === "light"
+                        ? "#F9FAFB"
+                        : "#1F2937",
+                        flexDirection: isRTL ? "row-reverse" : "row", // Adjust item layout direction
+
+                  }}
+                  className="flex-row items-center justify-between p-4 mb-2 rounded-xl"
                 >
-                  <ThemedText style={[
-                    styles.optionText,
-                    { color: selectedPatient === item.userId ? colors.primary : colors.text }
-                  ]}>
+                  <ThemedText
+                    variant="primary"
+                    className={`text-lg font-pbold ${
+                      selectedPatient === item.userId ? "text-primary" : ""
+                    }`}
+                  >
                     {item.fullName}
                   </ThemedText>
                 </TouchableOpacity>
               )}
             />
-          </View>
+
+            {/* Cancel Button */}
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={{
+                backgroundColor:
+                  currentTheme === "light" ? "#F3F4F6" : "#1F2937",
+              }}
+              className="mx-4 mb-4 p-4 rounded-xl items-center"
+            >
+              <ThemedText
+                variant="primary"
+                className="text-base font-psemibold"
+              >
+                {t.common.cancel}
+              </ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
         </View>
       </Modal>
+
     </View>
   );
+  
 
   const renderActionButtons = () => (
     <View style={styles.actionContainer}>

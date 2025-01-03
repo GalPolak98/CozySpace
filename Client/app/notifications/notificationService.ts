@@ -1,8 +1,14 @@
 import * as Notifications from "expo-notifications";
-import { AuthService } from '../../services/authService'; 
+import { AuthService } from '../../services/authService';  // Import your AuthService
+
+// In notificationService.ts
+export default {
+  saveNotificationToServer,
+  updateNotificationTapStatus
+};
 
 // Save notification initially with tapped as false
-export default async function saveNotificationToServer(notification: Notifications.Notification, tapped: boolean = false) {
+export async function saveNotificationToServer(notification: Notifications.Notification, tapped: boolean = false) {
   try {
     const userId = await AuthService.getCurrentUserId();
     const userToken = await AuthService.getAuthToken();
@@ -84,4 +90,3 @@ export async function updateNotificationTapStatus(notificationId: string, tapped
     throw error;
   }
 }
-

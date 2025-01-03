@@ -114,7 +114,7 @@ const ProfileScreen = () => {
         setProfile(profileData);
       }
     } catch (error) {
-      Alert.alert(t.errors.error, t.errors.loadError);
+      console.log("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
