@@ -184,8 +184,6 @@ class UserService {
         }
       );
   
-  
-      // Check if the response is an instance of Response
       if (response && response.json) {
         const data = await response.json();
 
@@ -238,13 +236,15 @@ class UserService {
           },
         }
       );
-   
+  
       const data = await response.json();
-      return data.dassResponses || [];
+      console.log('DASS Response data:', data); 
+      return data; 
     } catch (error) {
-      throw new Error(`Failed to get DASS responses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Failed to get DASS responses:', error);
+      throw error;
     }
-   }
+  }
 }
 
 export const userService = new UserService();

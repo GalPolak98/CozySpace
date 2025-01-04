@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
@@ -13,9 +14,7 @@ import { websocketManager } from "@/services/websocketManager";
 import { Ionicons } from "@expo/vector-icons";
 import ThemedText from "../ThemedText";
 
-interface AnxietyDataViewerProps {
-  userId: string;
-}
+const { width: screenWidth } = Dimensions.get("window");
 
 export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -55,6 +54,7 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
     return (
       <ScrollView
         style={[styles.container, { backgroundColor: colors.background }]}
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.section}>
           <View style={[styles.dataCard, { backgroundColor: colors.surface }]}>
@@ -62,18 +62,43 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
               <Text style={[styles.label, { color: colors.textSecondary }]}>
                 HRV:
               </Text>
-              <Text style={[styles.value, { color: colors.text }]}>
-                {sensorData.hrvData.value.toFixed(2)} ms (Quality:{" "}
-                {sensorData.hrvData.quality}%)
+              <Text
+                style={[styles.value, { color: colors.text }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {sensorData.hrvData.value.toFixed(2)} ms
               </Text>
             </View>
+            <View style={styles.qualityRow}>
+              <Text
+                style={[styles.qualityText, { color: colors.textSecondary }]}
+              >
+                Quality: {sensorData.hrvData.quality}%
+              </Text>
+            </View>
+
+            <View
+              style={[styles.divider, { backgroundColor: colors.border }]}
+            />
+
             <View style={styles.dataRow}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>
                 EDA:
               </Text>
-              <Text style={[styles.value, { color: colors.text }]}>
-                {sensorData.edaData.value.toFixed(2)} µS (Quality:{" "}
-                {sensorData.edaData.quality}%)
+              <Text
+                style={[styles.value, { color: colors.text }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {sensorData.edaData.value.toFixed(2)} µS
+              </Text>
+            </View>
+            <View style={styles.qualityRow}>
+              <Text
+                style={[styles.qualityText, { color: colors.textSecondary }]}
+              >
+                Quality: {sensorData.edaData.quality}%
               </Text>
             </View>
           </View>
@@ -93,6 +118,7 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
                   styles.value,
                   { color: analysis.isAnxious ? colors.error : colors.success },
                 ]}
+                numberOfLines={1}
               >
                 {analysis.isAnxious ? "Anxiety Detected" : "Normal State"}
               </Text>
@@ -101,7 +127,10 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
               <Text style={[styles.label, { color: colors.textSecondary }]}>
                 Confidence:
               </Text>
-              <Text style={[styles.value, { color: colors.text }]}>
+              <Text
+                style={[styles.value, { color: colors.text }]}
+                numberOfLines={1}
+              >
                 {(analysis.confidence * 100).toFixed(1)}%
               </Text>
             </View>
@@ -109,7 +138,10 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
               <Text style={[styles.label, { color: colors.textSecondary }]}>
                 Severity:
               </Text>
-              <Text style={[styles.value, { color: colors.text }]}>
+              <Text
+                style={[styles.value, { color: colors.text }]}
+                numberOfLines={1}
+              >
                 {analysis.severity}
               </Text>
             </View>
@@ -122,6 +154,7 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
                   <Text
                     key={index}
                     style={[styles.triggerItem, { color: colors.text }]}
+                    numberOfLines={2}
                   >
                     • {trigger}
                   </Text>
@@ -132,7 +165,10 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
         </View>
 
         {lastUpdateTime && (
-          <Text style={[styles.updateTime, { color: colors.textSecondary }]}>
+          <Text
+            style={[styles.updateTime, { color: colors.textSecondary }]}
+            numberOfLines={1}
+          >
             Last updated: {lastUpdateTime.toLocaleTimeString()}
           </Text>
         )}
@@ -142,21 +178,19 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <View style={styles.containerWrapper}>
-      <View style={[styles.headerContainer]}>
-        <TouchableOpacity
-          onPress={() => setIsExpanded(!isExpanded)}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons
-            name={isExpanded ? "chevron-down" : "chevron-forward"}
-            size={24}
-            color={colors.text}
-          />
-        </TouchableOpacity>
-        <ThemedText className="font-psemibold text-2xl mt-4 ml-4 align-middle">
+      <TouchableOpacity
+        onPress={() => setIsExpanded(!isExpanded)}
+        style={styles.headerContainer}
+      >
+        <Ionicons
+          name={isExpanded ? "chevron-down" : "chevron-forward"}
+          size={24}
+          color={colors.text}
+        />
+        <ThemedText className="text-xl font-psemibold ml-4" numberOfLines={1}>
           Sensor Data
         </ThemedText>
-      </View>
+      </TouchableOpacity>
 
       {isExpanded && renderContent()}
     </View>
@@ -166,27 +200,24 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 8,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   containerWrapper: {
     borderRadius: 8,
     overflow: "hidden",
+    marginHorizontal: 16,
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
-    alignContent: "center",
-  },
-  headerText: {
-    fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
+    padding: 12,
+    paddingVertical: 16,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "Poppins-SemiBold",
     marginBottom: 8,
   },
@@ -203,24 +234,39 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 4,
+  },
+  qualityRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
     marginBottom: 8,
+  },
+  divider: {
+    height: 1,
+    marginVertical: 8,
   },
   label: {
     fontSize: 14,
     fontFamily: "Poppins-Regular",
+    flex: 1,
   },
   value: {
     fontSize: 14,
     fontFamily: "Poppins-Medium",
+    flex: 2,
+    textAlign: "right",
+  },
+  qualityText: {
+    fontSize: 12,
+    fontFamily: "Poppins-Regular",
   },
   triggersContainer: {
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: "#eee",
   },
   triggerItem: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "Poppins-Regular",
     marginLeft: 16,
     marginTop: 4,
@@ -230,11 +276,13 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     textAlign: "center",
     marginTop: 8,
+    marginBottom: 16,
   },
   noDataText: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "Poppins-Regular",
     textAlign: "center",
-    marginTop: 20,
+    marginVertical: 20,
+    paddingHorizontal: 16,
   },
 });

@@ -83,7 +83,7 @@ export const useAnxietyMonitor = (userId: string) => {
         latestState.set(userId, newState);
 
         if (analysis.isAnxious) {
-          // console.log("sending push notification!!", pushToken);
+          //console.log("sending push notification!!", pushToken);
 
           if (pushToken) {
             sendPushNotification(pushToken, userId);

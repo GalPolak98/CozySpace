@@ -141,6 +141,18 @@ export const translations = {
           homeTherapist: {
             patientNotes: 'Patient Notes',
             patientReports: 'Patient Reports',
+            dassAnalysis: 'Analysis of DASS-21 questionnaires',
+          },
+          dassAnalysis: {
+            header: 'DASS-21',
+            title: "Depression Anxiety Stress Analysis",
+            latestResults: "Latest Assessment Results",
+            depression: "Depression",
+            anxiety: "Anxiety",
+            stress: "Stress",
+            scoreTrends: "Score Trends",
+            history: "Assessment History",
+            noData: "No assessments available"
           },
           recording: {
             statusRecording: {
@@ -573,6 +585,18 @@ export const translations = {
           homeTherapist: {
             patientNotes: 'פתקי המטופל',
             patientReports: 'נתונים סטטיסטיים על המטופל',
+            dassAnalysis: "ניתוח שאלוני DASS-21",
+          },
+          dassAnalysis: {
+            header: 'DASS-21',
+            title: "ניתוח דיכאון חרדה ולחץ",
+            latestResults: "תוצאות הערכה אחרונות",
+            depression: "דיכאון",
+            anxiety: "חרדה",
+            stress: "לחץ",
+            scoreTrends: "מגמות ציונים",
+            history: "היסטוריית הערכות",
+            noData: "אין הערכות זמינות"
           },
           homePatient: {
             talkToAI: {
@@ -594,7 +618,11 @@ export const translations = {
           },
           recording: {
             statusRecording: {
-              idle: "התחל תיעוד בעזרת הקלטה",
+              idle: {
+                male: 'התחל תיעוד בעזרת הקלטה',
+                female: 'התחילי תיעוד בעזרת הקלטה',
+                default: 'התחל תיעוד בעזרת הקלטה'
+              },
               recording: "מקליט...",
               stopped: "ההקלטה הופסקה",
             },

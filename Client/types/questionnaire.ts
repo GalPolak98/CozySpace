@@ -9,3 +9,4 @@ export interface DassQuestion {
     answers: { questionId: number; score: number }[];
     totalScore: number;
   }
+  

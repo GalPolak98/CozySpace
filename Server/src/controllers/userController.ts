@@ -281,7 +281,14 @@ export const getDassResponses: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    res.status(200).json({ success: true, responses });
+    const sortedResponses = responses.sort((a, b) => 
+      new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+
+    res.status(200).json({ 
+      success: true, 
+      responses: sortedResponses
+    });
   } catch (error) {
     next(error);
   }

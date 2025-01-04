@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, View, Alert, AppState } from "react-native";
+import { ScrollView, View, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import ThemedView from "@/components/ThemedView";
@@ -13,11 +13,11 @@ import useAuth from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import Loader from "@/components/Loader";
 import { useWebSocketConnection } from "@/hooks/useWebSocketConnection";
-import { AnxietyDataViewer } from "@/components/sensorData/AnxietyDataViewer";
 import { useFeatures } from "@/hooks/useFeatures";
 import { useDassQuestionnaire } from "@/hooks/useDassQuestionnaire";
 import { DassQuestionnaire } from "@/components/monthlyQuestionnaire/MonthlyAssessment";
 import { useAnxietyMonitor } from "@/hooks/useAnxietyMonitor";
+import Animated from "react-native-reanimated";
 
 type RouteType =
   | "/chat"
@@ -209,18 +209,51 @@ const HomePatient = () => {
   return (
     <ThemedView className="flex-1">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
-        {/* Welcome Message */}
-        <View className="items-center mb-8">
-          <ThemedText
-            className="font-psemibold text-2xl text-center mt-4"
-            isRTL={isRTL}
+        {/* Welcome Card */}
+        <Animated.View
+          className="bg-primary/10 rounded-s p-8 mb-2 relative overflow-hidden"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
+            elevation: 3,
+          }}
+        >
+          {/* Decorative Elements */}
+          <View className="absolute -right-6 -top-6 w-20 h-10 rounded-full bg-primary/5" />
+          <View className="absolute -left-4 bottom-0 w-12 h-2 rounded-full bg-primary/5" />
+
+          {/* Welcome Text */}
+          <View
+            className={`items-center justify-center mb-3"${
+              isRTL ? "flex-row-reverse" : "flex-row"
+            }`}
           >
-            {getGenderedText(t.common.welcome, gender)}, {fullName}
-          </ThemedText>
-        </View>
+            <MaterialIcons
+              name="self-improvement"
+              size={28}
+              color={currentTheme === "light" ? "#007AFF" : "#4DA3FF"}
+              style={{ marginRight: 8 }}
+            />
+            <ThemedText className="font-psemibold text-3xl text-center">
+              {getGenderedText(t.common.welcome, gender)}
+            </ThemedText>
+          </View>
+
+          {/* Name Display */}
+          <View className="flex-row items-center justify-center">
+            <ThemedText className="font-pbold text-2xl text-center text-primary">
+              {fullName}
+            </ThemedText>
+          </View>
+        </Animated.View>
 
         {/* Menu Items */}
-        <View className="space-y-4 mt-4">
+        <View className="space-y-4 mt-2">
           {menuItems.map((item, index) => (
             <CustomButton
               key={index}
@@ -233,7 +266,7 @@ const HomePatient = () => {
               isRTL={isRTL}
               containerStyles={{
                 paddingHorizontal: 35,
-                paddingVertical: 12,
+                paddingVertical: 4,
                 marginBottom: 16,
                 alignItems: isRTL ? "flex-end" : "flex-start",
                 flexDirection: "column",

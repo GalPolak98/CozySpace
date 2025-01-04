@@ -133,6 +133,14 @@ const InitialLayout = () => {
         />
 
         <Stack.Screen
+          name="dassAnalysis"
+          options={{
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
           name="reports"
           options={{
             headerTitle: "",

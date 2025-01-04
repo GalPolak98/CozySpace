@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, getUserProfile, getRecordings,updatePatientTherapist, getGuidedNotes, saveGuidedNotes, updateNotificationTappedStatus, getNotification, saveNotification, addNote,updateNote, saveRecording, getNotes, deleteNote, updateUserPreferences, saveBreathingSession, getBreathingSessions, getAllPatients, saveDassResponse} from '../controllers/userController';
+import { registerUser, getUserProfile, getRecordings,updatePatientTherapist, getGuidedNotes, saveGuidedNotes, updateNotificationTappedStatus, getNotification, saveNotification, addNote,updateNote, saveRecording, getNotes, deleteNote, updateUserPreferences, saveBreathingSession, getBreathingSessions, getAllPatients, saveDassResponse, getDassResponses} from '../controllers/userController';
 
 const router = express.Router();
 
@@ -29,6 +29,7 @@ router.patch('/:userId/notifications/:expoNotificationId', updateNotificationTap
 router.post('/:userId/breathingSessions', saveBreathingSession);
 router.get('/:userId/breathingSessions', getBreathingSessions);
 router.post('/:userId/dass', saveDassResponse);
+router.get('/:userId/dass', getDassResponses);
 
 router.get('/admin/patients', getAllPatients);
 

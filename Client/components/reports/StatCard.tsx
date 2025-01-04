@@ -42,7 +42,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => {
         >
           <ThemedText
             className="font-pbold text-lg mb-0.5"
-            numberOfLines={1}
+            numberOfLines={3}
             adjustsFontSizeToFit
             isRTL={isRTL}
           >
@@ -50,7 +50,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => {
           </ThemedText>
           <ThemedText
             className="font-pmedium text-xs mb-0.5"
-            numberOfLines={2}
+            numberOfLines={3}
             isRTL={isRTL}
           >
             {title}
