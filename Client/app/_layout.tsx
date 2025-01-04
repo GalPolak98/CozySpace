@@ -15,7 +15,7 @@ import MainHeader from "@/components/navigation/MainHeader";
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: false,
   }),
 });

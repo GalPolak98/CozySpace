@@ -1,9 +1,34 @@
+import * as Localization from 'expo-localization';
+
 const notificationCooldown = 1 * 60 * 1000; 
 const lastNotificationTime = new Map<string, number>(); 
 
+type Messages = {
+  [key: string]: {
+    title: string;
+    body: string;
+  };
+};
+
+function getLocalizedMessage(language: string) {
+  const messages: Messages = {
+    en: {
+      title: 'Take a Deep Breath',
+      body: 'We noticed signs of anxiety. Take a moment to relax.',
+    },
+    he: {
+      title: 'קח נשימה עמוקה',
+      body: 'שמנו לב לסימני חרדה. קח רגע להירגע.',
+    },
+  };
+
+  // Default to English if the language is not supported
+  return messages[language] || messages['en'];
+}
+
 export async function sendPushNotification(expoPushToken: string, userId: string) {
   const now = Date.now();
-
+  console.log('Sending push notification...');
   // Check if the cooldown period has passed since the last notification
   const lastNotification = lastNotificationTime.get(userId);
   if (lastNotification && now - lastNotification < notificationCooldown) {
@@ -11,12 +36,17 @@ export async function sendPushNotification(expoPushToken: string, userId: string
     return;
   }
 
+  const locales = Localization.getLocales();
+  const defaultLocale = locales[0]; // The first locale in the array is the default
+  const deviceLanguage = defaultLocale.languageCode === 'iw' || defaultLocale.languageCode === 'he' ? 'he' : 'en';
+  const localizedMessage = getLocalizedMessage(deviceLanguage);
+
   // Send notification
   const message = {
     to: expoPushToken,
     sound: 'default',
-    title: 'Take a Deep Breath',
-    body: 'We noticed signs of anxiety. Take a moment to relax.',
+    title: localizedMessage.title,
+    body: localizedMessage.body,
     data: { someData: 'goes here' },
   };
 

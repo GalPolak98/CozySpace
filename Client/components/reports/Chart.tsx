@@ -45,9 +45,6 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
       strokeWidth: "1.5",
       stroke: colors.primary,
     },
-    // Add left and right margin to ensure chart is centered
-    paddingRight: 0,
-    paddingLeft: 0,
   };
 
   return (
@@ -56,38 +53,31 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
       style={{
         borderWidth: 1,
         borderColor: colors.border,
-        marginBottom: 30,
       }}
       onLayout={onLayout}
     >
       <ThemedText
-        className="font-pbold text-base mb-2 w-full"
+        className="font-pbold text-base mb-3 w-full"
         style={{
           textAlign: isRTL ? "right" : "left",
           color: colors.text,
         }}
       >
-        {t.reports.weeklyAnxietyLevels}
+        {t.reports.anxietyEvents}
       </ThemedText>
 
       {containerWidth > 0 && (
-        <View
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 8,
-            width: "100%",
-          }}
-        >
+        <View style={{ 
+          flex: 1,
+          justifyContent: 'center',  
+          alignItems: 'flex-end', 
+        }}>
           <LineChart
             data={weeklyData}
-            width={containerWidth - 32}
+            width={containerWidth - 32}  
             height={280}
             chartConfig={chartConfig}
             bezier
-            style={{
-              marginHorizontal: -8,
-            }}
             withInnerLines={true}
             withOuterLines={false}
             withVerticalLines={true}
@@ -97,6 +87,9 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
             yAxisSuffix=""
             fromZero
             segments={4}
+            style={{
+              marginHorizontal: 16,  // Add horizontal margin
+            }}
           />
         </View>
       )}

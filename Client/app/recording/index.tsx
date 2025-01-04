@@ -111,7 +111,7 @@ export default function App() {
       </TouchableOpacity>
       <Text style={[styles.recordingStatusText, { color: currentTheme === 'light' ? 'black' : 'white' }]}>
 
-      {t.recording.status}: {t.recording.statusRecording[recordingStatus]}
+      {t.recording.statusRecording[recordingStatus]}
 
       </Text>
     </View>

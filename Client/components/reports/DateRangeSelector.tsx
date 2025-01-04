@@ -1,4 +1,3 @@
-// src/components/reports/DateRangeSelector.tsx
 import React from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 import { format } from 'date-fns';
@@ -12,7 +11,7 @@ interface DateRangeSelectorProps {
 
 const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({ dateRange, onPress }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();  // Get translation function
+  const { t } = useLanguage();  
 
   return (
     <TouchableOpacity
@@ -29,7 +28,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({ dateRange, onPres
             {t.reports.dateRange}
           </Text>
           <Text className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-            {format(dateRange.startDate, 'MM/dd/yyyy')} - {format(dateRange.endDate, 'MM/dd/yyyy')}
+          {format(dateRange.startDate, 'dd/MM/yyyy')} - {format(dateRange.endDate, 'dd/MM/yyyy')}
           </Text>
         </View>
       </View>

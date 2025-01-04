@@ -1,4 +1,3 @@
-// src/components/reports/DatePickerModal.tsx
 import React from 'react';
 import { Modal, View, TouchableOpacity, Text } from 'react-native';
 import { Calendar } from 'react-native-calendars';
@@ -10,8 +9,11 @@ interface DatePickerModalProps {
   isSelectingStartDate: boolean;
   handleDayPress: (day: { dateString: string }) => void;
   setVisible: (visible: boolean) => void;
-  markedDates: { [key: string]: any }; // Prop for marked dates
-
+  markedDates: { [key: string]: any };
+  dateRange: {
+    startDate: Date;
+    endDate: Date;
+  };
 }
 
 const DatePickerModal: React.FC<DatePickerModalProps> = ({
@@ -19,13 +21,11 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
   isSelectingStartDate,
   handleDayPress,
   setVisible,
-  markedDates,  // Accept markedDates as prop
-
+  dateRange
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();  // Get translation function
+  const { t } = useLanguage();  
 
-  // Define calendar styles based on the theme
   const calendarStyles = {
     todayTextColor: theme === 'dark' ? 'white' : 'black',
     selectedDayBackgroundColor: theme === 'dark' ? '#4B89FF' : '#3B82F6',
@@ -36,16 +36,71 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     textDisabledColor: theme === 'dark' ? '#666' : '#ccc',
   };
 
+  const getMarkedDates = () => {
+    const marked: { [key: string]: any } = {};
+    const startDateStr = dateRange.startDate.toISOString().split('T')[0];
+
+    if (isSelectingStartDate) {
+      if (startDateStr) {
+        marked[startDateStr] = {
+          selected: true,
+          color: calendarStyles.selectedDayBackgroundColor,
+          textColor: 'white'
+        };
+      }
+      return marked;
+    }
+
+    const endDateStr = dateRange.endDate.toISOString().split('T')[0];
+    
+    if (startDateStr) {
+      marked[startDateStr] = {
+        selected: true,
+        startingDay: true,
+        color: calendarStyles.selectedDayBackgroundColor,
+        textColor: 'white'
+      };
+    }
+
+    if (endDateStr && !isSelectingStartDate) {
+      marked[endDateStr] = {
+        selected: true,
+        endingDay: true,
+        color: calendarStyles.selectedDayBackgroundColor,
+        textColor: 'white'
+      };
+
+      const start = new Date(startDateStr);
+      const end = new Date(endDateStr);
+      const current = new Date(start);
+      current.setDate(current.getDate() + 1);
+
+      while (current < end) {
+        const dateStr = current.toISOString().split('T')[0];
+        marked[dateStr] = {
+          selected: true,
+          color: calendarStyles.selectedDayBackgroundColor,
+          textColor: 'white'
+        };
+        current.setDate(current.getDate() + 1);
+      }
+    }
+
+    return marked;
+  };
+
   return (
     <Modal visible={isVisible} transparent={true} animationType="slide">
       <View className={`flex-1 justify-center items-center ${theme === 'dark' ? 'bg-black/70' : 'bg-black/50'}`}>
         <View className={`w-11/12 rounded-lg p-4 ${theme === 'dark' ? 'bg-zinc-800' : 'bg-white'}`}>
           <Text className={`text-center mb-4 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-            {isSelectingStartDate ? t.reports.selectStartDate : 'Select End Date'}
+            {isSelectingStartDate ? t.reports.selectStartDate : t.reports.selectEndDate}
           </Text>
           <Calendar
             onDayPress={handleDayPress}
-            markedDates={markedDates}  // Pass markedDates to the calendar
+            markedDates={getMarkedDates()}
+            markingType="period"
+            initialDate={dateRange.startDate.toISOString().split('T')[0]} 
             theme={{
               ...calendarStyles,
               textSectionTitleColor: theme === 'dark' ? 'white' : 'black',

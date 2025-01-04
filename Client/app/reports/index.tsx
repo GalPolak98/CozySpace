@@ -41,14 +41,13 @@ const ReportsScreen = () => {
   const generateDayLabels = (startDate: Date, endDate: Date) => {
     const days = eachDayOfInterval({ start: startDate, end: endDate });
     return days.map((day) => {
-      const dayName = format(day, "EEE"); // Get the abbreviated day name (e.g., Mon, Tue, etc.)
-      return t.reports.days[dayName] || dayName; // Use the translation if available, fallback to the original day name
+      const dayName = format(day, "EEE"); 
+      return t.reports.days[dayName] || dayName; 
     });
   };
 
   const dayLabels = generateDayLabels(dateRange.startDate, dateRange.endDate);
 
-  // console.log('startDate', dateRange.startDate , 'endDate', dateRange.endDate);
 
   const markedDates = useMemo(() => {
     const marked: {
@@ -77,24 +76,21 @@ const ReportsScreen = () => {
       try {
         const targetId = patientId || userId;
 
-        // console.log('Fetching notes for user!!!!!!!!!:', targetId);
         const fetchedNotes = await loadNotes(
           targetId,
           isRTL,
           t as { common: { error: string }; note: { fetchError: string } }
         );
-        // console.log('Fetched Notes:', fetchedNotes);
-        // Filter notes based on dateRange
+
         const filteredNotes = fetchedNotes.filter((note) => {
-          const noteDate = new Date(note.timestamp); // Parse the note's timestamp
+          const noteDate = new Date(note.timestamp)
           return (
             noteDate >= new Date(dateRange.startDate) &&
             noteDate <= new Date(dateRange.endDate)
           );
         });
 
-        setNotesCount(filteredNotes.length); // Set count of filtered notes
-        // console.log('Filtered Notes Count:', filteredNotes.length);
+        setNotesCount(filteredNotes.length);
       } catch (error) {
         console.error("Failed to filter notes", error);
       }
@@ -118,12 +114,10 @@ const ReportsScreen = () => {
           const noteDate = new Date(guidedNote.timestamp);
           const startDate = new Date(dateRange.startDate);
           const endDate = new Date(dateRange.endDate);
-          endDate.setHours(23, 59, 59, 999); // Adjust endDate to the end of the day
+          endDate.setHours(23, 59, 59, 999);
 
           return noteDate >= startDate && noteDate <= endDate;
         });
-
-        // console.log("Filtered Notes:", filteredNotes);
 
         if (filteredNotes.length > 0) {
           const totalAnxietyRating = filteredNotes.reduce(
@@ -132,48 +126,9 @@ const ReportsScreen = () => {
           );
           const avgAnxietyIntensity = totalAnxietyRating / filteredNotes.length;
           setAverageAnxietyIntensity(avgAnxietyIntensity);
-
-          // Initialize weekly data array based on the number of days in the date range
-          let weeklyData = new Array(dayLabels.length).fill(0);
-
-          // Aggregate anxiety ratings by each day in the range (not just by weekday)
-          filteredNotes.forEach((note) => {
-            const noteDate = new Date(note.timestamp);
-            const dayIndex = eachDayOfInterval({
-              start: dateRange.startDate,
-              end: dateRange.endDate,
-            }).findIndex(
-              (day) =>
-                format(day, "yyyy-MM-dd") === format(noteDate, "yyyy-MM-dd")
-            );
-            if (dayIndex !== -1) {
-              weeklyData[dayIndex] += note.anxietyRating;
-            }
-          });
-
-          // Calculate the average anxiety intensity for each day
-          weeklyData = weeklyData.map((total, index) => {
-            const count = filteredNotes.filter((note) => {
-              const noteDate = new Date(note.timestamp);
-              const dayIndex = eachDayOfInterval({
-                start: dateRange.startDate,
-                end: dateRange.endDate,
-              }).findIndex(
-                (day) =>
-                  format(day, "yyyy-MM-dd") === format(noteDate, "yyyy-MM-dd")
-              );
-              return dayIndex === index;
-            }).length;
-            return count > 0 ? total / count : 0;
-          });
-
-          setWeeklyData(weeklyData);
-          // console.log("Weekly Data after aggregation:", weeklyData);
         } else {
-          // Reset data if no notes match
           console.log("No notes match the date range");
           setAverageAnxietyIntensity(0);
-          setWeeklyData(new Array(dayLabels.length).fill(0));
         }
       } catch (error) {
         console.error("Failed to fetch guided notes", error);
@@ -197,10 +152,35 @@ const ReportsScreen = () => {
         );
 
         if (Array.isArray(fetchedNotifications)) {
+          
+          const filteredNotifications = fetchedNotifications.filter((notification) => {
+            const notificationDate = new Date(notification.notificationTimestamp);
+            const startDate = new Date(dateRange.startDate);
+            const endDate = new Date(dateRange.endDate);
+            endDate.setHours(23, 59, 59, 999); 
+  
+            return notificationDate >= startDate && notificationDate <= endDate;
+          });
+
           const notificationsCount = fetchedNotifications.length;
 
           setNotifications(notificationsCount);
+          let weeklyData = new Array(dayLabels.length).fill(0);
+        filteredNotifications.forEach((notification) => {
+          const notificationDate = new Date(notification.notificationTimestamp);
+          const dayIndex = eachDayOfInterval({
+            start: dateRange.startDate,
+            end: dateRange.endDate,
+          }).findIndex(
+            (day) =>
+              format(day, "yyyy-MM-dd") === format(notificationDate, "yyyy-MM-dd")
+          );
+          if (dayIndex !== -1) {
+            weeklyData[dayIndex]++; 
+          }
+        });
 
+        setWeeklyData(weeklyData);
           if (notificationsCount > 0) {
             const totalAnxietyDuration = fetchedNotifications.reduce(
               (sum, notification) => {
@@ -219,17 +199,20 @@ const ReportsScreen = () => {
             "Fetched notifications is not an array:",
             fetchedNotifications
           );
-          setNotifications(0); // Invalid data, set count to 0
-          setAverageEpisodeDuration(0); // If no valid notifications, set average duration to 0
+          setNotifications(0); 
+          setAverageEpisodeDuration(0); 
+          setWeeklyData(new Array(dayLabels.length).fill(0));
+
         }
       } catch (error) {
         console.error("Failed to filter notifications:", error);
-        setNotifications(0); // On error, set count to 0
-        setAverageEpisodeDuration(0); // On error, set average duration to 0
+        setNotifications(0); 
+        setAverageEpisodeDuration(0); 
+        setWeeklyData(new Array(dayLabels.length).fill(0));
+
       }
     };
 
-    // Fetch notifications whenever dateRange or userId changes
     fetchNotification();
   }, [dateRange, userId]);
 
@@ -242,7 +225,6 @@ const ReportsScreen = () => {
         }
         const response = await userService.getBreathingSession(targetId);
 
-        // Calculate the total number of sessions
         setBreathingSessionCount(response.length);
 
         if (response.length > 0) {
@@ -254,7 +236,6 @@ const ReportsScreen = () => {
           const avgBreathingSession = totalBreathingSession / response.length;
           setAverageBreathingSessionDuration(avgBreathingSession);
         } else {
-          // Reset data if no notes match
           console.log("No breathung sessions match the date range!");
           setAverageBreathingSessionDuration(0);
         }
@@ -270,10 +251,10 @@ const ReportsScreen = () => {
     const selectedDate = new Date(day.dateString);
 
     if (isSelectingStartDate) {
-      setDateRange((prev) => ({
-        ...prev,
-        startDate: selectedDate,
-      }));
+    setDateRange({
+      startDate: selectedDate,
+      endDate: selectedDate // Reset end date to be same as start date
+    });
       setIsSelectingStartDate(false);
     } else {
       if (selectedDate >= dateRange.startDate) {
@@ -360,6 +341,8 @@ const ReportsScreen = () => {
         handleDayPress={handleDayPress}
         setVisible={setDatePickerVisible}
         markedDates={markedDates}
+        dateRange={dateRange}
+
       />
     </ThemedView>
   );

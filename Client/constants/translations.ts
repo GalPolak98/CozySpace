@@ -83,9 +83,8 @@ export const translations = {
             anxietyEvents: 'Anxiety Events',
             dateRange: 'Date Range',
             change: 'Edit',
-            weeklyAnxietyLevels: 'Anxiety Levels',
             selectStartDate: 'Select Start Date',
-            selectEndtDate: 'Select End Date',
+            selectEndDate: 'Select End Date',
             breathingSessions: 'Breathing Sessions',
             averageBreathingSessionDuration: 'Avg. Breathing \nSession Duration\n (sec)',
             days:{
@@ -145,9 +144,9 @@ export const translations = {
           },
           recording: {
             statusRecording: {
-              idle: "Idle",
-              recording: "Recording",
-              stopped: "Stopped",
+              idle: "Start recording for documentation",
+              recording: "Recording...",
+              stopped: "Recording stopped",
             },
             startRecording: 'Start recording for documentation',
             stopRecording: 'Stop recording for documentation',
@@ -595,9 +594,9 @@ export const translations = {
           },
           recording: {
             statusRecording: {
-              idle: "התחל",
-              recording: "מקליט",
-              stopped: "עצר",
+              idle: "התחל תיעוד בעזרת הקלטה",
+              recording: "מקליט...",
+              stopped: "ההקלטה הופסקה",
             },
             startRecording: {
               male: 'התחל הקלטה לתיעוד',
@@ -638,9 +637,8 @@ export const translations = {
             anxietyEvents: 'אירועי חרדה',
             dateRange: 'טווח זמנים',
             change: 'ערוך',
-            weeklyAnxietyLevels: 'רמות חרדה ',
             selectStartDate: 'בחר תאריך התחלה',
-            selectEndtDate: 'בחר תאריך סיום',
+            selectEndDate: 'בחר תאריך סיום',
             breathingSessions: 'סשני נשימה',
             averageBreathingSessionDuration: 'מסך סשן נשימה ממוצע בשניות',
             days:{
