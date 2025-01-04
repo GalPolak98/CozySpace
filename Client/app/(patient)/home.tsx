@@ -17,7 +17,6 @@ import { useFeatures } from "@/hooks/useFeatures";
 import { useDassQuestionnaire } from "@/hooks/useDassQuestionnaire";
 import { DassQuestionnaire } from "@/components/monthlyQuestionnaire/MonthlyAssessment";
 import { useAnxietyMonitor } from "@/hooks/useAnxietyMonitor";
-import Animated from "react-native-reanimated";
 
 type RouteType =
   | "/chat"
@@ -210,7 +209,7 @@ const HomePatient = () => {
     <ThemedView className="flex-1">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
         {/* Welcome Card */}
-        <Animated.View
+        <View
           className="bg-primary/10 rounded-s p-8 mb-2 relative overflow-hidden"
           style={{
             shadowColor: "#000",
@@ -223,10 +222,6 @@ const HomePatient = () => {
             elevation: 3,
           }}
         >
-          {/* Decorative Elements */}
-          <View className="absolute -right-6 -top-6 w-20 h-10 rounded-full bg-primary/5" />
-          <View className="absolute -left-4 bottom-0 w-12 h-2 rounded-full bg-primary/5" />
-
           {/* Welcome Text */}
           <View
             className={`items-center justify-center mb-3"${
@@ -250,7 +245,7 @@ const HomePatient = () => {
               {fullName}
             </ThemedText>
           </View>
-        </Animated.View>
+        </View>
 
         {/* Menu Items */}
         <View className="space-y-4 mt-2">
