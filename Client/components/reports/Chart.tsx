@@ -88,7 +88,7 @@ const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
             fromZero
             segments={4}
             style={{
-              marginHorizontal: 16,  // Add horizontal margin
+              marginHorizontal: 16, 
             }}
           />
         </View>

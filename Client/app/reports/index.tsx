@@ -153,17 +153,19 @@ const ReportsScreen = () => {
 
         if (Array.isArray(fetchedNotifications)) {
           
+          const startDate = new Date(dateRange.startDate);
+          const endDate = new Date(dateRange.endDate);
+  
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(23, 59, 59, 999);
+  
           const filteredNotifications = fetchedNotifications.filter((notification) => {
             const notificationDate = new Date(notification.notificationTimestamp);
-            const startDate = new Date(dateRange.startDate);
-            const endDate = new Date(dateRange.endDate);
-            endDate.setHours(23, 59, 59, 999); 
-  
             return notificationDate >= startDate && notificationDate <= endDate;
           });
-
-          const notificationsCount = fetchedNotifications.length;
-
+  
+          const notificationsCount = filteredNotifications.length; 
+  
           setNotifications(notificationsCount);
           let weeklyData = new Array(dayLabels.length).fill(0);
         filteredNotifications.forEach((notification) => {
@@ -179,7 +181,6 @@ const ReportsScreen = () => {
             weeklyData[dayIndex]++; 
           }
         });
-
         setWeeklyData(weeklyData);
           if (notificationsCount > 0) {
             const totalAnxietyDuration = fetchedNotifications.reduce(
@@ -224,11 +225,25 @@ const ReportsScreen = () => {
           return;
         }
         const response = await userService.getBreathingSession(targetId);
+        const startDate = new Date(dateRange.startDate);
+        startDate.setHours(0, 0, 0, 0);
 
-        setBreathingSessionCount(response.length);
+        const endDate = new Date(dateRange.endDate);
+        endDate.setHours(23, 59, 59, 999); 
+        console.log(startDate, endDate);
+        const filteredSessions = response.filter((session: { timestamp: string }) => {
+          const cleanedTimestamp = session.timestamp.replace(/ /g, ' ').replace(',', '');
+          
+          const sessionDate = parse(cleanedTimestamp, "MM/dd/yyyy h:mm:ss a", new Date());
+          console.log("Parsed session date: ", sessionDate);
+    
+          return sessionDate >= startDate && sessionDate <= endDate;
+        });
 
-        if (response.length > 0) {
-          const totalBreathingSession = response.reduce(
+        setBreathingSessionCount(filteredSessions.length);
+
+        if (filteredSessions.length > 0) {
+          const totalBreathingSession = filteredSessions.reduce(
             (sum: number, session: { durationSec: number }) =>
               sum + session.durationSec,
             0
