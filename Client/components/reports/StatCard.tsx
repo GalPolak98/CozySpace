@@ -22,7 +22,7 @@ const StatCard: React.FC<StatCardProps> = ({
 
 
   return (
-    <ThemedView className={`p-4 rounded-lg w-[49%] mb-4 shadow-md`}>
+    <ThemedView className={`p-2 rounded-lg w-[49%] mb-4 shadow-md`}>
       <ThemedView className={`flex-row items-center mb-3 ${isRTL ? 'right' : 'left'}`}>
       <ThemedView className={`p-2 rounded-full`}>
           <Feather name={icon} size={20} color="#3b82f6" />

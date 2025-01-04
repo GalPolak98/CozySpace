@@ -117,6 +117,29 @@ const InitialLayout = () => {
         />
 
         <Stack.Screen
+          name="recordingInfo"
+          options={{
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="notesInfo"
+          options={{
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="reports"
+          options={{
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="index"
           options={{
             headerTitle: "Cozy Space",

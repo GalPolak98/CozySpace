@@ -2,14 +2,14 @@ import React from "react";
 import { useTheme } from "@/components/ThemeContext";
 import { theme } from "@/styles/Theme";
 import { Stack } from "expo-router";
-import ReportsHeader from "@/components/reports/ReportsHeader";
+import RecordingsInfoHeader from "@/components/information/recordingsInfoHeader";
 
 const HeaderWrapper = () => {
   const { theme: currentTheme, toggleTheme } = useTheme();
-  return <ReportsHeader toggleTheme={toggleTheme} />;
+  return <RecordingsInfoHeader toggleTheme={toggleTheme} />;
 };
 
-const ReportsLayoutInner = () => {
+const RecordingsInfoLayoutInner = () => {
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
 
@@ -39,4 +39,4 @@ const ReportsLayoutInner = () => {
   );
 };
 
-export default ReportsLayoutInner;
+export default RecordingsInfoLayoutInner;

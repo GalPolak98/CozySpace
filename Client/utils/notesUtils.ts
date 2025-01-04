@@ -84,8 +84,8 @@ export const loadNotes = async (
 
     return sortedNotes;
   } catch (error) {
-    // console.error('Failed to fetch notes!!', error);
-    Alert.alert(t.common.error, t.note.fetchError);
+    console.log('Failed to fetch notes');
+    // Alert.alert(t.common.error, t.note.fetchError);
     return [];
   }
 };

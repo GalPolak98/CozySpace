@@ -86,7 +86,7 @@ export const translations = {
             selectStartDate: 'Select Start Date',
             selectEndtDate: 'Select End Date',
             breathingSessions: 'Breathing Sessions',
-            averageBreathingSessionDuration: 'Average Breathing Session Duration',
+            averageBreathingSessionDuration: 'Avg. Breathing \nSession Duration\n (sec)',
             days:{
               Mon: 'Mon',
               Tue: 'Tue',
@@ -634,7 +634,7 @@ export const translations = {
             selectStartDate: 'בחר תאריך התחלה',
             selectEndtDate: 'בחר תאריך סיום',
             breathingSessions: 'סשני נשימה',
-            averageBreathingSessionDuration: 'משך סשן נשימה ממוצע',
+            averageBreathingSessionDuration: 'מסך סשן נשימה ממוצע בשניות',
             days:{
               Mon: 'יום ב',
               Tue: 'יום ג',

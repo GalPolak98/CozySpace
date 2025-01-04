@@ -5,7 +5,7 @@ import { useTheme } from '@/components/ThemeContext';
 import useAuth from '@/hooks/useAuth';
 import * as FileSystem from 'expo-file-system'; 
 import { Audio } from 'expo-av'; 
-import ThemedText from '../components/ThemedText';
+import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -31,15 +31,19 @@ export default function RecordingsInfoScreen() {
       if (!recordingsDirectory) return;
 
       try {
-        console.log('recording directory:', recordingsDirectory);
         const directoryInfo = await FileSystem.getInfoAsync(recordingsDirectory);
         if (!directoryInfo.exists) {
-          console.log(`not exists`);
           await FileSystem.makeDirectoryAsync(recordingsDirectory, { intermediates: true });
         }
 
         const files = await FileSystem.readDirectoryAsync(recordingsDirectory);
-        const audioFiles = files.filter((file) => file.endsWith('.caf'));
+        const audioFiles = files
+          .filter((file) => file.endsWith('.caf'))
+          .sort((a, b) => {
+            const timestampA = parseInt(a.replace('recording-', '').replace('.caf', ''));
+            const timestampB = parseInt(b.replace('recording-', '').replace('.caf', ''));
+            return timestampB - timestampA; // Sort in descending order (newest first)
+          });
         setRecordings(audioFiles);
       } catch (error) {
         Alert.alert(t.errors.error, t.errors.loadError);
@@ -102,20 +106,7 @@ export default function RecordingsInfoScreen() {
   };
 
   return (
-    <>
-      <Stack.Screen />
       <ThemedView style={[styles.container, { backgroundColor: theme === 'dark' ? '#121212' : '#fff' }]}>
-      <ThemedText
-        style={[
-          styles.header,
-          {
-            color: theme === 'dark' ? '#fff' : '#000',
-            textAlign: isRTL ? 'right' : 'left', 
-          },
-        ]}
-      >
-        {t.information.recordings}
-      </ThemedText>
 
       {recordings.length === 0 ? (
           <View style={styles.emptyStateContainer}>
@@ -133,7 +124,6 @@ export default function RecordingsInfoScreen() {
           />
         )}
       </ThemedView>
-    </>
   );
 }
 

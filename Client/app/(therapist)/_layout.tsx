@@ -3,10 +3,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { useTheme } from '@/components/ThemeContext';
 import { theme } from '@/styles/Theme';
-import { Ionicons } from '@expo/vector-icons';
 import { HeaderLeft, HeaderRight } from '@/components/navigation/HeaderButtons';
-import { Stack } from "expo-router";
-import MainHeader from "@/components/navigation/MainHeader";
 import { useLanguage } from '@/context/LanguageContext';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 
