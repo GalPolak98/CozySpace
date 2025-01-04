@@ -220,6 +220,7 @@ export const translations = {
           therapistSelection: {
             dropdownLabel: '',
             dropdownPlaceholder: 'Choose a therapist to work with',
+            dropdownPlaceholderGender: 'Choose a therapist to work with',
             noTherapistOption: "I don't want to work with a therapist now",
             noTherapistDesc: 'You can select a therapist later',
             dataSharingTitle: 'Data Sharing Settings',

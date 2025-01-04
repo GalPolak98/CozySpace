@@ -235,6 +235,10 @@ const HomePatient = () => {
                 paddingHorizontal: 35,
                 paddingVertical: 12,
                 marginBottom: 16,
+                alignItems: isRTL ? "flex-end" : "flex-start",
+                flexDirection: "column",
+                gap: 8,
+                width: "100%",
               }}
             />
           ))}
