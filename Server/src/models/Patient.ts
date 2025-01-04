@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { baseModelFields, IBaseModel } from "./BaseModel";
+import { DassResponse } from "../types/dass";
 
 
 interface IBreathingSession {
@@ -70,6 +71,7 @@ export interface IPatient extends IBaseModel {
       }
     ];
     breathingSessions: IBreathingSession[];
+    dassResponses: DassResponse[];
   }
   
   const PatientSchema = new Schema({
@@ -139,6 +141,26 @@ export interface IPatient extends IBaseModel {
       durationSec: { type: Number, required: true },
       patternType: { type: String, required: true },
       completed: { type: Boolean, default: true }
+    }],
+    dassResponses: [{
+      timestamp: { type: String, required: true },
+      answers: [{
+        questionId: { type: Number, required: true },
+        score: { type: Number, required: true, min: 0, max: 3 }
+      }],
+      totalScore: { type: Number, required: true },
+      analysis: {
+        scaleScores: {
+          depression: { type: Number, required: true },
+          anxiety: { type: Number, required: true },
+          stress: { type: Number, required: true }
+        },
+        severity: {
+          depression: { type: String, required: true },
+          anxiety: { type: String, required: true },
+          stress: { type: String, required: true }
+        }
+      }
     }]
   });
   

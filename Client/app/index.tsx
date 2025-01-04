@@ -23,7 +23,6 @@ import Loader from "@/components/Loader";
 import { AuthRoutingService } from "@/services/authRoutingService";
 import { translations } from "@/constants/translations";
 import { useNotification } from "@/context/NotificationContext";
-import * as FileSystem from "expo-file-system";
 
 const { width, height } = Dimensions.get("window");
 
@@ -34,7 +33,6 @@ interface OnboardingItem {
   image: any;
 }
 
-// Updated onboardingData with proper types
 const onboardingData: OnboardingItem[] = [
   {
     id: "1",

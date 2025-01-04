@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Alert } from "react-native";
+import { View, Alert, ScrollView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import ThemedView from "@/components/ThemedView";
@@ -7,6 +7,9 @@ import ThemedText from "@/components/ThemedText";
 import CustomButton from "@/components/CustomButton";
 import { useTheme } from "@/components/ThemeContext";
 import { useLanguage } from "@/context/LanguageContext";
+import useAuth from "@/hooks/useAuth";
+import { useFeatures } from "@/hooks/useFeatures";
+import { AnxietyDataViewer } from "@/components/sensorData/AnxietyDataViewer";
 
 type RouteType = "/notesInfo" | "/recordingInfo";
 
@@ -21,6 +24,8 @@ const InformationPatient = () => {
   const { isRTL, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const userId = useAuth();
+  const { features } = useFeatures();
 
   const handleNavigation = async (route: RouteType) => {
     setIsLoading(true);
@@ -67,7 +72,7 @@ const InformationPatient = () => {
 
   return (
     <ThemedView className="flex-1">
-      <View className="px-4 py-6">
+      <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
         <ThemedText
           className={`text-2xl font-bold mb-4 ${isRTL ? "text-right" : "text-left"}`}
         >
@@ -102,7 +107,12 @@ const InformationPatient = () => {
             />
           ))}
         </View>
-      </View>
+        {userId && features?.anxietyDataViewer && (
+          <View>
+            <AnxietyDataViewer userId={userId} />
+          </View>
+        )}
+      </ScrollView>
     </ThemedView>
   );
 };

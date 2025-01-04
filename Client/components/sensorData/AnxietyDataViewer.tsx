@@ -11,6 +11,7 @@ import { theme } from "@/styles/Theme";
 import { useAnxietyMonitor } from "@/hooks/useAnxietyMonitor";
 import { websocketManager } from "@/services/websocketManager";
 import { Ionicons } from "@expo/vector-icons";
+import ThemedText from "../ThemedText";
 
 interface AnxietyDataViewerProps {
   userId: string;
@@ -56,9 +57,6 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
         style={[styles.container, { backgroundColor: colors.background }]}
       >
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Sensor Data
-          </Text>
           <View style={[styles.dataCard, { backgroundColor: colors.surface }]}>
             <View style={styles.dataRow}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>
@@ -155,6 +153,9 @@ export const AnxietyDataViewer: React.FC<{ userId: string }> = ({ userId }) => {
             color={colors.text}
           />
         </TouchableOpacity>
+        <ThemedText className="font-psemibold text-2xl mt-4 ml-4 align-middle">
+          Sensor Data
+        </ThemedText>
       </View>
 
       {isExpanded && renderContent()}
@@ -176,9 +177,9 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
+    alignContent: "center",
   },
   headerText: {
     fontSize: 16,

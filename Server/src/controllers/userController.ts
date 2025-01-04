@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { userService } from '../services/userService';
 import { PatientModel } from '../models/Patient';
+import { DassResponse } from '../types/dass';
 
 export const registerUser: RequestHandler = async (req, res, next) => {
   try {
@@ -250,6 +251,37 @@ export const getAllPatients: RequestHandler = async (req, res, next) => {
   try {
     const patients = await userService.getAllPatients();
     res.status(200).json({ success: true, patients });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const saveDassResponse: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const responseData: DassResponse = {
+      userId,
+      ...req.body
+    };
+
+    const result = await userService.saveDassResponse(userId, responseData);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDassResponses: RequestHandler = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const responses = await userService.getDassResponsesForUser(userId);
+    
+    if (!responses) {
+      res.status(404).json({ error: 'No DASS responses found for this user' });
+      return;
+    }
+
+    res.status(200).json({ success: true, responses });
   } catch (error) {
     next(error);
   }

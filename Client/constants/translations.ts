@@ -27,6 +27,7 @@ export const translations = {
           submit: 'Submit',
           error: 'Error',
           success: 'Success',
+          ok: 'OK',
           logoutConfirm: 'Are you sure you want to logout?',
           logoutError: 'Failed to logout. Please try again.',
           enabled: 'Enabled',
@@ -124,6 +125,7 @@ export const translations = {
             error: "Error",
             loadError: "Failed to load data",
             playingRecording: 'Failed to play recording',
+            unansweredQuestions: "Please answer all questions",
           },
 
           success: {
@@ -218,6 +220,7 @@ export const translations = {
           therapistSelection: {
             dropdownLabel: '',
             dropdownPlaceholder: 'Choose a therapist to work with',
+            dropdownPlaceholderGender: 'Choose a therapist to work with',
             noTherapistOption: "I don't want to work with a therapist now",
             noTherapistDesc: 'You can select a therapist later',
             dataSharingTitle: 'Data Sharing Settings',
@@ -439,6 +442,17 @@ export const translations = {
             }
           },
           },
+          questionnaire: {  
+            title: 'Monthly Mental Health Assessment',
+            instruction: 'Please rate how much each statement applied to you over the past week:',
+            ratings: {
+              0: 'Did not apply to me at all',
+              1: 'Applied to me some degree',
+              2: 'Applied to me a considerable degree',
+              3: 'Applied to me very much'
+            },
+            savedSuccessfully: 'Your responses have been saved successfully.',
+          },
         }
     },
     he: {
@@ -460,9 +474,14 @@ export const translations = {
           cancel: 'בטל',
           save: 'שמור',
           delete: 'מחק',
-          submit: 'שלח',
+          submit: {
+            male: 'שלח',
+            female: 'שלחי',
+            default: 'שלח/י'
+          },
           error: 'שגיאה',
           success: 'הצלחה',
+          ok: 'בסדר',
           logoutConfirm: 'האם את/ה בטוח/ה שברצונך להתנתק?',
           logoutError: 'ההתנתקות נכשלה. אנא נסה/י שוב.',
           enabled: 'מופעל',
@@ -540,6 +559,11 @@ export const translations = {
             error: "שגיאה",
             loadError: "טעינת הנתונים נכשלה",
             playingRecording: 'נכשל בניגון ההקלטה',
+            unansweredQuestions: {
+              male: "אנא ענה על כל השאלות",
+              female: "אנא עני על כל השאלות",
+              default: "אנא ענו על כל השאלות"
+            },
           },
 
           success: {
@@ -715,6 +739,11 @@ export const translations = {
           therapistSelection: {
             dropdownLabel: '',
             dropdownPlaceholder: 'בחר/י מטפל לעבוד איתו',
+            dropdownPlaceholderGender: {
+              male: "בחר מטפל לעבוד איתו",
+              female: "בחרי מטפל לעבוד איתו",
+              default: "בחר/י מטפל לעבוד איתו"
+            },
             noTherapistOption: 'איני מעוניין/ת לעבוד עם מטפל כרגע',
             noTherapistDesc: 'תוכל/י לבחור מטפל מאוחר יותר',
             dataSharingTitle: 'הגדרות שיתוף מידע',
@@ -1089,8 +1118,22 @@ export const translations = {
                   ]
                 }
               }
-            }
-              
+            },
+          },
+          questionnaire: {  
+            title: 'הערכת בריאות נפשית חודשית',
+            instruction: {
+              male: 'דרג עד כמה כל משפט התאים לך בשבוע האחרון:',
+              female: 'דרגי עד כמה כל משפט התאים לך בשבוע האחרון:',
+              default: 'דרגו עד כמה כל משפט התאים לכם בשבוע האחרון:'
+            },
+            ratings: {
+              0: 'כלל לא',
+              1: 'במידה מסוימת', 
+              2: 'במידה ניכרת',
+              3: 'במידה רבה מאוד'
+            },
+            savedSuccessfully: 'התגובות שלך נשמרו בהצלחה.',
           }
       },
     },

@@ -15,6 +15,9 @@ import Loader from "@/components/Loader";
 import { useWebSocketConnection } from "@/hooks/useWebSocketConnection";
 import { AnxietyDataViewer } from "@/components/sensorData/AnxietyDataViewer";
 import { useFeatures } from "@/hooks/useFeatures";
+import { useDassQuestionnaire } from "@/hooks/useDassQuestionnaire";
+import { DassQuestionnaire } from "@/components/monthlyQuestionnaire/MonthlyAssessment";
+import { useAnxietyMonitor } from "@/hooks/useAnxietyMonitor";
 
 type RouteType =
   | "/chat"
@@ -45,6 +48,12 @@ const HomePatient = () => {
     error: userDataError,
   } = useUserData(userId);
   const { features } = useFeatures();
+  const {
+    shouldShow,
+    isLoading: dassLoading,
+    hideQuestionnaire,
+  } = useDassQuestionnaire(userId);
+  const { isAnxious } = useAnxietyMonitor(userId as string);
 
   useEffect(() => {
     requestLocationPermission();
@@ -173,8 +182,28 @@ const HomePatient = () => {
       : []),
   ] as MenuItem[];
 
-  if (userDataLoading || !gender || !fullName) {
+  if (dassLoading || userDataLoading || !gender || !fullName) {
     return <Loader isLoading={true} />;
+  }
+
+  const handleQuestionnaireComplete = () => {
+    Alert.alert(t.common.success, t.questionnaire.savedSuccessfully, [
+      {
+        text: t.common.ok,
+        onPress: () => hideQuestionnaire(),
+      },
+    ]);
+  };
+
+  if (shouldShow && !isAnxious) {
+    return (
+      <ThemedView className="flex-1">
+        <DassQuestionnaire
+          userId={userId as string}
+          onComplete={handleQuestionnaireComplete}
+        />
+      </ThemedView>
+    );
   }
 
   return (
@@ -206,6 +235,10 @@ const HomePatient = () => {
                 paddingHorizontal: 35,
                 paddingVertical: 12,
                 marginBottom: 16,
+                alignItems: isRTL ? "flex-end" : "flex-start",
+                flexDirection: "column",
+                gap: 8,
+                width: "100%",
               }}
             />
           ))}
@@ -215,13 +248,6 @@ const HomePatient = () => {
         {features?.recordings && (
           <View className="mt-8">
             <RecordingsSection />
-          </View>
-        )}
-
-        {/* Anxiety Data Viewer */}
-        {userId && features?.anxietyDataViewer && (
-          <View>
-            <AnxietyDataViewer userId={userId} />
           </View>
         )}
       </ScrollView>

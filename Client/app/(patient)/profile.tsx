@@ -256,7 +256,10 @@ const ProfileScreen = () => {
               className="text-lg font-pbold mb-4"
               isRTL={isRTL}
             >
-              {t.therapistSelection.dropdownPlaceholder}
+              {getGenderedText(
+                t.therapistSelection.dropdownPlaceholderGender,
+                gender as string
+              )}
             </ThemedText>
 
             <TherapistSelectionSection

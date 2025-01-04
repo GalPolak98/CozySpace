@@ -52,7 +52,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       case "secondary":
         variantStyles = {
           backgroundColor:
-            currentTheme === "dark" ? colors.surface : colors.background,
+            currentTheme === "dark" ? colors.surface : colors.surface,
         };
         break;
       case "outline":

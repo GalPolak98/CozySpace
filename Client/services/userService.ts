@@ -204,7 +204,47 @@ class UserService {
     }
   }
   
-  
+  async saveDassResponse(userId: string, responseData: {
+    timestamp: string;
+    answers: Array<{ questionId: number; score: number }>;
+    totalScore: number;
+   }) {
+    try {
+      const response = await this.fetchWithTimeout(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/dass`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(responseData),
+        }
+      );
+   
+      return await response.json();
+    } catch (error) {
+      throw new Error(`Failed to save DASS response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+   }
+   
+   async getDassResponses(userId: string) {
+    try {
+      const response = await this.fetchWithTimeout(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/users/${userId}/dass`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+   
+      const data = await response.json();
+      return data.dassResponses || [];
+    } catch (error) {
+      throw new Error(`Failed to get DASS responses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+   }
 }
 
 export const userService = new UserService();
