@@ -387,17 +387,47 @@ class WebSocketManager extends EventEmitter {
     if (state.isReconnecting) return;
     
     state.isReconnecting = true;
-    const backoffTime = Math.min(1000 * Math.pow(2, state.reconnectAttempts), 30000); // Max 30 seconds
+    
+    const jitter = Math.random() * 1000;
+    const baseDelay = 1000;
+    const backoffTime = Math.min(
+      baseDelay * Math.pow(1.5, state.reconnectAttempts) + jitter,
+      30000
+    );
   
-    setTimeout(async () => {
-      try {
-        await this.connect(userId);
-      } catch (error) {
-        console.error(`[WebSocketManager] Reconnection failed for user: ${userId}`, error);
-      } finally {
-        state.isReconnecting = false;
-      }
-    }, backoffTime);
+    console.log(`[WebSocketManager] Scheduling reconnection for ${userId} in ${backoffTime}ms`);
+  
+    return new Promise((resolve) => {
+      const timeoutId = setTimeout(async () => {
+        try {
+          if (!this.isNetworkAvailable) {
+            console.log('[WebSocketManager] Network unavailable, skipping reconnection attempt');
+            return;
+          }
+  
+          if (state.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+            console.log('[WebSocketManager] Max reconnection attempts reached');
+            this.emitWithNamespace(userId, 'maxRetriesReached');
+            return;
+          }
+  
+          await this.connect(userId);
+          state.reconnectAttempts = 0;
+          
+        } catch (error) {
+          console.error(`[WebSocketManager] Reconnection attempt failed:`, error);
+          state.reconnectAttempts++;
+          if (state.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            await this.scheduleReconnect(userId);
+          }
+        } finally {
+          state.isReconnecting = false;
+          resolve();
+        }
+      }, backoffTime);
+  
+      this.backgroundTasks.set(userId, timeoutId);
+    });
   }
 
   private handleMessage(data: WebSocketMessage, userId: string): void {
