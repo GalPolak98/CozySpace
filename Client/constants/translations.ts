@@ -471,7 +471,11 @@ export const translations = {
           cancel: 'בטל',
           save: 'שמור',
           delete: 'מחק',
-          submit: 'שלח',
+          submit: {
+            male: 'שלח',
+            female: 'שלחי',
+            default: 'שלח/י'
+          },
           error: 'שגיאה',
           success: 'הצלחה',
           logoutConfirm: 'האם את/ה בטוח/ה שברצונך להתנתק?',
@@ -731,6 +735,11 @@ export const translations = {
           therapistSelection: {
             dropdownLabel: '',
             dropdownPlaceholder: 'בחר/י מטפל לעבוד איתו',
+            dropdownPlaceholderGender: {
+              male: "בחר מטפל לעבוד איתו",
+              female: "בחרי מטפל לעבוד איתו",
+              default: "בחר/י מטפל לעבוד איתו"
+            },
             noTherapistOption: 'איני מעוניין/ת לעבוד עם מטפל כרגע',
             noTherapistDesc: 'תוכל/י לבחור מטפל מאוחר יותר',
             dataSharingTitle: 'הגדרות שיתוף מידע',

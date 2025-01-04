@@ -1,74 +1,105 @@
-// components/Chart.tsx
-import React from 'react';
-import { Dimensions } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import { useTheme } from '../ThemeContext';
-import ThemedView from '../ThemedView';
-import ThemedText from '../ThemedText';
-import { useLanguage } from '@/context/LanguageContext';  
+import React, { useEffect, useState } from "react";
+import { Dimensions, View, LayoutChangeEvent } from "react-native";
+import { LineChart } from "react-native-chart-kit";
+import { useTheme } from "../ThemeContext";
+import ThemedView from "../ThemedView";
+import ThemedText from "../ThemedText";
+import { useLanguage } from "@/context/LanguageContext";
+import { theme } from "@/styles/Theme";
 
 interface ChartProps {
   weeklyData: any;
 }
 
 const Chart: React.FC<ChartProps> = ({ weeklyData }) => {
-  const { theme } = useTheme(); 
-  const screenWidth = Dimensions.get('window').width;
-  const isDark = theme === 'dark';
-  const { t , isRTL} = useLanguage();  // Get translation function
+  const { theme: currentTheme } = useTheme();
+  const isDark = currentTheme === "dark";
+  const { t, isRTL } = useLanguage();
+  const [containerWidth, setContainerWidth] = useState(0);
+  const colors = theme[currentTheme];
+
+  const onLayout = (event: LayoutChangeEvent) => {
+    const { width } = event.nativeEvent.layout;
+    setContainerWidth(width);
+  };
 
   const chartConfig = {
-    backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
-    backgroundGradientFrom: isDark ? '#1a1a1a' : '#ffffff',
-    backgroundGradientTo: isDark ? '#1a1a1a' : '#ffffff',
-    color: (opacity = 1) => isDark 
-      ? `rgba(255, 255, 255, ${opacity})`
-      : `rgba(0, 0, 0, ${opacity})`,
+    backgroundColor: colors.background,
+    backgroundGradientFrom: colors.background,
+    backgroundGradientTo: colors.background,
+    color: (opacity = 1) =>
+      isDark ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
     strokeWidth: 2,
     decimalPlaces: 0,
     propsForLabels: {
       fontSize: 10,
-      fontFamily: 'Poppins-Medium',
+      fontFamily: "Poppins-Medium",
     },
     propsForBackgroundLines: {
       strokeDasharray: "4 4",
       strokeWidth: 1,
-      stroke: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+      stroke: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)",
     },
     propsForDots: {
       r: "3",
       strokeWidth: "1.5",
-      stroke: "#3b82f6"
-    }
+      stroke: colors.primary,
+    },
+    // Add left and right margin to ensure chart is centered
+    paddingRight: 0,
+    paddingLeft: 0,
   };
 
   return (
-    <ThemedView className="bg-white dark:bg-gray-900  rounded-lg  shadow-sm">
+    <ThemedView
+      className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-4"
+      style={{
+        borderWidth: 1,
+        borderColor: colors.border,
+        marginBottom: 30,
+      }}
+      onLayout={onLayout}
+    >
       <ThemedText
-        className="font-pbold text-base mb-0.5"
+        className="font-pbold text-base mb-2 w-full"
         style={{
-          textAlign: isRTL ? 'right' : 'left', // Adjust text alignment
+          textAlign: isRTL ? "right" : "left",
+          color: colors.text,
         }}
       >
-      {t.reports.weeklyAnxietyLevels}
+        {t.reports.weeklyAnxietyLevels}
       </ThemedText>
-      <LineChart
-        data={weeklyData}
-        width={screenWidth - 20}
-        height={280}
-        chartConfig={chartConfig}
-        bezier
-        style={{
-          borderRadius: 8,
-        }}
-        withInnerLines={true}
-        withOuterLines={false}
-        withVerticalLines={true}
-        yAxisLabel=""
-        yAxisSuffix=""
-        fromZero
-        segments={4}
-      />
+
+      {containerWidth > 0 && (
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 8,
+            width: "100%",
+          }}
+        >
+          <LineChart
+            data={weeklyData}
+            width={containerWidth - 32}
+            height={280}
+            chartConfig={chartConfig}
+            bezier
+            style={{
+              marginHorizontal: -8,
+            }}
+            withInnerLines={true}
+            withOuterLines={false}
+            withVerticalLines={true}
+            withHorizontalLabels={true}
+            withVerticalLabels={true}
+            yAxisLabel=""
+            yAxisSuffix=""
+            fromZero
+            segments={4}
+          />
+        </View>
+      )}
     </ThemedView>
   );
 };

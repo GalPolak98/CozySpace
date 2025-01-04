@@ -4,7 +4,7 @@ import { userService } from '@/services/userService';
 import { DassResponse } from '@/types/questionnaire';
 
 const DASS_STORAGE_KEY = '@dass_last_shown_';
-const MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000;
+const MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000; //Once a month
 
 export const useDassQuestionnaire = (userId: string | null) => {
   const [shouldShow, setShouldShow] = useState(false);

@@ -237,13 +237,6 @@ const HomePatient = () => {
             <RecordingsSection />
           </View>
         )}
-
-        {/* Anxiety Data Viewer */}
-        {userId && features?.anxietyDataViewer && (
-          <View>
-            <AnxietyDataViewer userId={userId} />
-          </View>
-        )}
       </ScrollView>
     </ThemedView>
   );

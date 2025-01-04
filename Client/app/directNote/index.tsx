@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import useAuth from '../../hooks/useAuth';
-import { useTheme } from '@/components/ThemeContext';
-import { useLanguage } from '@/context/LanguageContext';
-import ThemedText from '@/components/ThemedText';
-import NotebookInput from '../../components/notes/NoteInput';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { theme } from '@/styles/Theme';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { loadNotes } from '../../utils/notesUtils';
+import React, { useState, useEffect } from "react";
+import { View, Alert, StyleSheet, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import useAuth from "../../hooks/useAuth";
+import { useTheme } from "@/components/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
+import ThemedText from "@/components/ThemedText";
+import NotebookInput from "../../components/notes/NoteInput";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { theme } from "@/styles/Theme";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { loadNotes } from "../../utils/notesUtils";
 import { useUserData } from "@/hooks/useUserData";
 
 const NotesSection: React.FC = () => {
@@ -17,15 +20,8 @@ const NotesSection: React.FC = () => {
   const [notes, setNotes] = useState<
     { _id: string; content: string; timestamp: string }[]
   >([]);
-  const [selectedNote, setSelectedNote] = useState<{
-    _id: string;
-    content: string;
-    timestamp: string;
-  } | null>(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editedNote, setEditedNote] = useState("");
   const userId = useAuth();
-  const { t, isRTL ,getGenderedText} = useLanguage();
+  const { t, isRTL, getGenderedText } = useLanguage();
   const { theme: currentTheme } = useTheme();
   const colors = theme[currentTheme];
   const insets = useSafeAreaInsets();
@@ -34,9 +30,8 @@ const NotesSection: React.FC = () => {
 
   const getCurrentDateTime = () => {
     const now = new Date();
-    return now.toISOString(); // Return the timestamp in ISO 8601 format
+    return now.toISOString();
   };
-  
 
   useEffect(() => {
     const loadDraftNote = async () => {
@@ -51,17 +46,6 @@ const NotesSection: React.FC = () => {
   useEffect(() => {
     AsyncStorage.setItem("draftNote", note);
   }, [note]);
-
-  const parseTimestamp = (timestamp: string): number => {
-    if (isRTL) {
-      const [datePart, timePart] = timestamp.split(", ");
-      const [day, month, year] = datePart.split(".").map(Number);
-      const [hours, minutes, seconds] = timePart.split(":").map(Number);
-      return new Date(year, month - 1, day, hours, minutes, seconds).getTime();
-    } else {
-      return new Date(timestamp).getTime();
-    }
-  };
 
   const addNote = async () => {
     if (note.trim() === "") return;
@@ -84,10 +68,14 @@ const NotesSection: React.FC = () => {
       if (!response.ok) throw new Error("Failed to save note");
 
       const savedNote = await response.json();
-      setNotes(prevNotes => [savedNote, ...prevNotes]);
-      setNote('');
-      await AsyncStorage.removeItem('draftNote');
-      const updatedNotes = await loadNotes(userId, isRTL, t as { common: { error: string }; note: { fetchError: string } });
+      setNotes((prevNotes) => [savedNote, ...prevNotes]);
+      setNote("");
+      await AsyncStorage.removeItem("draftNote");
+      const updatedNotes = await loadNotes(
+        userId,
+        isRTL,
+        t as { common: { error: string }; note: { fetchError: string } }
+      );
 
       setNotes(updatedNotes);
       Alert.alert(t.common.success, t.note.saveSuccess);
@@ -105,13 +93,12 @@ const NotesSection: React.FC = () => {
       ]}
     >
       <KeyboardAwareScrollView
-      keyboardOpeningTime={0}
-      keyboardShouldPersistTaps="handled"
-      scrollToOverflowEnabled={true}
-      enableOnAndroid={true}
-      enableAutomaticScroll={true}>
-       
-
+        keyboardOpeningTime={0}
+        keyboardShouldPersistTaps="handled"
+        scrollToOverflowEnabled={true}
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+      >
         <View
           style={[
             styles.inputContainer,
@@ -121,31 +108,30 @@ const NotesSection: React.FC = () => {
             },
           ]}
         >
-        
-        <View style={{ width: '100%' }}>
-          <NotebookInput note={note} setNote={setNote} />
+          <View style={{ width: "100%" }}>
+            <NotebookInput note={note} setNote={setNote} />
+          </View>
+
+          <View style={[styles.addNoteButton, { width: "100%" }]}>
+            <TouchableOpacity
+              onPress={addNote}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: colors.primary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "row",
+                  gap: 8,
+                },
+              ]}
+            >
+              <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
+                {getGenderedText(t.note.addNote, gender as string)}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
         </View>
-        
-        <View style={[styles.addNoteButton, { width: '100%' }]}>
-  <TouchableOpacity 
-    onPress={addNote} 
-    style={[
-      styles.button, 
-      { 
-        backgroundColor: colors.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row', // Add this to align icon and text horizontally
-        gap: 8, // Add space between icon and text
-      }
-    ]}
-  >
-    <ThemedText style={[styles.buttonText]} isRTL={isRTL}>
-      {getGenderedText(t.note.addNote, gender as string)}
-    </ThemedText>
-    </TouchableOpacity>
-  </View>
-      </View>
       </KeyboardAwareScrollView>
     </View>
   );
@@ -180,7 +166,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
