@@ -27,6 +27,7 @@ export const translations = {
           submit: 'Submit',
           error: 'Error',
           success: 'Success',
+          ok: 'OK',
           logoutConfirm: 'Are you sure you want to logout?',
           logoutError: 'Failed to logout. Please try again.',
           enabled: 'Enabled',
@@ -448,7 +449,8 @@ export const translations = {
               1: 'Applied to me some degree',
               2: 'Applied to me a considerable degree',
               3: 'Applied to me very much'
-            }
+            },
+            savedSuccessfully: 'Your responses have been saved successfully.',
           },
         }
     },
@@ -478,6 +480,7 @@ export const translations = {
           },
           error: 'שגיאה',
           success: 'הצלחה',
+          ok: 'בסדר',
           logoutConfirm: 'האם את/ה בטוח/ה שברצונך להתנתק?',
           logoutError: 'ההתנתקות נכשלה. אנא נסה/י שוב.',
           enabled: 'מופעל',
@@ -1128,7 +1131,8 @@ export const translations = {
               1: 'במידה מסוימת', 
               2: 'במידה ניכרת',
               3: 'במידה רבה מאוד'
-            }
+            },
+            savedSuccessfully: 'התגובות שלך נשמרו בהצלחה.',
           }
       },
     },

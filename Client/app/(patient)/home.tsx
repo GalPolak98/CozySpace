@@ -186,12 +186,21 @@ const HomePatient = () => {
     return <Loader isLoading={true} />;
   }
 
+  const handleQuestionnaireComplete = () => {
+    Alert.alert(t.common.success, t.questionnaire.savedSuccessfully, [
+      {
+        text: t.common.ok,
+        onPress: () => hideQuestionnaire(),
+      },
+    ]);
+  };
+
   if (shouldShow && !isAnxious) {
     return (
       <ThemedView className="flex-1">
         <DassQuestionnaire
           userId={userId as string}
-          onComplete={hideQuestionnaire}
+          onComplete={handleQuestionnaireComplete}
         />
       </ThemedView>
     );

@@ -129,7 +129,7 @@ export const DassQuestionnaire: React.FC<{
       ))}
       <View>
         <CustomButton
-          title={t.common.submit}
+          title={getGenderedText(t.common.submit, gender as string)}
           handlePress={handleSubmit}
           variant="primary"
           isLoading={isSubmitting}
