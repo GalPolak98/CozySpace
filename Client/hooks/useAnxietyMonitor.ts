@@ -3,6 +3,7 @@ import { websocketManager } from '@/services/websocketManager';
 import type { AnxietyAnalysis, SensorData } from '@/types/sensorTypes';
 import { useWebSocketConnection } from './useWebSocketConnection';
 import { sendPushNotification  } from '@/services/pushNotificationService'; 
+import { registerForPushNotificationsAsync } from '@/utils/registerForPushNotificationsAsync';
 
 interface AnxietyState {
   isAnxious: boolean;
@@ -40,11 +41,26 @@ export const useAnxietyMonitor = (userId: string) => {
 
   const { isConnected } = useWebSocketConnection(userId);
   const stateUpdateRef = useRef(setAnxietyState);
+  const [pushToken, setPushToken] = useState<string | null>(null);
+
   // Keep the state updater function reference current
   useEffect(() => {
     stateUpdateRef.current = setAnxietyState;
   });
 
+  useEffect(() => {
+    const fetchPushToken = async () => {
+      try {
+        const token = await registerForPushNotificationsAsync();
+        setPushToken(token);
+      } catch (error) {
+        console.error('[useAnxietyMonitor] Failed to fetch push token:', error);
+      }
+    };
+
+    fetchPushToken();
+  }, []);
+  
   useEffect(() => {
     if (!userId || !isConnected) return;
     const namespace = `user_${userId}`;
@@ -70,8 +86,11 @@ export const useAnxietyMonitor = (userId: string) => {
         stateUpdateRef.current(newState);
         latestState.set(userId, newState);
 
-        if (analysis.isAnxious && process.env.EXPO_PUBLIC_PUSH_TOKEN ) {
-          sendPushNotification(process.env.EXPO_PUBLIC_PUSH_TOKEN , userId);
+        if (analysis.isAnxious) {
+          if (pushToken) {
+            console.log("sending push notification!!", pushToken);
+            sendPushNotification(pushToken, userId);
+          }
         }
       } catch (error) {
         console.error('[useAnxietyMonitor] Error processing sensor data:', error);
