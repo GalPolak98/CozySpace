@@ -2,6 +2,7 @@ import { PatientModel } from '../models/Patient';
 import { UserModel } from '../models/User';
 import { TherapistModel } from '../models/Therapist';
 import mongoose from 'mongoose';
+import { DassResponse, DassAnalysis, SCALE_MAPPINGS, SEVERITY_THRESHOLDS, ScaleScores, ScaleSeverity } from '../types/dass';
 
 class UserService {
   async registerUser(userData: any) {
@@ -489,7 +490,135 @@ async getAllPatients() {
     session.endSession();
   }
 }
+
+private calculateScaleScore(answers: { questionId: number; score: number }[], scaleQuestions: number[]): number {
+  return scaleQuestions.reduce((sum, questionId) => {
+    const answer = answers.find(a => a.questionId === questionId);
+    return sum + (answer?.score || 0);
+  }, 0);
 }
 
-// Create and export a single instance
+private determineScaleSeverity(score: number, thresholds: typeof SEVERITY_THRESHOLDS.depression): string {
+  if (score <= thresholds.normal[1]) return 'Normal';
+  if (score <= thresholds.mild[1]) return 'Mild';
+  if (score <= thresholds.moderate[1]) return 'Moderate';
+  if (score <= thresholds.severe[1]) return 'Severe';
+  return 'Extremely Severe';
+}
+
+private analyzeDassResponse(responseData: DassResponse): DassAnalysis {
+  const scaleScores: ScaleScores = {
+    depression: this.calculateScaleScore(responseData.answers, SCALE_MAPPINGS.depression),
+    anxiety: this.calculateScaleScore(responseData.answers, SCALE_MAPPINGS.anxiety),
+    stress: this.calculateScaleScore(responseData.answers, SCALE_MAPPINGS.stress)
+  };
+
+  const severity: ScaleSeverity = {
+    depression: this.determineScaleSeverity(scaleScores.depression, SEVERITY_THRESHOLDS.depression),
+    anxiety: this.determineScaleSeverity(scaleScores.anxiety, SEVERITY_THRESHOLDS.anxiety),
+    stress: this.determineScaleSeverity(scaleScores.stress, SEVERITY_THRESHOLDS.stress)
+  };
+
+  return { scaleScores, severity };
+}
+
+async saveDassResponse(userId: string, responseData: DassResponse) {
+  const session = await PatientModel.startSession();
+  session.startTransaction();
+
+  try {
+    const patient = await PatientModel.findOne({ userId }).session(session);
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
+    const analysis = this.analyzeDassResponse(responseData);
+
+    const enrichedResponse: DassResponse = {
+      ...responseData,
+      analysis
+    };
+
+    patient.dassResponses.push(enrichedResponse);
+    await patient.save({ session });
+
+    await session.commitTransaction();
+    return { 
+      success: true, 
+      message: 'DASS response saved successfully',
+      analysis 
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
+async getDassResponsesForUser(userId: string) {
+  try {
+    const patient = await PatientModel.findOne({ userId });
+    if (!patient) {
+      return null;
+    }
+
+    return patient.dassResponses;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async getLatestDassResponse(userId: string) {
+  try {
+    const patient = await PatientModel.findOne({ userId });
+    if (!patient || !patient.dassResponses.length) {
+      return null;
+    }
+
+    return patient.dassResponses[patient.dassResponses.length - 1];
+  } catch (error) {
+    throw error;
+  }
+}
+
+async getDassAnalyticsSummary(userId: string) {
+  try {
+    const patient = await PatientModel.findOne({ userId });
+    if (!patient || !patient.dassResponses.length) {
+      return null;
+    }
+
+    const responses = patient.dassResponses;
+    const latestResponse = responses[responses.length - 1];
+
+    const trends = {
+      depression: this.calculateTrend(responses, 'depression'),
+      anxiety: this.calculateTrend(responses, 'anxiety'),
+      stress: this.calculateTrend(responses, 'stress')
+    };
+
+    return {
+      latestAnalysis: latestResponse.analysis,
+      responseCount: responses.length,
+      trends,
+      lastUpdated: latestResponse.timestamp
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+private calculateTrend(responses: DassResponse[], scale: keyof ScaleScores): 'increasing' | 'decreasing' | 'stable' {
+  if (responses.length < 2) return 'stable';
+
+  const latest = responses[responses.length - 1].analysis?.scaleScores[scale] || 0;
+  const previous = responses[responses.length - 2].analysis?.scaleScores[scale] || 0;
+
+  if (latest > previous) return 'increasing';
+  if (latest < previous) return 'decreasing';
+  return 'stable';
+}
+}
+
 export const userService = new UserService();

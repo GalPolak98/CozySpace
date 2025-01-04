@@ -124,6 +124,7 @@ export const translations = {
             error: "Error",
             loadError: "Failed to load data",
             playingRecording: 'Failed to play recording',
+            unansweredQuestions: "Please answer all questions",
           },
 
           success: {
@@ -439,6 +440,16 @@ export const translations = {
             }
           },
           },
+          questionnaire: {  
+            title: 'Monthly Mental Health Assessment',
+            instruction: 'Please rate how much each statement applied to you over the past week:',
+            ratings: {
+              0: 'Did not apply to me at all',
+              1: 'Applied to me some degree',
+              2: 'Applied to me a considerable degree',
+              3: 'Applied to me very much'
+            }
+          },
         }
     },
     he: {
@@ -540,6 +551,11 @@ export const translations = {
             error: "שגיאה",
             loadError: "טעינת הנתונים נכשלה",
             playingRecording: 'נכשל בניגון ההקלטה',
+            unansweredQuestions: {
+              male: "אנא ענה על כל השאלות",
+              female: "אנא עני על כל השאלות",
+              default: "אנא ענו על כל השאלות"
+            },
           },
 
           success: {
@@ -1089,8 +1105,21 @@ export const translations = {
                   ]
                 }
               }
+            },
+          },
+          questionnaire: {  
+            title: 'הערכת בריאות נפשית חודשית',
+            instruction: {
+              male: 'דרג עד כמה כל משפט התאים לך בשבוע האחרון:',
+              female: 'דרגי עד כמה כל משפט התאים לך בשבוע האחרון:',
+              default: 'דרגו עד כמה כל משפט התאים לכם בשבוע האחרון:'
+            },
+            ratings: {
+              0: 'כלל לא',
+              1: 'במידה מסוימת', 
+              2: 'במידה ניכרת',
+              3: 'במידה רבה מאוד'
             }
-              
           }
       },
     },
