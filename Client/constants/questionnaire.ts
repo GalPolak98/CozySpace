@@ -19,7 +19,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "התקשיתי להיות נינוחה",
         default: "התקשיתי להיות נינוח",
       },
-      en: "I found it difficult to be at ease",
+      en: "I found it hard to wind down",
     },
   },
   {
@@ -30,7 +30,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "חשתי ביובש בפה",
         default: "חשתי ביובש בפה",
       },
-      en: "I felt dryness in my mouth",
+      en: "I was aware of dryness of my mouth",
     },
   },
   {
@@ -41,7 +41,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "התקשיתי לחוות כל הרגשה חיובית",
         default: "התקשיתי לחוות כל הרגשה חיובית",
       },
-      en: "I found it difficult to experience any positive feelings",
+      en: "I could not seem to experience any positive feeling at all",
     },
   },
   {
@@ -54,7 +54,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         default:
           "חשתי קושי בנשימה (לדוגמא, נשימה מואצת במיוחד, חוסר אוויר בהעדר פעילות גופנית מאומצת)",
       },
-      en: "I felt difficulty breathing (e.g., rapid breathing, shortness of breath without intense physical activity)",
+      en: "I experienced breathing difficulty (eg, excessively rapid breathing, breathlessness in the absence of physical exertion)",
     },
   },
   {
@@ -65,7 +65,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "לא היו לי הכוחות לעשות דברים",
         default: "לא היו לי הכוחות לעשות דברים",
       },
-      en: "I did not have the energy to do things",
+      en: "I found it difficult to work up the initiative to do things",
     },
   },
   {
@@ -76,7 +76,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "נטיתי להגזים בתגובותיי למצבים מסוימים",
         default: "נטיתי להגזים בתגובותיי למצבים מסוימים",
       },
-      en: "I tended to overreact to certain situations",
+      en: "I tended to over-react to situations",
     },
   },
   {
@@ -87,7 +87,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "חשתי רעד (למשל, בידיים)",
         default: "חשתי רעד (למשל, בידיים)",
       },
-      en: "I felt trembling (e.g., in my hands)",
+      en: "I experienced trembling (eg, in the hands)",
     },
   },
   {
@@ -98,7 +98,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "הרגשתי שאני מתעצבנת יותר מדי",
         default: "הרגשתי שאני מתעצבן/ת יותר מדי",
       },
-      en: "I felt that I was getting too irritated",
+      en: "I felt that I was using a lot of nervous energy",
     },
   },
   {
@@ -109,7 +109,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "חששתי ממצבים בהם אולי אכנס לחרדה ואעשה צחוק מעצמי",
         default: "חששתי ממצבים בהם אולי אכנס לחרדה ואעשה צחוק מעצמי",
       },
-      en: "I was afraid of situations where I might get anxious and embarrass myself",
+      en: "I was worried about situations in which I might panic and make a fool of myself",
     },
   },
   {
@@ -120,7 +120,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "הרגשתי שאין לי למה לצפות בחיים",
         default: "הרגשתי שאין לי למה לצפות בחיים",
       },
-      en: "I felt like I had nothing to look forward to in life",
+      en: "I felt that I had nothing to look forward to",
     },
   },
   {
@@ -131,7 +131,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "הרגשתי שאני קצרת רוח",
         default: "הרגשתי שאני קצר/ת רוח",
       },
-      en: "I felt impatient",
+      en: "I found myself getting agitated",
     },
   },
   {
@@ -153,7 +153,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "חוויתי דכדוך ותחושות עצבות",
         default: "חוויתי דכדוך ותחושות עצבות",
       },
-      en: "I experienced feelings of gloom and sadness",
+      en: "I felt down-hearted and blue",
     },
   },
   {
@@ -164,7 +164,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "הייתי חסרת סובלנות כלפי כל דבר שהפריע לי במעשיי",
         default: "הייתי חסר/ת סובלנות כלפי כל דבר שהפריע לי במעשיי",
       },
-      en: "I was intolerant of anything that interfered with my activities",
+      en: "I was intolerant of anything that kept me from getting on with what I was doing",
     },
   },
   {
@@ -175,7 +175,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "הרגשתי שאני קרובה למצב של פאניקה",
         default: "הרגשתי שאני קרוב/ה למצב של פאניקה",
       },
-      en: "I felt close to a state of panic",
+      en: "I felt I was close to panic",
     },
   },
   {
@@ -186,7 +186,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "לא הצלחתי להתלהב משום דבר",
         default: "לא הצלחתי להתלהב משום דבר",
       },
-      en: "I couldn't get excited about anything",
+      en: "I was unable to become enthusiastic about anything",
     },
   },
   {
@@ -197,7 +197,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "הערכתי העצמית כאדם הייתה מאוד נמוכה",
         default: "הערכתי העצמית כאדם הייתה מאוד נמוכה",
       },
-      en: "My self-esteem as a person was very low",
+      en: "I felt I was not worth much as a person",
     },
   },
   {
@@ -208,7 +208,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "הרגשתי רגישה ופגיעה למדי",
         default: "הרגשתי רגיש/ה ופגיע/ה למדי",
       },
-      en: "I felt sensitive and quite vulnerable",
+      en: "I felt that I was rather touchy",
     },
   },
   {
@@ -221,7 +221,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         default:
           "חשתי בפעילות ליבי גם ללא פעילות גופנית (לדוגמה, הרגשת עלייה בקצב הלב, החסרת פעימת לב)",
       },
-      en: "I felt my heart activity even without physical activity (e.g., an increased heart rate, skipping a heartbeat)",
+      en: "I was aware of the action of my heart in the absence of physical exertion (eg, sense of heart rate increase, heart missing a beat)",
     },
   },
   {
@@ -232,7 +232,7 @@ export const DASS_QUESTIONS: DassQuestion[] = [
         female: "הייתי מפוחדת גם ללא סיבה מיוחדת",
         default: "הייתי מפוחד/ת גם ללא סיבה מיוחדת",
       },
-      en: "I was scared even without a specific reason",
+      en: "I felt scared without any good reason",
     },
   },
   {
