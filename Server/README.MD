@@ -1,30 +1,21 @@
-Environment Variables Configuration
-This project uses environment variables to manage configuration settings. These variables are stored in a .env file in the project root.
-Setup
 
-Copy the .env.example file to a new file named .env:
+## Get started
 
-cp .env.example .env
+1. Install dependencies
 
-Open the .env file and update the values according to your environment.
+   ```bash
+   npm install
+   ```
+2. Configure environment:
 
-Available Variables
+Copy .env.example to .env
+Fill required variables (see Environment Variables section)
 
-PORT: The port number on which the server will run (default: 3000)
-MONGO_PASSWORD: The connection string for your MongoDB database
+3. Start the app
 
-Example:
-PORT=3000
-MONGO_PASSWORD = password
+   ```bash
+    npm run start
+   ```
 
-Running the Server
-To run the server, follow these steps:
 
-Ensure all dependencies are installed:
-npm install
 
-This command uses ts-node-dev to run the server, which will automatically restart when file changes are detected.
-For production, first build the TypeScript files and then run the compiled JavaScript:
-
-npm run build
-npm start
