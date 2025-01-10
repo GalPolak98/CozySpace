@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "900286492838",
+    "project_id": "anxiease",
+    "storage_bucket": "anxiease.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900286492838:android:346fbd1bc5e9034f754467",
+        "android_client_info": {
+          "package_name": "com.galpo.CozySpace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQbSyjGivjebJomgMwKNp_Mo27uxjxN3w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

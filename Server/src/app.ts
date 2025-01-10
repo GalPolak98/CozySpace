@@ -21,15 +21,6 @@ let wss: WebSocketServer;
 // Set port
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
-const expoPushToken = process.env.EXPO_PUSH_TOKEN || ''; 
-
-// setInterval(async () => {
-//   const title = 'You are having anxiety attack';
-//   const message = 'Please take care';
-  
-//   await sendPushNotification(expoPushToken, title, message);
-// }, 20000); 
-
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());

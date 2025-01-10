@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { websocketManager } from '@/services/websocketManager';
 import type { AnxietyAnalysis, SensorData } from '@/types/sensorTypes';
 import { useWebSocketConnection } from './useWebSocketConnection';
-import { sendPushNotification  } from '@/services/pushNotificationService'; 
-import { registerForPushNotificationsAsync } from '@/utils/registerForPushNotificationsAsync';
+import { useAnxietyNotifications } from './useAnxietyNotifications';
+import { sendPushNotification } from '@/services/pushNotificationService';
 
 interface AnxietyState {
   isAnxious: boolean;
@@ -37,27 +37,16 @@ export const useAnxietyMonitor = (userId: string) => {
       sensorData: null
     }
   );
+  const { pushToken } = useAnxietyNotifications(userId); // Get push token from notification hook
 
   const { isConnected } = useWebSocketConnection(userId);
   const stateUpdateRef = useRef(setAnxietyState);
-  const [pushToken, setPushToken] = useState<string | null>(null);
 
   useEffect(() => {
     stateUpdateRef.current = setAnxietyState;
   });
 
-  useEffect(() => {
-    const fetchPushToken = async () => {
-      try {
-        const token = await registerForPushNotificationsAsync();
-        setPushToken(token);
-      } catch (error) {
-        console.error('[useAnxietyMonitor] Failed to fetch push token:', error);
-      }
-    };
 
-    fetchPushToken();
-  }, [userId, isConnected]);
   
   useEffect(() => {
     if (!userId || !isConnected) return;
@@ -81,14 +70,7 @@ export const useAnxietyMonitor = (userId: string) => {
         console.log(newState, "new state");
         stateUpdateRef.current(newState);
         latestState.set(userId, newState);
-
-        if (analysis.isAnxious) {
-          //console.log("sending push notification!!", pushToken);
-
-          if (pushToken) {
-            sendPushNotification(pushToken, userId);
-          }
-        }
+        
       } catch (error) {
         console.error('[useAnxietyMonitor] Error processing sensor data:', error);
       }
@@ -140,7 +122,16 @@ export const useAnxietyMonitor = (userId: string) => {
       }
     };
   }, [userId, isConnected]);
-
+  
+    useEffect(() => {
+      if (anxietyState.isAnxious && pushToken) {
+        console.log("sending push notification!!", pushToken);
+        sendPushNotification(pushToken, userId);
+      } else if (anxietyState.isAnxious && !pushToken) {
+        console.log("Push token is not available yet, skipping notification");
+      }
+    }, [anxietyState, pushToken, userId]);
+  
   return {
     ...anxietyState,
     isConnected
