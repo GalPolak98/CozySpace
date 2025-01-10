@@ -38,13 +38,26 @@ const ReportsScreen = () => {
   const [averageBreathingSessionDuration, setAverageBreathingSessionDuration] =
     useState<number>(0);
 
-  const generateDayLabels = (startDate: Date, endDate: Date) => {
-    const days = eachDayOfInterval({ start: startDate, end: endDate });
-    return days.map((day) => {
-      const dayName = format(day, "EEE"); 
-      return t.reports.days[dayName] || dayName; 
-    });
-  };
+    const generateDayLabels = (startDate: Date, endDate: Date) => {
+      const days = eachDayOfInterval({ start: startDate, end: endDate });
+      const maxLabels = 10; 
+    
+      if (days.length > maxLabels) {
+        const step = Math.ceil(days.length / maxLabels); 
+        return days.map((day, index) => {
+          if (index % step === 0) {
+            const dayName = format(day, "EEE");
+            return t.reports.days[dayName] || dayName; 
+          }
+          return ""; 
+        });
+      }
+    
+      return days.map((day) => {
+        const dayName = format(day, "EEE");
+        return t.reports.days[dayName] || dayName; 
+      });
+    };
 
   const dayLabels = generateDayLabels(dateRange.startDate, dateRange.endDate);
 

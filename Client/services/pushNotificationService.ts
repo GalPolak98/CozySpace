@@ -22,14 +22,12 @@ function getLocalizedMessage(language: string) {
     },
   };
 
-  // Default to English if the language is not supported
   return messages[language] || messages['en'];
 }
 
 export async function sendPushNotification(expoPushToken: string, userId: string) {
   const now = Date.now();
   console.log('Sending push notification...');
-  // Check if the cooldown period has passed since the last notification
   const lastNotification = lastNotificationTime.get(userId);
   if (lastNotification && now - lastNotification < notificationCooldown) {
     console.log('Cooldown period still active, skipping notification.');
@@ -37,11 +35,10 @@ export async function sendPushNotification(expoPushToken: string, userId: string
   }
 
   const locales = Localization.getLocales();
-  const defaultLocale = locales[0]; // The first locale in the array is the default
+  const defaultLocale = locales[0]; 
   const deviceLanguage = defaultLocale.languageCode === 'iw' || defaultLocale.languageCode === 'he' ? 'he' : 'en';
   const localizedMessage = getLocalizedMessage(deviceLanguage);
 
-  // Send notification
   const message = {
     to: expoPushToken,
     sound: 'default',
@@ -66,7 +63,6 @@ export async function sendPushNotification(expoPushToken: string, userId: string
       console.error('Failed to send notification:', errorData);
     } else {
       console.log('Notification sent successfully!');
-      // Update the last notification time
       lastNotificationTime.set(userId, now);
     }
   } catch (error) {
