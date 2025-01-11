@@ -73,9 +73,7 @@ const InformationPatient = () => {
   return (
     <ThemedView className="flex-1">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
-        <ThemedText
-          className={`text-2xl font-bold mb-4 ${isRTL ? "text-right" : "text-left"}`}
-        >
+        <ThemedText className={`text-2xl font-bold mb-4 text-center`}>
           {t.information.patientInformation}
         </ThemedText>
 

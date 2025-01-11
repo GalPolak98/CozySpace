@@ -100,7 +100,7 @@ export const translations = {
           information:{
             recordings: 'Recordings',
             notes: 'Notes',
-            patientInformation: 'Patient Information',
+            patientInformation: 'Personal information',
             description: 'Access and manage your medical information'
           },
           errors: {
@@ -655,7 +655,7 @@ export const translations = {
           information:{
             recordings: 'הקלטות',
             notes: 'פתקים',
-            patientInformation: 'מידע על המטופל',
+            patientInformation: 'מידע אישי',
             description: 'גש למידע הרפואי שלך ונהל אותו'
           },
           reports: {

@@ -16,7 +16,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.finalproject.cozyspace",
+      "bundleIdentifier": "com.galpo.CozySpace",
       "infoPlist": {
         "UIBackgroundModes": [
           "fetch",
@@ -39,7 +39,7 @@
         "android.permission.WAKE_LOCK",
         "android.permission.FOREGROUND_SERVICE"
       ],
-      "package": "com.cozyspace_finalproject.CozySpace",
+      "package": "com.galpo.CozySpace",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -79,9 +79,7 @@
       }
     },
     "owner": "cozyspace_finalproject",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/a85fc8f4-3269-42ba-93a7-6f509bdabf9f"
     }
