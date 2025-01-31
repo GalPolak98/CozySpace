@@ -1,3 +1,9 @@
+Main Components:
+Client: Frontend implementation 
+Server: Backend implementation 
+Phase A & B: Project documentation and artifacts
+
+
 See detailed setup instructions in each directory's README:
 Client Setup
 Server Setup
