@@ -1,4 +1,5 @@
 Main Components:
+
 Client: Frontend implementation 
 Server: Backend implementation 
 Phase A & B: Project documentation and artifacts
